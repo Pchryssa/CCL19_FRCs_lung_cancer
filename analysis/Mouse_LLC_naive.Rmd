@@ -66,6 +66,7 @@ DimPlot(CCL19_EYFP, reduction = "umap", group.by = "annot", cols=palet)+
   ylab("UMAP2") + ggtitle(paste0("Ccl19-EYFP", "\U207A ", "cells"))
 ```
 
+
 #### Umap colored per tumor presence
 ```{r CCL19 EYFP umap tumor}
 CCL19_EYFP_origin <- subset(CCL19_EYFP, origin %in% c("naive","tumor"))
