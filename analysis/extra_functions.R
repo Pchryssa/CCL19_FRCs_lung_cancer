@@ -59,13 +59,13 @@ Cellchat_Analysis <- function(data){
   return(cellchat)
 }
 
-CellChatDownstreamAnalysis <- function(cellchat,type){
+CellChatDownstreamAnalysis <- function(cellchat,type,thresh){
   # Cell-Cell Communication Analysis
-  cellchat <- CellToCellCommunicationAnalysis(cellchat,type)
+  cellchat <- CellToCellCommunicationAnalysis(cellchat,type, thresh)
   return(cellchat)
 }
 
-CellToCellCommunicationAnalysis <- function(cellchat,type){
+CellToCellCommunicationAnalysis <- function(cellchat,type, thresh){
   # Preprocessing of Expression data
   cellchat <- LoadCellChatDB(cellchat,type)
   
@@ -73,7 +73,7 @@ CellToCellCommunicationAnalysis <- function(cellchat,type){
   cellchat <- DataPreprocessing(cellchat)
   
   # Inference of cell-cell communication network
-  cellchat <- CellToCellCommunicationInference(cellchat)
+  cellchat <- CellToCellCommunicationInference(cellchat, thresh)
   
   return(cellchat)
 }
@@ -101,11 +101,11 @@ DataPreprocessing <- function(cellchat){
   return(cellchat)
 }
 
-CellToCellCommunicationInference <- function(cellchat){
+CellToCellCommunicationInference <- function(cellchat, thresh){
   # Compute the communication probability and infer cellular communication network
   cellchat <- computeCommunProb(cellchat,population.size = FALSE)
   # Infer the cell-cell communication at a signaling pathway level
-  cellchat <- computeCommunProbPathway(cellchat, thresh = 0.05)
+  cellchat <- computeCommunProbPathway(cellchat, thresh = thresh)
   # Calculate the aggregated cell-cell communication network
   cellchat <- aggregateNet(cellchat)
   # Compute network centrality scores - slot 'netP' : inferred intercellular communication network of signaling pathways
