@@ -400,14 +400,14 @@ seurat_integrated[['mds']] <- CreateDimReducObject(embeddings = mds, key = 'MDS_
 ```
 
 ```{r save integrated MDS data, eval=FALSE}
-#saveRDS(seurat_integrated, "/Users/immbio/Documents/PhD/Lung_Tumour/Chrysa_Human_LLC/CCL19_FRCs_lung_cancer/data/Mouse/integrated_naive_mcov_mds_new.rds")
+#saveRDS(seurat_integrated, paste0(basedir,"/data/Mouse/integrated_naive_mcov_mds.rds"))
 ```
 
 We provide the integrated object with MDS representation as the classical MDS algorithm takes a long time to run.
 
 ### Read integrated object with MDS representation
 ```{r read integrated MDS data}
-seurat_integrated <- readRDS(paste0(basedir,"/data/Mouse/integrated_naive_mcov_mds_new.rds"))
+seurat_integrated <- readRDS(paste0(basedir,"/data/Mouse/integrated_naive_mcov_mds.rds"))
 ```
 
 ### Visualize MDS plot (Figure 6E)
