@@ -1,0 +1,226 @@
+---
+title: "NSCLC CCL19 TRC/PRC vs Tonsilar FRCs"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: true
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(dittoSeq)
+  library(gridExtra)
+  library(gsubfn)
+  library(ggsci)
+  library(bigmds)
+  library(tidyverse)
+})
+```
+
+## **Comparison between NSCLC CCL19`r knitr::asis_output("\U207A")` FRCs and Tonsilar FRCs**
+
+## Set directory
+```{r set directory}
+basedir <- here()
+```
+
+### Read NSCLC CCL19`r knitr::asis_output("\U207A")` TRC PRC data
+```{r read CCL19 TRC PRC}
+NCLS_FRCS <- readRDS(paste0(basedir,"/data/Human/NSCLC_Ccl19_FB_FRCs_trc_prc_final.rds"))
+```
+
+### Read Tonsilar FRC data
+```{r read Tonsil FRC data}
+Tons_FRC_data <-readRDS(paste0(basedir,"/data/Human/mergedHumanTonsilExtendedDataset_incAcuteTonsilitis_mapped_wocl11+12+14_seuratFRC.rds"))
+```
+
+### Define color palette
+```{r color vector}
+cols<- pal_igv()(51)
+names(cols) <- c(0:50)
+```
+
+### Tonsilar FRCs (Supplementary Figure 2I)
+```{r umap Tonsilar FRC}
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_1"] <- paste0("ACTA2", expression("\U207A"),"PRC_1")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_2"] <- paste0("ACTA2", expression("\U207A"),"PRC_2")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_3"] <- paste0("ACTA2", expression("\U207A"),"PRC_3")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_4"] <- paste0("ACTA2", expression("\U207A"),"PRC_4")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_5"] <- paste0("ACTA2", expression("\U207A"),"PRC_5")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "FDC_6"] <- "FDC"
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "PI16+RC_10"] <- paste0("PI16", expression("\U207A"),"RC_1")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "PI16+RC_11"] <- paste0("PI16", expression("\U207A"),"RC_2")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "PI16+RC_12"] <- paste0("PI16", expression("\U207A"),"RC_3")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "TRC_7"] <- "TRC_1"
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "TRC_8"] <- "TRC_2"
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "TRC_9"] <- "TRC_3"
+
+colDataset <- cols[3:15]
+names(colDataset) <- unique(Tons_FRC_data$clusterLabel)
+
+DimPlot(Tons_FRC_data, reduction = "umap", group.by = "clusterLabel",cols=colDataset)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle("Tonsilar FRCs (De Martin et al 2023)")
+```
+
+### Merge NSCLC TRC and PRC with Tonsilar FRCs
+```{r merge NSCLC TRC PRC Tons FRC}
+NCLS_FRCS$Disease_short <-rep("NSCLC",nrow(NCLS_FRCS@meta.data))
+Tons_FRC_data$Disease_short <-rep("Tonsil",nrow(Tons_FRC_data@meta.data))
+colnames(Tons_FRC_data@meta.data)[names(Tons_FRC_data@meta.data) == 'clusterLabel'] <- 'cell_type'
+
+data_merge <- merge(NCLS_FRCS, y = c(Tons_FRC_data),
+             add.cell.ids = c("NCLS_FRCS","Tons_FRC_data"),
+             project = "merge_nsclc_tonsils")
+
+#Preprocessing
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.8, 1.)
+data_merge  <- preprocessing(data_merge,resolution)
+```
+
+
+### Save merged NSCLC CCL19`r knitr::asis_output("\U207A")` TRC PRC and Tonsilar FRC data
+```{r save merged NSCLC Tons}
+#saveRDS(data_merge, paste0(basedir,"/data/Human/NSCLC_Ccl19_tonsil_merged.rds"))
+```
+
+
+### **Integrate data to correct for batch effects due to different tissues via seurat**
+### Step 1
+```{r integrate data step 1, eval=FALSE}
+obj.list <-SplitObject(data_merge, split.by = 'cell_type')
+#For each object in list we see to run normalization and identify highly variable features
+for (i in 1:length(obj.list)){
+  #Normalization
+  obj.list[[i]] <- NormalizeData(obj.list[[i]], normalization.method = "LogNormalize", scale.factor = 10000) 
+  #Find high variable genes
+  obj.list[[i]] <- FindVariableFeatures(obj.list[[i]], selection.method = "vst", nfeatures = 2000)
+}
+```
+
+### Step 2
+```{r integrate data step 2, eval=FALSE}
+#select features that are repeatedly variable across datasets for integration
+features <- SelectIntegrationFeatures(object.list = obj.list)
+#Find anchors to integrate the data across different patients (Canonical correlation analysis)
+anchors <- FindIntegrationAnchors(object.list = obj.list, anchor.features = features)
+# Create an 'integrated' data assay
+seurat_integrated <- IntegrateData(anchorset = anchors)
+```
+
+### Step 3
+```{r integrate data step 3, eval=FALSE}
+# We run a single integrated analysis on all cells!
+DefaultAssay(seurat_integrated) <- "integrated"
+
+# Run the standard workflow for visualization and clustering
+seurat_integrated <- ScaleData(seurat_integrated, verbose = FALSE)
+seurat_integrated <- RunPCA(object = seurat_integrated, npcs = 30, verbose = FALSE,seed.use = 8734) 
+seurat_integrated <- RunTSNE(object = seurat_integrated, reduction = "pca", dims = 1:20, seed.use = 8734)
+seurat_integrated<- RunUMAP(object = seurat_integrated, reduction = "pca", dims = 1:20, seed.use = 8734)
+seurat_integrated <- FindNeighbors(object = seurat_integrated, reduction = "pca", dims = 1:20, seed.use = 8734)
+#Clustering 
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.8, 1.,1.2,1.4,1.8)
+for(k in 1:length(resolution)){
+  seurat_integrated <- FindClusters(object = seurat_integrated, resolution = resolution[k], random.seed = 8734)
+}
+```
+
+### Apply Divide-and-conquer MDS algorithm proposed by Delicado P. and C. Pachón-García (2021) for fast MDS computation due to large dataset size
+```{r MDS computation, eval=FALSE}
+DefaultAssay(seurat_integrated) <-'integrated'
+
+#MDS computation
+mds <- divide_conquer_mds(x = t(GetAssayData(seurat_integrated, slot = 'scale.data')), l = 200, c_points = 5 * 2, r = 2, n_cores = 1)$points
+colnames(mds) <- paste0("MDSDIVCONQ_", 1:2)
+
+# Store MDS representation as a custom dimensional reduction field
+seurat_integrated[['mds_div_conq']] <- CreateDimReducObject(embeddings = mds, key = 'MDSDIVCONQ_', assay = DefaultAssay(seurat_integrated))
+```
+
+### Multidimensional scaling (MDS) plot 
+
+Multidimensional scaling (MDS) visualizes the level of similarity of variables in a data set. MDS recognizes the structure of the dataset in 2D, as it maintains the pairwise distances between data points.
+
+Due to the large size of the integrated dataset of Tonsilar and NSCLC FRCs, the classical MDS algorithm suffers from computational problems and thus MDS configuration can not be obtained. To resolve this issue, we used the Divide-and-conquer MDS algorithm proposed by Delicado P. and C. Pachón-García (2021) for large data sets from the bigmds R package. 
+
+In the MDS plot:
+
+a. Positions of cells are based on the calculated MDS representation 
+b. Positions of points in the final plot are calculated by taking the mean Gaussian kernel of coordinates of cells in a group
+
+Gaussian kernel function flexibly measures the similarity between data points in a high-dimensional space, given its ability to capture complex relationships that may not be linear or easily separable in the original feature space. When calculating Euclidean distance, the value increases with distance, thus the kernel function weights these observations accordingly. 
+
+Please note that we provide the integrated object with the MDS representation given that it takes some time to be generated.
+
+### Read integrated object with MDS representation 
+```{r read integrated data}
+seurat_integrated <- readRDS(paste0(basedir,"/data/Human/Tonsil_Ccl19_TRC_PRC_final_mds.rds"))
+```
+
+### Visualize MDS plot (Supplementary Figure 2J)
+```{r MDS visualization}
+mds_tx_condition <- seurat_integrated@reductions$mds_div_conq@cell.embeddings %>% 
+as.data.frame() %>% cbind(tx = seurat_integrated@meta.data$Disease_short)
+
+mds_tx_celltype <- seurat_integrated@reductions$mds_div_conq@cell.embeddings %>% 
+as.data.frame() %>% cbind(tx = seurat_integrated@meta.data$cell_type)
+
+mds_tx_TOTAL <- merge(mds_tx_condition, mds_tx_celltype, by=c("MDSDIVCONQ_1", "MDSDIVCONQ_2"), all.x=T, all.y=T)
+colnames(mds_tx_TOTAL) <-c("MDS_1", "MDS_2", "Condition","Celltype")
+
+#Color palette
+colDataset <- cols[1:15]
+names(colDataset) <- unique(seurat_integrated$cell_type)
+
+# Use mean gaussian kernel
+mds_tx_TOTAL_gk <- mds_tx_TOTAL %>% 
+  group_by(Celltype,Condition) %>% 
+  mutate(count_mds1 = mean(GK(MDS_1))) %>%
+  mutate(count_mds2 = mean(GK(MDS_2)))
+
+ggplot(mds_tx_TOTAL_gk, aes(x=count_mds1, y=count_mds2, color=Celltype, shape = Condition)) + geom_point(stroke = 1.5) + ylab("MDS2") + xlab("MDS1") + coord_cartesian(xlim = c(0, max(mds_tx_TOTAL_gk$count_mds1,mds_tx_TOTAL_gk$count_mds2)), ylim = c(0, max(mds_tx_TOTAL_gk$count_mds1,mds_tx_TOTAL_gk$count_mds2)) ) +
+scale_color_manual(values=colDataset) + scale_shape_manual(values = c(2, 3)) + 
+  theme(aspect.ratio = 2,axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    axis.text.y = element_text(angle = 0, vjust = 0.5,colour = "black",size = 10),
+    axis.text.x = element_text(angle = 0, vjust = 0.5,colour = "black",size = 10)) 
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
+
