@@ -95,7 +95,7 @@ DimPlot(merged_data, reduction = "umap", group.by = "cell_type", cols=palet)+
 ### Convert seurat object to cellchat object
 ```{r conv seurat to cellchat}
 cellchat <- Cellchat_Analysis(merged_data)
-cellchat <-CellChatDownstreamAnalysis(cellchat,"human")
+cellchat <-CellChatDownstreamAnalysis(cellchat,"human",thresh = 0.05)
 ```
 
 ### Save cellchat data
@@ -186,7 +186,7 @@ DimPlot(merged_data, reduction = "umap", group.by = "cell_type", cols = palet)+
 ### Convert seurat object to cellchat object
 ```{r conv seurat to cellchat FRC CD8}
 cellchat <- Cellchat_Analysis(merged_data)
-cellchat <-CellChatDownstreamAnalysis(cellchat,"human")
+cellchat <-CellChatDownstreamAnalysis(cellchat,"human",thresh=0.08)
 ```
 
 ### Save cellchat data
