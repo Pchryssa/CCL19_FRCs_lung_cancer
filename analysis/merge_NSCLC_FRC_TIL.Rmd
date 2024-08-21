@@ -1,0 +1,335 @@
+---
+title: "Merge NSCLC FRCs and TILs"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: true
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+## Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(dittoSeq)
+  library(gridExtra)
+  library(CellChat)
+  library(NMF)
+  library(pheatmap)
+})
+```
+
+## **Infiltrating lymphocytes in NSCLC**
+
+### Set directory
+```{r set directory}
+basedir <- here()
+```
+
+## **Merge CCL19`r knitr::asis_output("\U207A")` FRCs and Infiltrating lymphocytes in NSCLC**
+
+### Read NSCLC TIL and FRC data
+```{r read dataC}
+NSCLS_TIL_data <-readRDS(paste0(basedir,"/data/Human/NSCLC_TILs.rds"))
+NSCLC_CCL19_FRCs <-readRDS(paste0(basedir,"/data/Human/NSCLC_CCL19_FRCs_CAFs.rds"))
+```
+
+### Merge NSCLS CCL19`r knitr::asis_output("\U207A")` FRCs and NSCLS TILs
+```{r merge CCL19 FRCs TILS}
+same_columns <- intersect(colnames(NSCLS_TIL_data@meta.data),colnames(NSCLC_CCL19_FRCs@meta.data))
+
+NSCLS_TIL_data@meta.data <-NSCLS_TIL_data@meta.data[,same_columns]
+NSCLC_CCL19_FRCs@meta.data <-NSCLC_CCL19_FRCs@meta.data[,same_columns]
+
+merged_data<- merge(NSCLS_TIL_data, y = c(NSCLC_CCL19_FRCs),
+             add.cell.ids = c('NSCLS_TIL_data','NSCLC_CCL19_FRCs'),
+             project = "NSCLC_FRC_TIL")
+
+resolution <- c(0.1, 0.25, 0.4, 0.6, 0.8, 1.,1.2,1.4,1.6,2.)
+merged_data  <- preprocessing(merged_data,resolution)
+```
+
+### NSCLS CCL19`r knitr::asis_output("\U207A")` FRCs and NSCLS TILs
+```{r umap}
+#Define color palet
+palet <- c("#1B9E77", "#54B0E4","#E3BE00", "#E41A1C", "#4DAF4A","#FB9A99","#377EB8","#A65628","#222F75")
+names(palet) <- c( "CAF2/TRC","CAF1/PRC","AdvFB" ,"SMC/PC", paste0("CD4", "\u207A ", "T cells"), paste0("CD8", "\u207A ", "T cells"), "B cells", "Regulatory T cells",paste0("Cycling CD8", "\u207A ", "T cells"))
+
+DimPlot(merged_data, reduction = "umap", group.by = "cell_type", cols=palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+         panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("NSCLC CCL19", "\U207A ", "FRCs", " and TILs"))
+
+```
+
+### Save merged data
+```{r save data}
+#saveRDS(merged_data, paste0(basedir,"/data/Human/NSCLC_TILs_SI4.rds"))
+```
+
+### **Interactome Analysis with Cellchat (Suoqin Jin et al., 2021)**
+
+### Convert seurat object to cellchat object
+```{r conv seurat to cellchat}
+cellchat <- Cellchat_Analysis(merged_data)
+cellchat <-CellChatDownstreamAnalysis(cellchat,"human")
+```
+
+### Save cellchat data
+```{r save cellchat data}
+#saveRDS(cellchat,paste0(basedir,"/data/Human/CCL19_FRC_TIL_SIF4_cellchat.rds"))
+```
+
+### Interactome analysis (Supplementary Figure 4D)
+```{r interactome analysis, message=FALSE }
+gg <- netAnalysis_signalingRole_scatter(cellchat,color.use = palet)
+gg <- gg + ggtitle("Interactome analysis (Cellchat)")
+gg
+```
+
+### Outgoing signaling patterns
+```{r outgoing signaling}
+selectK(cellchat, pattern = "outgoing")
+```
+
+### Incoming signaling patterns
+```{r incoming signaling}
+selectK(cellchat, pattern = "incoming")
+```
+
+### Incoming and outgoing patterns
+```{r patterns, results='hide', fig.keep = 'none'}
+nPatterns <- 7
+cellchat <- identifyCommunicationPatterns(cellchat, pattern = "outgoing", k = nPatterns, color.use = palet)
+cellchat <- identifyCommunicationPatterns(cellchat, pattern = "incoming", k = nPatterns, color.use = palet)
+```
+
+### Joint dotplot for incoming and outcoming communication patterns (Supplementary Figure 4E)
+```{r joint dotplot in out signaling}
+
+pathways <-c("CXCL","CCL","ICAM","VCAM","MK","FGF","NECTIN","TIGIT","SELL","ITGB2","NOTCH","BAFF","SEMA3","SEMA4","LIGHT","EGF","IFN-II","CD226","IGF","FASLG")
+
+order_list <-c("CAF2/TRC","CAF1/PRC","SMC/PC","AdvFB","Regulatory T cells", "CD4⁺ T cells","CD8⁺ T cells","Cycling CD8⁺ T cells","B cells")
+
+netAnalysis_joint_dot(cellchat,color.use = palet,font.size = 12,pathways = pathways, order_list = order_list)
+```
+
+## **Merge CCL19`r knitr::asis_output("\U207A")` FRCs and CD8`r knitr::asis_output("\U207A")` T cell subsets in NSCLC**
+
+### Read CD8`r knitr::asis_output("\U207A")` T cell data
+```{r read CD8 T}
+NCLS_TIL_FRC_cd8 <-readRDS(paste0(basedir,"/data/Human/NSCLC_TILs_CD8_pop.rds"))
+```
+
+### Merge NSCLS CCL19`r knitr::asis_output("\U207A")` FRCs and NSCLS CD8`r knitr::asis_output("\U207A")` T cell subsets
+```{r merge NSCLC FRC CD8 T}
+same_columns <- intersect(colnames(NCLS_TIL_FRC_cd8@meta.data),colnames(NSCLC_CCL19_FRCs@meta.data))
+
+NCLS_TIL_FRC_cd8@meta.data <-NCLS_TIL_FRC_cd8@meta.data[,same_columns]
+NSCLC_CCL19_FRCs@meta.data <-NSCLC_CCL19_FRCs@meta.data[,same_columns]
+
+merged_data<- merge(NCLS_TIL_FRC_cd8, y = c(NSCLC_CCL19_FRCs),
+             add.cell.ids = c('NCLS_TIL_FRC_cd8','NSCLC_CCL19_FRCs'),
+             project = "NSCLC_FRC_TIL_CD8")
+
+resolution <- c(0.1, 0.25, 0.4, 0.6, 0.8, 1.,1.2,1.4,1.6,2.)
+merged_data  <- preprocessing(merged_data,resolution)
+```
+
+### NSCLS CCL19`r knitr::asis_output("\U207A")` FRCs and NSCLS CD8`r knitr::asis_output("\U207A")` T cell subsets
+```{r umapNSCLS CCL19 FRC CD8 }
+#Extend palet for CD8 T cell subsets
+palet <- c("#1B9E77", "#54B0E4","#E3BE00", "#E41A1C","#F8766D","#00C08B","#7CAE00","#00B4F0","#F564E3")
+names(palet) <- c("CAF2/TRC","CAF1/PRC","AdvFB" ,"SMC/PC",paste0("Stem-like/Naive CD8", "\u207A ", "T cells"),paste0("Exhausted CD8", "\u207A ", "T cells"), paste0("Effector-memory CD8", "\u207A ", "T cells"),paste0("Effector CD8", "\u207A ", "T cells"),paste0("Cycling CD8", "\u207A ", "T cells"))
+
+palet <- palet[names(palet) %in% unique(merged_data$cell_type)]
+
+DimPlot(merged_data, reduction = "umap", group.by = "cell_type", cols = palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2")
+```
+
+### NSCLS CCL19`r knitr::asis_output("\U207A")` FRCs and NSCLS CD8`r knitr::asis_output("\U207A")` T cell data 
+```{r save NSCLC FRC CD8 T}
+#saveRDS(merged_data, paste0(basedir,"/data/Human/NSCLC_TILs_CD8_pop_merge.rds"))
+```
+
+### **Interactome Analysis with Cellchat (Suoqin Jin et al., 2021)**
+
+### Convert seurat object to cellchat object
+```{r conv seurat to cellchat FRC CD8}
+cellchat <- Cellchat_Analysis(merged_data)
+cellchat <-CellChatDownstreamAnalysis(cellchat,"human")
+```
+
+### Save cellchat data
+```{r save cellchat data FRC CD8}
+#saveRDS(cellchat,paste0(basedir,"/data/Human/CCL19_FRC_TIL_F3E_cellchat.rds"))
+```
+
+### Interactome analysis (Figure 4E)
+```{r interactome analysis NSCLC FRC CD8, message=FALSE }
+gg <- netAnalysis_signalingRole_scatter(cellchat,color.use = palet)
+gg <- gg + ggtitle("Interactome analysis (Cellchat)")
+gg
+```
+
+### Outgoing signaling patterns
+```{r outgoing signaling FRC CD8}
+selectK(cellchat, pattern = "outgoing")
+```
+
+### Incoming signaling patterns
+```{r incoming signaling FRC CD8}
+selectK(cellchat, pattern = "incoming")
+```
+
+### Incoming and outgoing patterns
+```{r patterns FRC CD8 T, results='hide', fig.keep = 'none'}
+nPatterns <- 8
+cellchat <- identifyCommunicationPatterns(cellchat, pattern = "outgoing", k = nPatterns, color.use = palet)
+cellchat <- identifyCommunicationPatterns(cellchat, pattern = "incoming", k = nPatterns, color.use = palet)
+```
+
+### Joint dotplot for incoming and outcoming communication patterns (Figure 3F)
+```{r joint dotplot in out signaling FRC CD8}
+pathways <-c("MHC-II","LAMININ","FN1","CXCL","CCL","VCAM","ICAM","ITGB2","LIGHT","NECTIN","TIGIT","CD226","EGF","FASLG","SEMA4","IFN-II","IL16","GDF")
+
+order_list <-c("CAF2/TRC","CAF1/PRC",paste0("Stem-like/Naive CD8", "\u207A ", "T cells"),
+               paste0("Exhausted CD8", "\u207A ", "T cells"),
+               paste0("Effector-memory CD8", "\u207A ", "T cells"),
+               paste0("Effector CD8", "\u207A ", "T cells"),
+               paste0("Cycling CD8", "\u207A ", "T cells"))
+
+netAnalysis_joint_dot(cellchat,color.use = palet,font.size = 8,pathways = pathways, order_list = order_list, exclude = c("AdvFB" ,"SMC/PC"))
+```
+
+### Attraction and adhesion (Figure 3G) {.tabset}
+#### Heatmap stroma
+```{r heatmap VCAM1 CXCL16 CD34 CXCL12 }
+Selgenes <- c("VCAM1","CXCL16", "CD34","CXCL12")
+order_list <-c("CAF1/PRC","SMC/PC", "CAF2/TRC","AdvFB")
+data_subset <- subset(merged_data, cell_type  %in% order_list)
+  
+Heatmap(data_subset, Selgenes, order_list = order_list, palet = palet)
+```
+
+#### Heatmap CD8`r knitr::asis_output("\U207A")` T cell
+```{r heatmap ITGA4 ITGB1 ITGB7 SELL CXCR4}
+Selgenes <- c("ITGA4","ITGB1","ITGB7","CXCR6","SELL","CXCR4")
+order_list <-c(paste0("Stem-like/Naive CD8", "\u207A ", "T cells"), 
+               paste0("Effector-memory CD8", "\u207A ", "T cells"),
+               paste0("Effector CD8", "\u207A ", "T cells"),
+               paste0("Exhausted CD8", "\u207A ", "T cells"),
+               paste0("Cycling CD8", "\u207A ", "T cells") )
+data_subset <- subset(merged_data, cell_type  %in% order_list)
+
+Heatmap(data_subset, Selgenes, order_list = order_list, palet = palet)
+```
+
+### T cell reactivity (Figure 3H) {.tabset}
+#### Heatmap stroma
+```{r heatmap NECTIN3 NECTIN2 EGFR FAS IFNGR1 IFNGR2}
+Selgenes <- c("NECTIN3","NECTIN2","EGFR","FAS","IFNGR1","IFNGR2")
+order_list <-c("CAF1/PRC","SMC/PC", "CAF2/TRC","AdvFB")
+data_subset <- subset(merged_data, cell_type  %in% order_list)
+  
+Heatmap(data_subset, Selgenes, order_list = order_list, palet = palet)
+```
+
+#### Heatmap CD8`r knitr::asis_output("\U207A")` T cell
+```{r heatmap TIGIT CD226 AREG FASLG IFNG}
+Selgenes <- c("TIGIT","CD226","AREG","FASLG","IFNG")
+order_list <-c(paste0("Stem-like/Naive CD8", "\u207A ", "T cells"), 
+               paste0("Effector-memory CD8", "\u207A ", "T cells"),
+               paste0("Effector CD8", "\u207A ", "T cells"),
+               paste0("Exhausted CD8", "\u207A ", "T cells"),
+               paste0("Cycling CD8", "\u207A ", "T cells") )
+data_subset <- subset(merged_data, cell_type  %in% order_list)
+
+Heatmap(data_subset, Selgenes, order_list = order_list, palet = palet)
+```
+
+### Niche formation (Figure 3I) {.tabset}
+#### Heatmap stroma
+```{r heatmap LTBR TNFRSF14 NOTCH3 JAG1}
+Selgenes <- c("LTBR","TNFRSF14","NOTCH3","JAG1")
+order_list <-c("CAF1/PRC","SMC/PC", "CAF2/TRC","AdvFB")
+data_subset <- subset(merged_data, cell_type  %in% order_list)
+  
+Heatmap(data_subset, Selgenes, order_list = order_list, palet = palet)
+```
+
+#### Heatmap CD8`r knitr::asis_output("\U207A")` T cell
+```{r heatmap LTA LTB TNFSF14 DLL1 JAG1}
+Selgenes <- c("LTA","LTB","TNFSF14","DLL1","JAG1")
+order_list <-c(paste0("Stem-like/Naive CD8", "\u207A ", "T cells"), 
+               paste0("Effector-memory CD8", "\u207A ", "T cells"),
+               paste0("Effector CD8", "\u207A ", "T cells"),
+               paste0("Exhausted CD8", "\u207A ", "T cells"),
+               paste0("Cycling CD8", "\u207A ", "T cells") )
+data_subset <- subset(merged_data, cell_type  %in% order_list)
+
+Heatmap(data_subset, Selgenes, order_list = order_list, palet = palet)
+```
+
+### Heatmaps (Figure 3J) {.tabset}
+#### LTBR regulated
+```{r heatmap CLU TNFSF13B MFGE8}
+Selgenes <- c("CLU","TNFSF13B","MFGE8")
+order_list <-c("CAF1/PRC","SMC/PC", "CAF2/TRC","AdvFB")
+data_subset <- subset(merged_data, cell_type  %in% order_list)
+  
+Heatmap(data_subset, Selgenes, order_list = order_list, palet = palet)
+```
+
+#### TNFRSF14 regulated
+```{r heatmap DKK1 IL32 IL34}
+Selgenes <- c("DKK1", "IL32", "IL34")
+order_list <-c("CAF1/PRC","SMC/PC", "CAF2/TRC","AdvFB")
+data_subset <- subset(merged_data, cell_type  %in% order_list)
+  
+Heatmap(data_subset, Selgenes, order_list = order_list, palet = palet)
+```
+
+#### NOTCH3 regulated
+```{r heatmap HEY1 HEY2 HEYL}
+Selgenes <- c("HEY1", "HEY2", "HEYL")
+order_list <-c("CAF1/PRC","SMC/PC", "CAF2/TRC","AdvFB")
+data_subset <- subset(merged_data, cell_type  %in% order_list)
+  
+Heatmap(data_subset, Selgenes, order_list = order_list, palet = palet)
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
