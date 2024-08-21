@@ -1,0 +1,188 @@
+---
+title: "NSCLC TILs"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: true
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png","cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+## Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(dittoSeq)
+  library(gridExtra)
+  library(dplyr)
+})
+```
+
+## **Infiltrating lymphocytes in NSCLC**
+
+### Set directory
+```{r set directory}
+basedir <- here()
+```
+
+### Read NSCLC TIL data
+```{r read NSCLC TIL}
+NSCLS_TIL_data <-readRDS(paste0(basedir,"/data/Human/NSCLC_TILs.rds"))
+```
+
+### NSCLC infiltrating lymphocytes (Supplementary Figure 4C) {.tabset}
+#### umap 
+```{r NSCLC TILS}
+#Define color palet
+palet <- c("#1B9E77", "#54B0E4","#E3BE00", "#E41A1C","#4DAF4A","#377EB8","#A65628","#222F75","#FB9A99")
+names(palet) <- c("TRC","PRC","AdvFB" ,"SMC/PC",  paste0("CD4", "\u207A ", "T cells"),"B cells", "Regulatory T cells" ,paste0("Cycling CD8", "\u207A ", "T cells"),paste0("CD8", "\u207A ", "T cells"))
+
+palet <- palet[names(palet) %in% unique(NSCLS_TIL_data$cell_type)]
+
+DimPlot(NSCLS_TIL_data, reduction = "umap", group.by = "cell_type",cols = palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle("NSCLC infiltrating lymphocytes")
+
+```
+
+#### CD4
+```{r CD4 expr, results='hide'}
+
+gg <- FeaturePlot(NSCLS_TIL_data, reduction = "umap", 
+          features =  get_full_gene_name("CD4",NSCLS_TIL_data)[4],
+          cols=c("lightgrey", "darkred"),
+          order = T,combin = FALSE)
+
+ 
+gg[[1]]$labels$title <- "CD4"
+gg
+```
+
+#### CD8A
+```{r CD8A expr, results='hide'}
+gg <-FeaturePlot(NSCLS_TIL_data, reduction = "umap", 
+          features =  get_full_gene_name("CD8A",NSCLS_TIL_data),
+          cols=c("lightgrey", "darkred"),
+          order = T,combin = FALSE)
+
+gg[[1]]$labels$title <- "CD8A"
+gg
+```
+
+#### CD79A
+```{r CD79A expr, results='hide'}
+gg <-FeaturePlot(NSCLS_TIL_data, reduction = "umap", 
+          features =  get_full_gene_name("CD79A",NSCLS_TIL_data),
+          cols=c("lightgrey", "darkred"),
+          order = T,combin = FALSE) 
+
+gg[[1]]$labels$title <- "CD79A"
+gg
+```
+
+### Read NSCLS CCL19`r knitr::asis_output("\U207A")` FRCs and NSCLS TILs
+```{r read NSCLC FRC TIL}
+merged_data <-readRDS(paste0(basedir,"/data/Human/NSCLC_TILs_SI3.rds"))
+```
+
+### **CD8`r knitr::asis_output("\U207A")` T cell subsets in NSCLC**
+```{r subset CD8 T}
+NCLS_TIL_FRC_cd8 <- subset(merged_data, cell_type %in% c(paste0("CD8", "\u207A ", "T cells"), paste0("Cycling CD8", "\u207A ", "T cells")))
+
+#Preprocessing
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0)
+NCLS_TIL_FRC_cd8 <- FindVariableFeatures(NCLS_TIL_FRC_cd8, selection.method = "vst", nfeatures = 2000)
+NCLS_TIL_FRC_cd8 <- ScaleData(NCLS_TIL_FRC_cd8)
+NCLS_TIL_FRC_cd8 <- RunPCA(object = NCLS_TIL_FRC_cd8, npcs = 30, verbose = FALSE,seed.use = 8734)
+NCLS_TIL_FRC_cd8 <- RunTSNE(object = NCLS_TIL_FRC_cd8, reduction = "pca", dims = 1:20, seed.use = 8734)
+NCLS_TIL_FRC_cd8 <- RunUMAP(object = NCLS_TIL_FRC_cd8, reduction = "pca", dims = 1:20, seed.use = 8734)
+NCLS_TIL_FRC_cd8 <- FindNeighbors(object = NCLS_TIL_FRC_cd8, reduction = "pca", dims = 1:20, seed.use = 8734)
+for(k in 1:length(resolution)){
+  NCLS_TIL_FRC_cd8 <- FindClusters(object = NCLS_TIL_FRC_cd8, resolution = resolution[k], random.seed = 8734)
+}
+```
+
+### Annotation of CD8`r knitr::asis_output("\U207A")` T cell populations
+```{r annot CD8 T}
+NCLS_TIL_FRC_cd8$cell_type <- NULL
+NCLS_TIL_FRC_cd8$cell_type <--1
+
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 0)] <- paste0("Stem-like/Naive CD8", "\u207A ", "T cells")
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 1)] <-paste0("Stem-like/Naive CD8", "\u207A ", "T cells")
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 2)] <- paste0("Effector-memory CD8", "\u207A ", "T cells")
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 3)] <- paste0("Effector-memory CD8", "\u207A ", "T cells")
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 4)] <-  paste0("Exhausted CD8", "\u207A ", "T cells")
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 5)] <- paste0("Effector CD8", "\u207A ", "T cells")
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 6)] <-paste0("Exhausted CD8", "\u207A ", "T cells")
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 7)] <- paste0("Exhausted CD8", "\u207A ", "T cells")
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 8)] <- paste0("Cycling CD8", "\u207A ", "T cells")
+NCLS_TIL_FRC_cd8$cell_type[which(NCLS_TIL_FRC_cd8$RNA_snn_res.0.4 == 9)] <- paste0("Effector CD8", "\u207A ", "T cells")
+```
+
+
+### CD8`r knitr::asis_output("\U207A")` T cells in NSCLC (Figure 3D)
+```{r umap CD8 T}
+#Extend palet for CD8 T cell subsets
+palet <- c("#1B9E77", "#54B0E4","#E3BE00", "#E41A1C","#F8766D","#00C08B","#7CAE00","#00B4F0","#F564E3")
+names(palet) <- c("TRC","PRC","AdvFB" ,"SMC/PC",paste0("Stem-like/Naive CD8", "\u207A ", "T cells"),paste0("Exhausted CD8", "\u207A ", "T cells"), paste0("Effector-memory CD8", "\u207A ", "T cells"),paste0("Effector CD8", "\u207A ", "T cells"),paste0("Cycling CD8", "\u207A ", "T cells"))
+
+palet <- palet[names(palet) %in% unique(NCLS_TIL_FRC_cd8$cell_type)]
+
+DimPlot(NCLS_TIL_FRC_cd8, reduction = "umap", group.by = "cell_type", cols = palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("CD8", "\U207A ", "T cells (NSCLC)"))
+
+```
+
+### Save CD8`r knitr::asis_output("\U207A")` T cell data
+```{r save CD8 T}
+saveRDS(NCLS_TIL_FRC_cd8,paste0(basedir,"/data/Human/NSCLC_TILs_CD8_pop.rds"))
+```
+
+### Dotplot CD8`r knitr::asis_output("\U207A")` T cells (Supplementary Figure 4F)
+```{r dotplot CD8 T}
+genes <-c("CCR7","SELL","TCF7","NKG7","GZMA","GZMB","GZMM","GZMK","CX3CR1","GNLY","FCGR3A",  "KIR3DL2","KLRF1","TIGIT","CTLA4","LAG3","ZEB2","TOP2A","MKI67","PCLAF")
+
+data_conv <-Remove_ensebl_id(NCLS_TIL_FRC_cd8) 
+data_conv$cell_type <- factor(data_conv$cell_type, levels = rev(c(paste0("Cycling CD8", "\u207A ", "T cells"),
+                                                      paste0("Effector CD8", "\u207A ", "T cells"),
+                                                      paste0("Exhausted CD8", "\u207A ", "T cells"),
+                                                      paste0("Effector-memory CD8", "\u207A ", "T cells"),
+                                                      paste0("Stem-like/Naive CD8", "\u207A ", "T cells"))))
+  
+gg <-dittoDotPlot(data_conv, vars = genes, group.by = "cell_type", size = 4)
+gg + coord_fixed(ratio=0.8) + ylab("")
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
