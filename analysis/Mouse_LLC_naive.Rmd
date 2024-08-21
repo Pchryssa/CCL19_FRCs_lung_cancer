@@ -1,0 +1,250 @@
+---
+title: "CCL19-expressing FRCs in murine lung tumors"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(dittoSeq)
+  library(gridExtra)
+  library(gsubfn)
+  library(ggsci)
+  library(slingshot)
+})
+```
+
+## Set directory
+```{r set directory}
+basedir <- here()
+```
+
+### Read CCL19-EYFP`r knitr::asis_output("\U207A")` cell data from naïve lungs and excised LLC-gp33 tumors on day 23
+```{r read CCL19 FRC data}
+CCL19_EYFP <- readRDS(paste0(basedir,"/data/Mouse/CCL19_EYFP_nonmCOV.rds"))
+```
+
+### CCL19-EYFP`r knitr::asis_output("\U207A")` cells (Figure 5E) {.tabset}
+#### Umap colored per celltype
+```{r CCL19 EYFP umap}
+#Define color palette
+palet <-c("#2ED9FF","#90AD1C","#FEAF16","#B00068","#1CFFCE","#3283FE","#16FF32","#AA0DFE")
+names(palet) <-c(paste0("Smoc1", expression("\u207A "), "AdvFB"),paste0("Cd34", expression("\u207A "), "AdvFB"),paste0("Npnt", expression("\u207A "), "AlvFB"),paste0("Hhip", expression("\u207A "), "AdvFB"),paste0("Sulf1", expression("\u207A "), "TRC"),paste0("Rgs5", expression("\u207A "), "PRC"),"SMC/PC","AlvFB/SMC/PC")
+
+DimPlot(CCL19_EYFP, reduction = "umap", group.by = "annot", cols=palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("Ccl19-EYFP", "\U207A ", "cells"))
+```
+
+#### Umap colored per tumor presence
+```{r CCL19 EYFP umap tumor}
+CCL19_EYFP_origin <- subset(CCL19_EYFP, origin %in% c("naive","tumor"))
+
+CCL19_EYFP_origin$origin[which(CCL19_EYFP_origin$origin == "naive")] <- "Lung"
+CCL19_EYFP_origin$origin[which(CCL19_EYFP_origin$origin == "tumor")] <- "Tumor/Day 23"
+
+DimPlot(CCL19_EYFP_origin, reduction = "umap", group.by = "origin", cols = c("lightgrey", "red"))+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2")
+```
+
+### Dotplot (Figure 5F)
+```{r dotplot mouse tumor}
+data_conv <-CCL19_EYFP
+data_conv <-Remove_ensebl_id(data_conv)
+
+Idents(data_conv) <- data_conv$annot
+levels(data_conv)<-levels(data_conv)[order(match(levels(data_conv),c("Hhip⁺ AdvFB","Cd34⁺ AdvFB","Smoc1⁺ AdvFB",paste0("Npnt", expression("\u207A "), "AlvFB"),
+                                                                     "Sulf1⁺ TRC","SMC/PC","AlvFB/SMC/PC","Rgs5⁺ PRC")))]
+data_conv$annot <- factor(as.character(data_conv@active.ident), levels = rev(c("Hhip⁺ AdvFB","Cd34⁺ AdvFB","Smoc1⁺ AdvFB",paste0("Npnt", expression("\u207A "), "AlvFB"),"Sulf1⁺ TRC","SMC/PC","AlvFB/SMC/PC","Rgs5⁺ PRC")))
+
+gene_list <-c("Cd34","Pdpn","Npnt","Hhip","Sulf1","Ccl11","Il33","Cxcl9","Tnc","Pdgfrb","Notch3","Rgs5","Acta2","Des","Myh11")
+
+gg <-DotPlot(data_conv, features = gene_list, group.by = "annot", scale = TRUE, cols = c("lightgrey", "#C51B7D"), 
+             scale.min = 0, scale.max = 100,col.min = 0 , dot.scale = 4) + xlab(" ") + ylab(" ")
+
+gg + theme(axis.text.x = element_text(angle = 45,hjust = 1))
+```
+
+
+### CCL19-EYFP`r knitr::asis_output("\U207A")` cells in different timepoints (Figure 5K) {.tabset}
+#### Umap colored per timepoint of tumor detection
+```{r CCL19 EYFP umap tumor timepoint}
+CCL19_EYFP$TimePoint[which(CCL19_EYFP$TimePoint == "d0")] <- "Naive"
+CCL19_EYFP$TimePoint[which(CCL19_EYFP$TimePoint == "d15")] <- "Day 15"
+CCL19_EYFP$TimePoint[which(CCL19_EYFP$TimePoint == "d23")] <- "Day 23"
+
+DimPlot(CCL19_EYFP, reduction = "umap", group.by = "TimePoint", cols = c("red", "gray" , "gray"))+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("Ccl19-EYFP", "\U207A ", "cells"))
+```
+
+#### Umap of unaffected Lung (Naive)
+```{r CCL19 EYFP umap naive}
+CCL19_EYFP_naive <- subset(CCL19_EYFP, TimePoint %in% c("Naive"))
+
+DimPlot(CCL19_EYFP_naive, reduction = "umap", group.by = "TimePoint", cols = c("gray"))+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle("Naive")
+```
+
+#### Umap of Tumor at Day 15 
+```{r CCL19 EYFP umap d15}
+CCL19_EYFP_d15 <- subset(CCL19_EYFP, TimePoint %in% c("Day 15"))
+
+DimPlot(CCL19_EYFP_d15, reduction = "umap", group.by = "TimePoint", cols = c("red"))+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle("Day 15")
+```
+
+#### Umap of Tumor at Day 23 
+```{r CCL19 EYFP umap d23}
+CCL19_EYFP_d23 <- subset(CCL19_EYFP, TimePoint %in% c("Day 23"))
+
+DimPlot(CCL19_EYFP_d23, reduction = "umap", group.by = "TimePoint", cols = c("grey"))+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle("Day 23")
+```
+
+### Des in Day 15 vs Day 23 (Supplementary Figure 6C)
+```{r DES split by timepoint}
+CCL19_EYFP_15_vs_23 <- subset(CCL19_EYFP, TimePoint %in% c("Day 15","Day 23"))
+
+FeaturePlot(CCL19_EYFP_15_vs_23, reduction = "umap", split.by = "TimePoint",
+          features = get_full_gene_name('Des',CCL19_EYFP),raster=FALSE,
+          cols=c("lightgrey", "darkred"))
+```
+
+### Differentiation trajectories on CCL19-EYFP`r knitr::asis_output("\U207A")` cells based on Slingshot algorithm (Figure 5L) {.tabset}
+#### Annotation from RNA_snn_res.0.25 to perform trajectory analysis
+```{r umap CCL19 EYFP umap map annotation}
+#Define color palette
+palet_new <-c("#2ED9FF","#90AD1C","#FEAF16","#B00068","#1CFFCE","#3283FE","#16FF32","#AA0DFE")
+names(palet_new) <-c("5","0","2","3","4","6","1","7" )
+
+# This column was used to annotate the dataset
+DimPlot(CCL19_EYFP, reduction = "umap", group.by = "RNA_snn_res.0.25",cols = palet_new)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle("RNA_snn_res.0.25")
+
+```
+
+#### Differentiation trajectories for Sulf1`r knitr::asis_output("\U207A")` TRC and Rgs5`r knitr::asis_output("\U207A")` PRC
+```{r CCL19 EYFP differentiation trajectories}
+#Set color palette
+palet_new <-c("#90AD1C","#16FF32","#FEAF16","#B00068","#1CFFCE","#2ED9FF","#3283FE","#AA0DFE")
+names(palet_new) <-c(1,2,3,4,5,6,7,8)
+
+#Calculation of CCL19-EYFP`r knitr::asis_output("\U207A")` cell differentiation trajectories
+clustering <- as.integer(CCL19_EYFP@meta.data$RNA_snn_res.0.25)
+dimred <- CCL19_EYFP@reductions$umap@cell.embeddings
+
+# Slingshot for TRC
+pto_TRC <- slingshot(dimred, clustering, start.clus = '6', end.clus = '5' ,reducedDim = 'umap',extend="n",stretch=0.07,thresh=0.05)
+pto_TRC <- as.SlingshotDataSet(pto_TRC)
+
+# Slingshot for PRC
+pto_PRC <- slingshot(dimred, clustering, start.clus = '2', end.clus = '7' ,reducedDim = 'umap',extend="n",stretch=0.07,thresh=0.05)
+pto_PRC <- as.SlingshotDataSet(pto_PRC)
+
+plot(dimred, col = palet_new[clustering], asp = 1, pch = 16)
+lines(pto_PRC@curves$Lineage4, lwd = 3, col = 'magenta')
+lines(pto_TRC@curves$Lineage2, lwd = 3, col = 'black')
+legend("bottomright", legend = c("T1","T2"), col = c('black','magenta'), lty = 1, lwd = 2.5, cex = 1.1)
+legend("topright", legend = names(palet), col = palet, pch = 2, pt.cex = 1, cex = 0.72)
+```
+
+### CCL19-EYFP`r knitr::asis_output("\U207A")` cells (no fate) and CCL19-iEYFP `r knitr::asis_output("\U207A")` cells sorted from doxycycline-treated LLC-gp33 tumors (Fatemapping experiment) (Figure 5N) {.tabset}
+#### Umap
+```{r CCL19 EYFP umap fatemapped}
+CCL19_EYFP$FateMapping[which(CCL19_EYFP$FateMapping == "no fate")] <- "Ccl19-EYFP"
+CCL19_EYFP$FateMapping[which(CCL19_EYFP$FateMapping == "fate mapped")] <- "Ccl19-iEYFP (Day 15 progeny)"
+
+DimPlot(CCL19_EYFP, reduction = "umap", group.by = "FateMapping", cols = c("#00BFC4","#F8766D"))+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") 
+```
+
+#### Umap indicating differentiation trajectories
+```{r CCL19 EYFP umap fatemapped differentiation}
+CCL19_EYFP$FateMapping_anot <- CCL19_EYFP$FateMapping
+CCL19_EYFP$FateMapping_anot[which(CCL19_EYFP$FateMapping == "no fate")] <- 1
+CCL19_EYFP$FateMapping_anot[which(CCL19_EYFP$FateMapping == "fate mapped")] <- 2
+
+#Set color palette
+cols_vec <- c("#00BFC4","#F8766D")
+names(cols_vec) <-c("Ccl19-EYFP","Ccl19-iEYFP (Day 15 progeny)")
+
+clustering <- CCL19_EYFP@meta.data$FateMapping_anot 
+
+plot(dimred, col = cols_vec[clustering], asp = 1, pch = 16)
+lines(pto_PRC@curves$Lineage4, lwd = 3, col = 'magenta')
+lines(pto_TRC@curves$Lineage2, lwd = 3, col = 'black')
+legend("bottomright", legend = c("T1","T2"), col = c('black','magenta'), lty = 1, lwd = 2.5, cex = 1)
+legend("topright", legend = names(cols_vec), col = cols_vec, pch = 2, pt.cex = 1, cex = 0.6)
+
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
