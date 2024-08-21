@@ -511,15 +511,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree5a7acbb44878a19e3375c0f986ce5bbd5b8ce428targetblank5a7acbba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertreec85bb484eb58ded4cefd76c1963f2086de785e48targetblankc85bb48a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/5a7acbb44878a19e3375c0f986ce5bbd5b8ce428" target="_blank">5a7acbb</a>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/c85bb484eb58ded4cefd76c1963f2086de785e48" target="_blank">c85bb48</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree5a7acbb44878a19e3375c0f986ce5bbd5b8ce428targetblank5a7acbba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertreec85bb484eb58ded4cefd76c1963f2086de785e48targetblankc85bb48a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -529,7 +529,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/5a7acbb44878a19e3375c0f986ce5bbd5b8ce428" target="_blank">5a7acbb</a>.
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/c85bb484eb58ded4cefd76c1963f2086de785e48" target="_blank">c85bb48</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -557,18 +557,15 @@ Ignored files:
     Ignored:    output/GSEA_SMC_PRC/
 
 Untracked files:
-    Untracked:  analysis/Mouse_LLC_naive.Rmd
-    Untracked:  analysis/Mouse_mCOV.Rmd
+    Untracked:  README.html
     Untracked:  analysis/NSCLC_PDAC_CAFs.Rmd
     Untracked:  analysis/NSCLC_trajectory_analysis.Rmd
-    Untracked:  analysis/Tetra_CD8_T_cells.Rmd
     Untracked:  analysis/Total_CD8_DTR_Tetra.Rmd
-    Untracked:  analysis/extra_functions.R
     Untracked:  analysis/index_hidden.Rmd
     Untracked:  analysis/mcov_R.Rmd
 
 Unstaged changes:
-    Modified:   .gitignore
+    Modified:   analysis/extra_functions.R
 
 </code></pre>
 <p>
@@ -614,6 +611,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/c85bb484eb58ded4cefd76c1963f2086de785e48/analysis/merge_NSCLC_FRC_TIL.Rmd" target="_blank">c85bb48</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-21
+</td>
+<td>
+Merge NSCLC TIL
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/Pchryssa/CCL19_FRCs_lung_cancer/532ab316a6ea751714b197e56aa9ebc51e073194/docs/merge_NSCLC_FRC_TIL.html" target="_blank">532ab31</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -805,10 +836,10 @@ class="section level3">
 <pre><code>[1] &quot;Create a CellChat object from a data matrix&quot;
 Set cell identities for the new CellChat object 
 The cell groups used for CellChat analysis are  AdvFB B cells CAF1/PRC CAF2/TRC CD4⁺ T cells CD8⁺ T cells Cycling CD8⁺ T cells Regulatory T cells SMC/PC </code></pre>
-<pre class="r"><code>cellchat &lt;-CellChatDownstreamAnalysis(cellchat,&quot;human&quot;)</code></pre>
+<pre class="r"><code>cellchat &lt;-CellChatDownstreamAnalysis(cellchat,&quot;human&quot;,thresh = 0.05)</code></pre>
 <pre><code>triMean is used for calculating the average gene expression per cell group. 
-[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-08-21 09:31:58.649619]&quot;
-[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-08-21 09:33:33.020121]&quot;</code></pre>
+[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-08-21 13:12:46.96783]&quot;
+[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-08-21 13:14:20.640863]&quot;</code></pre>
 </div>
 <div id="save-cellchat-data" class="section level3">
 <h3>Save cellchat data</h3>
@@ -926,7 +957,7 @@ Number of edges: 356757
 Running Louvain algorithm...
 Maximum modularity in 10 random starts: 0.8585
 Number of communities: 22
-Elapsed time: 1 seconds
+Elapsed time: 0 seconds
 Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 
 Number of nodes: 10459
@@ -999,10 +1030,10 @@ class="section level3">
 <pre><code>[1] &quot;Create a CellChat object from a data matrix&quot;
 Set cell identities for the new CellChat object 
 The cell groups used for CellChat analysis are  AdvFB CAF1/PRC CAF2/TRC Cycling CD8⁺ T cells Effector CD8⁺ T cells Effector-memory CD8⁺ T cells Exhausted CD8⁺ T cells SMC/PC Stem-like/Naive CD8⁺ T cells </code></pre>
-<pre class="r"><code>cellchat &lt;-CellChatDownstreamAnalysis(cellchat,&quot;human&quot;)</code></pre>
+<pre class="r"><code>cellchat &lt;-CellChatDownstreamAnalysis(cellchat,&quot;human&quot;,thresh=0.08)</code></pre>
 <pre><code>triMean is used for calculating the average gene expression per cell group. 
-[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-08-21 09:40:12.549866]&quot;
-[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-08-21 09:41:38.100548]&quot;</code></pre>
+[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-08-21 13:21:04.01837]&quot;
+[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-08-21 13:22:29.306021]&quot;</code></pre>
 </div>
 <div id="save-cellchat-data-1" class="section level3">
 <h3>Save cellchat data</h3>
@@ -1267,7 +1298,7 @@ loaded via a namespace (and not attached):
 [155] ROCR_1.0-11                 broom_1.0.5                
 [157] bslib_0.5.0                </code></pre>
 <pre class="r"><code>date()</code></pre>
-<pre><code>[1] &quot;Wed Aug 21 09:44:47 2024&quot;</code></pre>
+<pre><code>[1] &quot;Wed Aug 21 13:25:40 2024&quot;</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
