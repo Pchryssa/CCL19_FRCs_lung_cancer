@@ -50,7 +50,7 @@ basedir <- here()
 
 ### Read NSCLC CCL19`r knitr::asis_output("\U207A")` TRC PRC data
 ```{r read CCL19 TRC PRC}
-NCLS_FRCS <- readRDS(paste0(basedir,"/data/Human/NSCLC_Ccl19_FB_FRCs_trc_prc_final.rds"))
+NCLS_FRCS <- readRDS(paste0(basedir,"/data/Human/NSCLC_CCL19_TRC_PRC_CAFs.rds"))
 ```
 
 ### Read Tonsilar FRC data
