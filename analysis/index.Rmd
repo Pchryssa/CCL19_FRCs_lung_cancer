@@ -6,6 +6,16 @@ output:
     toc: false
 editor_options:
   chunk_output_type: console
+mainfont: {Arial Unicode MS}
 ---
 
-Welcome to my research website.
+```{r setup, include=FALSE}
+knitr::asis_output("\U207A","\U2212")
+```
+
+### **NSCLC** : 
+
+**Figure 1 and Supplementary Figure 2**
+
+* Characterize stroma cells (CD90`r knitr::asis_output("\U207A")` and CD90`r knitr::asis_output("\U2212")` fibroblasts and endothelial cells (EC) and primarily focus on CCL19`r knitr::asis_output("\U207A")` fibroblasts : [NSCLC_stroma_CCCL19_FRC.html](NSCLC_stroma_CCCL19_FRC.html)  
+

@@ -1,0 +1,399 @@
+---
+title: "NSCLC stroma and CCL19 cells"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(dittoSeq)
+  library(gridExtra)
+  library(gsubfn)
+  library(ggsci)
+})
+```
+
+## **Stroma cells in NSCLC**
+
+## Set directory
+```{r set directory}
+basedir <- here()
+```
+
+### Read Stroma cell data
+```{r read stroma cell data}
+data <- readRDS(paste0(basedir,"/data/Human/NSCLC_stroma_total.rds"))
+```
+
+### Define color palette
+```{r color vector}
+cols<- pal_igv()(51)
+names(cols) <- c(0:50)
+```
+
+### NSCLC Stroma cells (Supplementary Figure 2A-2B){.tabset}
+#### Patients
+
+```{r umap per patient}
+# Total fibroblasts and endothelial cells across NSCLC patients
+colors_pID <-c("#F8766D","#00C08B","#00B4F0","#0ADD08","#B79F00")
+names(colors_pID) <-c("NSCLC#2","NSCLC#3","NSCLC#4","NSCLC#6","NSCLC#7")
+
+DimPlot(data, reduction = "tsne", group.by = "patient", cols=colors_pID)+ 
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  xlab("tSNE1") +
+  ylab("tSNE2") + ggtitle("Patients")
+
+```
+
+#### Origin
+```{r umap per origin}
+# Total fibroblasts and endothelial cells isolated from SM, CM and unaffected lung (LU)
+colors_origin <-c("red","blue" ,"#33CC00FF") 
+names(colors_origin) <- c("Subpleural Margin","Lung (unaffected)","Central Margin")
+
+DimPlot(data, reduction = "tsne", group.by = "origin", cols=colors_origin )+ 
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  xlab("tSNE1") +
+  ylab("tSNE2") + ggtitle("Origin")
+```
+
+#### COL1A2
+```{r feature plot COL1A2}
+FeaturePlot(data, reduction = "tsne", 
+          features = get_full_gene_name('COL1A2',data),raster=FALSE,
+          cols=c("lightgrey", "darkred")) + ggtitle("CAF/FB(COL1A2)")
+```
+
+#### PECAM1
+```{r feature plot PECAM1}
+FeaturePlot(data, reduction = "tsne", 
+          features = get_full_gene_name('PECAM1',data),raster=FALSE,
+          cols=c("lightgrey", "darkred")) + ggtitle("EC(PECAM1)")
+```
+
+#### Cell type
+```{r umap per cell type}
+palet <- cols[4:10]
+names(palet) <- c("CAF2","CAF1", "EC", "FB" ,"Meso","SMC/PC")
+
+DimPlot(data, reduction = "tsne", group.by = "cell_type", cols= palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+         panel.grid.major = element_blank()) +
+ xlab("TSNE1") +
+ylab("TSNE2") 
+```
+
+### Dotplots (Supplementary Figure 2C and 2F) {.tabset}
+#### Cell type assignment 
+```{r dotplot stroma}
+data_conv <-data
+data_conv <-Remove_ensebl_id(data_conv)
+
+Idents(data_conv) <- data_conv$cell_type
+levels(data_conv)<-levels(data_conv)[order(match(levels(data_conv),c("CAF2","FB","CAF1","SMC/PC","Meso","EC")))]
+data_conv$cell_type <- factor(as.character(data_conv@active.ident), levels = rev(c("CAF2","FB","CAF1","SMC/PC","Meso","EC")))
+
+gene_list <-c("COL1A2","POSTN","MMP2","PDPN","PDGFRA","PDGFRB","ACTA2","RGS5","KRT19","PECAM1")
+
+gg <- dittoDotPlot(data_conv, vars = gene_list, group.by = "cell_type", size = 9,legend.size.title = "% expressed",scale = FALSE,summary.fxn.color = mean, max = 6.5, min = 0 , min.color = "#D1E5F0" , max.color = "#631879FF")
+
+gg + ggtitle("Celltype assignment")
+```
+
+#### Chemokines
+```{r dotplot chemokines}
+gene_list <-c("CCL19","CCL21","CCL3","CCL5","CCL8","CXCL10","CXCL3","CXCL9")
+
+gg <- dittoDotPlot(data_conv, vars = gene_list, group.by = "cell_type", size = 9,legend.size.title = "% expressed",scale = FALSE,summary.fxn.color = mean, min.percent = 0.02, max.percent = 0.7, max = 1.6, min = 0 ,min.color = "#D1E5F0" , max.color = "#631879FF")
+
+gg + ggtitle("Chemokines")
+```
+
+### Stacked Barplots (Supplementary Figure 2D and 2E) {.tabset}
+#### Number of cells per patient 
+```{r stacked barplot cells per patient}
+df <-data@meta.data %>% count(patient, cell_type) %>%    # Group by patient and cell_type, then count number in each group
+         mutate(pct=n/sum(n))                            # Calculate percent within each patient
+
+df$cell_type <- factor(df$cell_type, levels=names(palet))
+df$patient <- factor(df$patient, levels=c("NSCLC#2", "NSCLC#3" ,"NSCLC#4" ,"NSCLC#6" ,"NSCLC#7"))
+
+ggplot(df, aes(patient, n, fill=cell_type)) +
+  geom_bar(stat="identity") +
+  theme(  axis.line = element_line(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank()) +
+  scale_y_continuous(expand = c(0, 0))+
+  labs(y= "Cells", x= " ") +
+  scale_fill_manual(values = palet)
+
+```
+
+#### Number of cells per origin
+```{r stacked barplot cells per origin}
+df <-data@meta.data %>% count(origin, cell_type) %>%    # Group by orign and cell_type, then count number in each group
+         mutate(pct=n/sum(n))                           # Calculate percent within each patient
+
+df$cell_type <- factor(df$cell_type, levels=names(palet))
+df$origin <- factor(df$origin, levels=c("Lung (unaffected)", "Subpleural Margin", "Central Margin"))
+
+ggplot(df,aes(origin, n, fill=cell_type)) +
+  geom_bar(stat="identity") +
+  theme(  axis.line = element_line(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_blank()) +
+  scale_y_continuous(expand = c(0, 0))+
+  labs(y= "Cells", x= " ") +
+  scale_fill_manual(values = palet)
+```
+
+```{r deallocate memory NSCLC stroma data, include=FALSE}
+remove(data)
+```
+
+## **CCL19`r knitr::asis_output("\U207A")` FRCs in NSCLC**
+
+### Read CCL19 FRC data
+```{r read CCL19 FRC data}
+NSCLC_CCL19_data <- readRDS(paste0(basedir,"/data/Human/NSCLC_CCL19_FRCs_CAFs.rds"))
+```
+
+### CCL19`r knitr::asis_output("\U207A")` fibroblasts (Figure 1K)
+```{r umap CCL19 FRCs)}
+#Define color palet
+palet_CCL19_FRC <- c("#1B9E77", "#54B0E4","#E3BE00", "#E41A1C")
+names(palet_CCL19_FRC) <- c("CAF2/TRC","CAF1/PRC","AdvFB" ,"SMC/PC")
+
+palet_CCL19_FRC <- palet_CCL19_FRC[names(palet_CCL19_FRC) %in% unique(NSCLC_CCL19_data$cell_type)]
+
+DimPlot(NSCLC_CCL19_data, reduction = "umap", group.by = "cell_type",cols = palet_CCL19_FRC)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("CCL19", "\U207A ", "fibroblasts"))
+
+```
+
+### Dotplot (Figure 1L)
+```{r dotplot}
+data_conv <-NSCLC_CCL19_data
+
+data_conv <-Remove_ensebl_id(data_conv)
+
+Idents(data_conv) <- data_conv$cell_type
+levels(data_conv)<-levels(data_conv)[order(match(levels(data_conv),c("SMC/PC","CAF1/PRC","AdvFB","CAF2/TRC")))]
+data_conv$cell_type <- factor(as.character(data_conv@active.ident), levels = rev(c("SMC/PC","CAF1/PRC","AdvFB","CAF2/TRC")))
+
+gene_list <-c("CCL19","CCL21","PDPN","FAP","POSTN","CLU","LEPR","CD34","SULF1","DPT","ICAM1","VCAM1","ACTA2","MYH11",
+"MCAM","NOTCH3","RGS5","DES","AIFM2")
+
+dittoDotPlot(data_conv, vars = gene_list, group.by = "cell_type", size = 8,legend.size.title = "Expression (%)",scale = FALSE) + ylab(" ") + ggtitle(paste0("CCL19", expression("\u207A"), " fibroblasts"))
+
+```
+
+### Signatures {.tabset}
+#### SLO-PRC (Figure 1M)
+```{r sign SLO-PRC}
+SLO_PRC <-list("CCL19","CCL21","ITGA1","ITGA7","MCAM","CNN1","NOTCH3","ACTA2","PDGFRB","ANGPT2")
+object <- AddModuleScore(object = data_conv, features = SLO_PRC, name = "SLO_PRC_signature",ctrl = 20)
+FeaturePlot(object = object, features = "SLO_PRC_signature10",min.cutoff = -1, max.cutoff = 2.5) + ggtitle("SLO-PRC signature")
+```
+
+#### SLO-TRC (Figure 1N)
+```{r sign SLO-TRC}
+SLO_TRC <-c("CCL19","CCL21","PDPN","ICAM1","VCAM1","LUM","PDGFRA","TNFSF13B")
+object <- AddModuleScore(object = data_conv, features = SLO_TRC, name = "SLO_TRC_signature",ctrl = 20)
+FeaturePlot(object = object, features = "SLO_TRC_signature8",min.cutoff = -1, max.cutoff = 2.5) + ggtitle("SLO-TRC signature")
+```
+
+### Signatures (Supplementary Figure 2G) {.tabset}
+#### CCL21
+```{r feature plot CCL21}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('CCL21',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("CCL21")
+```
+
+#### ACTA2
+```{r feature plot ACTA2}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('ACTA2',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("ACTA2")
+```
+
+#### ITGA1
+```{r feature plot ITGA1}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('ITGA1',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("ITGA1")
+```
+
+#### NOTCH3
+```{r feature plot NOTCH3}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('NOTCH3',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("NOTCH3")
+```
+
+#### MCAM
+```{r feature plot MCAM}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('MCAM',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("MCAM")
+```
+
+#### CCL19
+```{r feature plot CCL19}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('CCL19',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("CCL19")
+```
+
+#### PDPN
+```{r feature plot PDPN}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('PDPN',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("PDPN")
+```
+
+#### ICAM1
+```{r feature plot ICAM1}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('ICAM1',NSCLC_CCL19_data)[2],raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("ICAM1")
+```
+
+#### VCAM1
+```{r feature plot VCAM1}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('VCAM1',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("VCAM1")
+```
+
+#### LUM
+```{r feature plot LUM}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('LUM',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("LUM")
+```
+
+### Unaffected Lung vs Tumor (Supplementary Figure 5A) {.tabset}
+#### Umap
+```{r split per tissue type umap}
+DimPlot(NSCLC_CCL19_data, reduction = "umap", group.by = "type", split.by = "type")+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2")
+```
+
+#### DES
+```{r split per tissue type DES}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", split.by = "type",
+          features = get_full_gene_name('DES',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5)
+```
+
+
+### Signatures (Supplementary Figure 5B) {.tabset}
+#### CD34
+```{r feature plot CD34}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('CD34',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("CD34")
+```
+
+#### LEPR
+```{r feature plot LEPR}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('LEPR',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("LEPR")
+```
+
+### Extract NSCLC TRC and PRC
+```{r subset NSCLC TRC PRC}
+NCLS_FRCS <- subset(NSCLC_CCL19_data, cell_type %in% c("CAF2/TRC","CAF1/PRC"))
+
+#Preprocessing
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0)
+NCLS_FRCS <- FindVariableFeatures(NCLS_FRCS, selection.method = "vst", nfeatures = 2000)
+NCLS_FRCS <- ScaleData(NCLS_FRCS)
+NCLS_FRCS <- RunPCA(object = NCLS_FRCS, npcs = 30, verbose = FALSE,seed.use = 8734)
+NCLS_FRCS <- RunTSNE(object = NCLS_FRCS, reduction = "pca", dims = 1:20, seed.use = 8734)
+NCLS_FRCS <- RunUMAP(object = NCLS_FRCS, reduction = "pca", dims = 1:20, seed.use = 8734)
+NCLS_FRCS <- FindNeighbors(object = NCLS_FRCS, reduction = "pca", dims = 1:20, seed.use = 8734)
+for(k in 1:length(resolution)){
+  NCLS_FRCS <- FindClusters(object = NCLS_FRCS, resolution = resolution[k], random.seed = 8734)
+}
+
+```
+
+```{r deallocate memory CCL19 data, include=FALSE}
+remove(NSCLC_CCL19_data)
+```
+
+### CCL19`r knitr::asis_output("\U207A")` TRC and PRC
+```{r umap CCL19 TRC PRC, include=FALSE}
+#Define color palette
+palet <- palet_CCL19_FRC[names(palet_CCL19_FRC) %in% unique(NCLS_FRCS$cell_type)]
+
+DimPlot(NCLS_FRCS, reduction = "umap", group.by = "cell_type",cols = palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2")
+```
+
+### Save NSCLC CCL19`r knitr::asis_output("\U207A")` TRC PRC data
+```{r save CCL19 TRC PRC}
+#saveRDS(NCLS_FRCS, paste0(basedir,"/data/Human/NSCLC_CCL19_TRC_PRC_CAFs.rds"))
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
