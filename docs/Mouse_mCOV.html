@@ -360,7 +360,7 @@ coronavirus-vector based immunotherapy</h1>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+workflowr <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -371,8 +371,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> </a>
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -385,9 +385,9 @@ aria-hidden="true"></span> </a>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 1
+aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>CCL19_FRCs_lung_cancer/</code>
@@ -497,56 +497,30 @@ run.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongabsolute">
-<span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> <strong>File paths:</strong> absolute </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
 </p>
 </div>
-<div id="strongFilepathsstrongabsolute" class="panel-collapse collapse">
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
 <div class="panel-body">
-<p>
-Using absolute paths to the files within your workflowr project makes it
-difficult for you and others to run your code on a different machine.
-Change the absolute path(s) below to the suggested relative path(s) to
-make your code more reproducible.
-</p>
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th style="text-align:left;">
-absolute
-</th>
-<th style="text-align:left;">
-relative
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-/Users/immbio/Documents/PhD/Lung_Tumour/Chrysa_Human_LLC/CCL19_FRCs_lung_cancer/data/Mouse/integrated_naive_mcov_mds_new.rds
-</td>
-<td style="text-align:left;">
-data/Mouse/integrated_naive_mcov_mds_new.rds
-</td>
-</tr>
-</tbody>
-</table>
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree512f20daaa15b8e4489f38b086ce0e12d31b8cf6targetblank512f20da">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree09ceaf16815aebf5fbe66f9ae5d95e1757b310cetargetblank09ceaf1a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/512f20daaa15b8e4489f38b086ce0e12d31b8cf6" target="_blank">512f20d</a>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/09ceaf16815aebf5fbe66f9ae5d95e1757b310ce" target="_blank">09ceaf1</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree512f20daaa15b8e4489f38b086ce0e12d31b8cf6targetblank512f20da"
+id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree09ceaf16815aebf5fbe66f9ae5d95e1757b310cetargetblank09ceaf1a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -556,7 +530,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/512f20daaa15b8e4489f38b086ce0e12d31b8cf6" target="_blank">512f20d</a>.
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/09ceaf16815aebf5fbe66f9ae5d95e1757b310ce" target="_blank">09ceaf1</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -584,16 +558,12 @@ Ignored files:
     Ignored:    output/GSEA_SMC_PRC/
 
 Untracked files:
+    Untracked:  README.html
     Untracked:  analysis/NSCLC_PDAC_CAFs.Rmd
     Untracked:  analysis/NSCLC_trajectory_analysis.Rmd
-    Untracked:  analysis/Tetra_CD8_T_cells.Rmd
     Untracked:  analysis/Total_CD8_DTR_Tetra.Rmd
-    Untracked:  analysis/extra_functions.R
     Untracked:  analysis/index_hidden.Rmd
     Untracked:  analysis/mcov_R.Rmd
-
-Unstaged changes:
-    Modified:   .gitignore
 
 </code></pre>
 <p>
@@ -639,6 +609,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/09ceaf16815aebf5fbe66f9ae5d95e1757b310ce/analysis/Mouse_mCOV.Rmd" target="_blank">09ceaf1</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-21
+</td>
+<td>
+mCOV add thresh
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/Pchryssa/CCL19_FRCs_lung_cancer/e8525456727c7d3309a773505aefe7601ecb2af3/docs/Mouse_mCOV.html" target="_blank">e852545</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1162,14 +1166,14 @@ mds &lt;- cmdscale(d = d, k = 2)
 colnames(mds) &lt;- paste0(&quot;MDS_&quot;, 1:2)
 # We will now store this as a custom dimensional reduction called &quot;mds&quot;
 seurat_integrated[[&#39;mds&#39;]] &lt;- CreateDimReducObject(embeddings = mds, key = &#39;MDS_&#39;, assay = DefaultAssay(seurat_integrated))</code></pre>
-<pre class="r"><code>#saveRDS(seurat_integrated, &quot;/Users/immbio/Documents/PhD/Lung_Tumour/Chrysa_Human_LLC/CCL19_FRCs_lung_cancer/data/Mouse/integrated_naive_mcov_mds_new.rds&quot;)</code></pre>
+<pre class="r"><code>#saveRDS(seurat_integrated, paste0(basedir,&quot;/data/Mouse/integrated_naive_mcov_mds.rds&quot;))</code></pre>
 <p>We provide the integrated object with MDS representation as the
 classical MDS algorithm takes a long time to run.</p>
 </div>
 <div id="read-integrated-object-with-mds-representation"
 class="section level3">
 <h3>Read integrated object with MDS representation</h3>
-<pre class="r"><code>seurat_integrated &lt;- readRDS(paste0(basedir,&quot;/data/Mouse/integrated_naive_mcov_mds_new.rds&quot;))</code></pre>
+<pre class="r"><code>seurat_integrated &lt;- readRDS(paste0(basedir,&quot;/data/Mouse/integrated_naive_mcov_mds.rds&quot;))</code></pre>
 </div>
 <div id="visualize-mds-plot-figure-6e" class="section level3">
 <h3>Visualize MDS plot (Figure 6E)</h3>
@@ -1306,15 +1310,15 @@ loaded via a namespace (and not attached):
 [115] labeling_0.4.2            ps_1.7.5                 
 [117] getPass_0.2-4             plyr_1.8.8               
 [119] fs_1.6.3                  stringi_1.7.12           
-[121] BiocParallel_1.34.2       viridisLite_0.4.2        
-[123] deldir_1.0-9              munsell_0.5.0            
+[121] viridisLite_0.4.2         deldir_1.0-9             
+[123] BiocParallel_1.34.2       munsell_0.5.0            
 [125] lazyeval_0.2.2            spatstat.geom_3.2-4      
 [127] sparseMatrixStats_1.12.2  future_1.33.0            
 [129] shiny_1.7.4.1             highr_0.10               
 [131] ROCR_1.0-11               igraph_1.5.0.1           
 [133] bslib_0.5.0              </code></pre>
 <pre class="r"><code>date()</code></pre>
-<pre><code>[1] &quot;Wed Aug 21 09:56:47 2024&quot;</code></pre>
+<pre><code>[1] &quot;Wed Aug 21 13:40:49 2024&quot;</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1423,8 +1427,8 @@ loaded via a namespace (and not attached):
 [115] labeling_0.4.2            ps_1.7.5                 
 [117] getPass_0.2-4             plyr_1.8.8               
 [119] fs_1.6.3                  stringi_1.7.12           
-[121] BiocParallel_1.34.2       viridisLite_0.4.2        
-[123] deldir_1.0-9              munsell_0.5.0            
+[121] viridisLite_0.4.2         deldir_1.0-9             
+[123] BiocParallel_1.34.2       munsell_0.5.0            
 [125] lazyeval_0.2.2            spatstat.geom_3.2-4      
 [127] sparseMatrixStats_1.12.2  future_1.33.0            
 [129] shiny_1.7.4.1             highr_0.10               
