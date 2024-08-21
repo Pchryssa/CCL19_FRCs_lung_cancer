@@ -1,0 +1,256 @@
+---
+title: "Ccl19-expressing FRCs control anti-tumor T cell responses"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A","\U2212")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(gridExtra)
+  library(gsubfn)
+  library(ggsci)
+  library(biomaRt)
+  library(tidyverse)
+  library(msigdbr)
+  library(stats)
+  library(clusterProfiler)
+  library(dict)
+  library(openxlsx)
+  library(DOSE)
+  library(enrichplot)
+  library(dittoSeq)
+})
+```
+
+### Set directory
+```{r set directory}
+basedir <- here()
+```
+ 
+
+### Read GP33/34`r knitr::asis_output("\U207A")` CD8`r knitr::asis_output("\U207A")` T cells sorted from LLC-gp33 bearing DTR`r knitr::asis_output("\U207A")` and DTR$^`r knitr::asis_output("\U2212")`$ lungs on day 23, after mCOV-Flt3l-gp33 immunization 
+```{r read CD8 T cells}
+Tetra_CD8 <- readRDS(paste0(basedir,"/data/Mouse/Tetra_CD8_EXH.rds"))
+```
+
+### Set color palette
+```{r color vec}
+cols <- c("#F8766D","#B79F00","#00C08B","#F564E3","#00B4F0")
+names(cols) <-c("Cycling T cells","Eff. Mem. T cells","Effector T cells",paste0("Ccr7", "\U207A ","T cells"),"Exhausted T cells")
+```
+
+### CD8`r knitr::asis_output("\U207A")`GP33/34`r knitr::asis_output("\U207A")` T cells (mCOV-FIt31-gp33) (Figure 7F){.tabset}
+#### Umap
+```{r umap Tetra CD8}
+DimPlot(Tetra_CD8, reduction = "umap", group.by = "annot", cols = cols)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("CD8", "\U207A ", "GP33/34" , "\U207A ", "T cells (mCOV-FIt31-g33)"))
+```
+
+#### DTR`r knitr::asis_output("<sup>\U2212")`
+```{r DTR neg umap}
+DTRneg <-subset(Tetra_CD8, depleted==paste0("DTR", expression("\u2212")))
+
+DimPlot(DTRneg, reduction = "umap", group.by = "depleted",split.by = "depleted")+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2")
+```
+
+#### DTR$^`r knitr::asis_output("\U207A")`$
+```{r DTR pos umap}
+DTRpos <-subset(Tetra_CD8, depleted==paste0("DTR", expression("\u207A")))
+
+DimPlot(DTRpos, reduction = "umap", group.by = "depleted",split.by = "depleted")+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2")
+```
+
+### Dotplot CD8`r knitr::asis_output("\U207A")` T cell subsets (Supplementary Figure 8E)
+```{r dotplot CD8 T cells}
+data_conv <-Tetra_CD8
+data_conv <-Remove_ensebl_id(data_conv)
+
+Idents(data_conv) <- data_conv$annot
+levels(data_conv)<-levels(data_conv)[order(match(levels(data_conv),c(paste0("Ccr7", "\U207A ","T cells"),"Exhausted T cells","Effector T cells","Eff. Mem. T cells","Cycling T cells")))]
+data_conv$cell_type <- factor(as.character(data_conv@active.ident), levels = rev(c(paste0("Ccr7", "\U207A ","T cells"),"Exhausted T cells","Effector T cells","Eff. Mem. T cells","Cycling T cells")))
+
+gene_list <-c("Pclaf","Top2a","Mki67","Mcm7","Klrg1","Gzma","Lef1","Klf2","Ifng","Ccl4","Xcl1","Il2","Gzmb","Havcr2","Ctla4","Prf1",
+              "Lag3","Pdcd1","Tigit", "Tox","Ccr7","Tcf7","Tnfsf4","Cd83")
+
+dittoDotPlot(data_conv, vars = gene_list, group.by = "cell_type", size = 5,legend.size.title = "Expression (%)",scale = TRUE,summary.fxn.color = mean) + ylab( " ")
+```
+
+### Pathway analysis 
+#### Enriched in DTR$^`r knitr::asis_output("\U2212")`$ exhausted T cells (Figure 7G)
+```{r Tetra Exhausted T}
+# Step 1 : Set output directory
+subDir <- "GSEA_EXH_T/"
+saving_path <- paste0(basedir,"/output/")
+final_dir <- file.path(saving_path, subDir)
+dir.create(final_dir, showWarnings = FALSE,recursive = TRUE)
+map_df <- ExtractMouseGeneSets(final_dir)
+
+# Step 2: Customize parameters
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
+organism <- "org.Mm.eg.db"
+
+disease_phase <- "Depl_vs_NDepl"
+datatype <- "SYMBOL"
+
+Exh_T <-subset(Tetra_CD8, annot %in% "Exhausted T cells")
+
+Idents(Exh_T) <- Exh_T$depleted
+  
+DEmarkers <-FindAllMarkers(Exh_T, only.pos=T, logfc.threshold = 0.1,
+                           min.pct = 0.1)
+
+Vec <-unique(Exh_T$depleted)
+EnrichParameters_EXH_T <-customize_parameters(Vec,DEmarkers,organism,datatype,disease_phase,saving_path) 
+
+#Step 3: Plot gene-concept network
+pathways <-c("lymphocyte mediated immunity","leukocyte cell-cell adhesion","leukocyte mediated cytotoxicity")
+
+cnetplot(EnrichParameters_EXH_T$enrichcl_list[[2]], node_label="gene", layout = "kk", showCategory = pathways,
+        max.overlaps=Inf,color.params = list(gene ="black",
+                                             category = "red",
+                                             edge = TRUE),cex.params = list(category_label = 0.0000001,
+                                            label_gene = 0.000001, gene_label= 0.6)) + 
+                                    theme(legend.text = element_text(size = 8))
+
+```
+
+#### Enriched in DTR$^`r knitr::asis_output("\U2212")`$ cycling T cells (Figure 7H)
+```{r Tetra cycling T}
+# Step 1 : Set output directory
+subDir <- "GSEA_CYCL_T/"
+saving_path <- paste0(basedir,"/output/")
+final_dir <- file.path(saving_path, subDir)
+dir.create(final_dir, showWarnings = FALSE,recursive = TRUE)
+map_df <- ExtractMouseGeneSets(final_dir)
+
+# Step 2: Customize parameters
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
+organism <- "org.Mm.eg.db"
+
+disease_phase <- "Depl_vs_NDepl"
+datatype <- "SYMBOL"
+
+Cycling_T <-subset(Tetra_CD8, annot %in% "Cycling T cells")
+
+Idents(Cycling_T) <- Cycling_T$depleted
+  
+DEmarkers <-FindAllMarkers(Cycling_T, only.pos=T, logfc.threshold = 0.1,
+                           min.pct = 0.1)
+
+Vec <-unique(Cycling_T$depleted)
+EnrichParameters_CYCL_T <-customize_parameters(Vec,DEmarkers,organism,datatype,disease_phase,saving_path) 
+
+#Step 3: Plot gene-concept network
+pathways <-c("mitotic cell cycle phase transition","regulation of apoptotic signaling pathway","regulation of leukocyte differentiation")
+
+cnetplot(EnrichParameters_CYCL_T$enrichcl_list[[2]], node_label="gene", layout = "kk", showCategory = pathways,
+        max.overlaps=Inf,color.params = list(gene ="black",
+                                             category = "red",
+                                             edge = TRUE),cex.params = list(category_label = 0.0000001,
+                                            label_gene = 0.000001, gene_label= 0.6)) + 
+                                    theme(legend.text = element_text(size = 8))
+
+```
+
+#### Enriched in DTR$^`r knitr::asis_output("\U2212")`$ Ccr7`r knitr::asis_output("\U207A")` T cells (Supplementary Figure 8F)
+```{r Ccr7 T}
+# Step 1 : Set output directory
+subDir <- "GSEA_CCR7_T/"
+saving_path <- paste0(basedir,"/output/")
+final_dir <- file.path(saving_path, subDir)
+dir.create(final_dir, showWarnings = FALSE,recursive = TRUE)
+map_df <- ExtractMouseGeneSets(final_dir)
+
+# Step 2: Customize parameters
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
+organism <- "org.Mm.eg.db"
+
+disease_phase <- "Depl_vs_NDepl"
+datatype <- "SYMBOL"
+
+Ccr7_T <-subset(Tetra_CD8, annot %in% paste0("Ccr7", "\U207A ","T cells"))
+
+Idents(Ccr7_T) <- Ccr7_T$depleted
+  
+DEmarkers <-FindAllMarkers(Ccr7_T, only.pos=T, logfc.threshold = 0.1,
+                           min.pct = 0.1)
+
+Vec <-unique(Ccr7_T$depleted)
+EnrichParameters_CCR7_T <-customize_parameters(Vec,DEmarkers,organism,datatype,disease_phase,saving_path) 
+```
+#### Enriched in Ccl19-EYFP (DTR$^`r knitr::asis_output("\U2212")`$)
+```{r barplot}
+ccr7_data <-EnrichParameters_CCR7_T$enrichcl_list[[2]]@result
+ccr7_data$Color <-rep("#F564E3",nrow(ccr7_data))
+ccr7_data$CellType <-rep(paste0("Ccr7", "\U207A ","T cells"),nrow(ccr7_data))
+
+exh_data <-EnrichParameters_EXH_T$enrichcl_list[[2]]@result
+exh_data$Color <-rep("#00B4F0",nrow(exh_data))
+exh_data$CellType <-rep("Exhausted T cells",nrow(exh_data))
+
+cycl_data <-EnrichParameters_CYCL_T$enrichcl_list[[2]]@result
+cycl_data$Color <-rep("#F8766D",nrow(cycl_data))
+cycl_data$CellType <-rep("Cycling T cells",nrow(cycl_data))
+
+df_list <-list(ccr7_data,exh_data,cycl_data)
+new_df<-do.call("rbind", df_list)
+
+# Filter on the most significant pathways (keep rows where p.adjust<= 0.05)
+test <-new_df[new_df$p.adjust <= 0.05,]
+
+pathways <- c("granzyme-mediated programmed cell death signaling pathway","T cell differentiation",
+              "cellular response to type II interferon","lymphocyte migration",
+              "chromatin remodeling" ,"alpha-beta T cell activation")
+
+BarPlot(test,pathways,cols)
+
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```

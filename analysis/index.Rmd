@@ -49,5 +49,9 @@ knitr::asis_output("\U207A","\U2212")
 * Characterize CCL19-EYFP`r knitr::asis_output("\U207A")` FRC subsets in coronavirus-vector based immunotherapy : [Mouse_mCOV.html](Mouse_mCOV.html)
 
 
+**Figure 7 and Supplementary Figure 8**
+
+* Characterize GP33/34`r knitr::asis_output("\U207A")` CD8`r knitr::asis_output("\U207A")` T cells sorted from LLC-gp33 bearing DTR`r knitr::asis_output("\U207A")` and DTR$^`r knitr::asis_output("\U2212")`$ lungs on day 23, after mCOV-Flt3l-gp33 immunization : [Tetra_CD8_T_cells.html](Tetra_CD8_T_cells.html)
+
 
 
