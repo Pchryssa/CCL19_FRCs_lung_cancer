@@ -44,5 +44,10 @@ knitr::asis_output("\U207A","\U2212")
 * Characterize CCL19-EYFP`r knitr::asis_output("\U207A")` cell data from naïve lungs and excised LLC-gp33 tumors on day 23 : [Mouse_LLC_naive.html](Mouse_LLC_naive.html)
 
 
+**Figure 6 and Supplementary Figure 7**
+
+* Characterize CCL19-EYFP`r knitr::asis_output("\U207A")` FRC subsets in coronavirus-vector based immunotherapy : [Mouse_mCOV.html](Mouse_mCOV.html)
+
+
 
 

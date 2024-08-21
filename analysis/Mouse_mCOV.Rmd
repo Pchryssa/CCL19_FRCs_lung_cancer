@@ -1,0 +1,450 @@
+---
+title: "CCL19-expressing FRC subsets in coronavirus-vector based immunotherapy"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(dittoSeq)
+  library(gridExtra)
+  library(gsubfn)
+  library(ggsci)
+  library(slingshot)
+  library(tradeSeq)
+  library(mgcv)
+})
+```
+
+## Set directory
+```{r set directory}
+basedir <- here()
+```
+
+### Read CCL19-EYFP`r knitr::asis_output("\U207A")` mCOV-FIt31-g33 cell data
+```{r read CCL19 FRC mCOV-FIt31-g33 data}
+CCL19_EYFP_mCOV <- readRDS(paste0(basedir,"/data/Mouse/mCOV.rds"))
+```
+
+### Define color palette
+```{r color vec}
+cols <- c("#C77CFF","#F8766D","#00BA38","#B79F00","#FF64B0","#00BFC4","#00B4F0","#7CAE00")
+names(cols) <-c(paste0("Smoc1", expression("\u207A "), "AdvFB"),paste0("Cd34", expression("\u207A "), "AdvFB"),paste0("Npnt", expression("\u207A "), "AlvFB"),paste0("Hhip", expression("\u207A "), "AdvFB"),paste0("Sulf1", expression("\u207A "), "TRC"),paste0("Rgs5", expression("\u207A "), "PRC"),"SMC/PC","TLS TRC")
+```
+
+
+### CCL19-EYFP`r knitr::asis_output("\U207A")` mCOV-FIt31-g33 cells
+#### Umap colored per celltype (Supplementary Figure 7C)
+```{r CCL19 EYFP umap mCOV-FIt31-g33 cells}
+DimPlot(CCL19_EYFP_mCOV, reduction = "umap", group.by = "annot", cols=cols)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("Ccl19-EYFP", "\U207A ", "cells (mCOV-FIt31-g33 cells)"))
+```
+
+### Dotplot (Figure 6F) {.tabset}
+```{r dotplot mouse tumor mCOV scale true}
+data_conv <-CCL19_EYFP_mCOV
+data_conv <-Remove_ensebl_id(data_conv)
+
+Idents(data_conv) <- data_conv$annot
+levels(data_conv)<-levels(data_conv)[order(match(levels(data_conv),c(paste0("Cd34", expression("\u207A "), "AdvFB"),paste0("Smoc1", expression("\u207A "), "AdvFB"),paste0("Hhip", expression("\u207A "), "AdvFB"),paste0("Npnt", expression("\u207A "), "AlvFB"),paste0("Sulf1", expression("\u207A "), "TRC"),paste0("Rgs5", expression("\u207A "), "PRC"),"SMC/PC","TLS TRC")))]
+data_conv$annot <- factor(as.character(data_conv@active.ident), levels = rev(c(paste0("Cd34", expression("\u207A "), "AdvFB"),paste0("Smoc1", expression("\u207A "), "AdvFB"), paste0("Hhip", expression("\u207A "), "AdvFB"),paste0("Npnt", expression("\u207A "), "AlvFB"),paste0("Sulf1", expression("\u207A "), "TRC"),paste0("Rgs5", expression("\u207A "), "PRC"),"SMC/PC","TLS TRC")))
+
+gene_list <-c("Cd34","Pdpn","Hhip","Sulf1","Ccl11","Cxcl9","Tnc","Pdgfrb","Notch3","Rgs5","Acta2","Des","Myh11","Il33","Ccl19","Ccl21a","Cxcl13","Clu")
+
+gg <-DotPlot(data_conv, features = gene_list, group.by = "annot", scale = TRUE, cols = c("lightgrey", "#C51B7D"), 
+             scale.min = 0, scale.max = 100,col.min = 0, col.max = 8 , dot.scale = 4) + xlab(" ") + ylab(" ")
+
+gg + theme(axis.text.x = element_text(angle = 45,hjust = 1))
+```
+
+### Differentiation trajectories on CCL19-EYFP`r knitr::asis_output("\U207A")` mCOV-FIt31-g33 cells based on Slingshot algorithm (Figure 6G) {.tabset}
+#### Annotation from RNA_snn_res.0.25 to perform trajectory analysis
+```{r umap CCL19 EYFP umap map annotation  mCOV-FIt31-g33}
+#Set color palette
+palet_new <- c("#C77CFF","#F8766D","#00BA38","#B79F00","#FF64B0","#00BFC4","#00B4F0","#7CAE00")
+names(palet_new) <-c(2,1,4,3,5,6,7,8)
+
+CCL19_EYFP_mCOV$annot_numeric <- CCL19_EYFP_mCOV$annot
+CCL19_EYFP_mCOV$annot_numeric[which(CCL19_EYFP_mCOV$annot == paste0("Cd34", expression("\u207A "), "AdvFB"))] <- 1
+CCL19_EYFP_mCOV$annot_numeric[which(CCL19_EYFP_mCOV$annot == paste0("Smoc1", expression("\u207A "), "AdvFB"))] <- 2
+CCL19_EYFP_mCOV$annot_numeric[which(CCL19_EYFP_mCOV$annot == paste0("Hhip", expression("\u207A "), "AdvFB"))] <- 3
+CCL19_EYFP_mCOV$annot_numeric[which(CCL19_EYFP_mCOV$annot == paste0("Npnt", expression("\u207A "), "AlvFB"))] <- 4
+CCL19_EYFP_mCOV$annot_numeric[which(CCL19_EYFP_mCOV$annot == paste0("Sulf1", expression("\u207A "), "TRC"))] <- 5
+CCL19_EYFP_mCOV$annot_numeric[which(CCL19_EYFP_mCOV$annot == paste0("Rgs5", expression("\u207A "), "PRC"))] <- 6
+CCL19_EYFP_mCOV$annot_numeric[which(CCL19_EYFP_mCOV$annot == "SMC/PC")] <- 7
+CCL19_EYFP_mCOV$annot_numeric[which(CCL19_EYFP_mCOV$annot == "TLS TRC")] <- 8
+
+DimPlot(CCL19_EYFP_mCOV, reduction = "umap", group.by = "annot_numeric", cols = palet_new)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle("New annotation")
+
+```
+
+#### Differentiation trajectories for Sulf1`r knitr::asis_output("\U207A")` TRC, TLS TRC and Rgs5`r knitr::asis_output("\U207A")` PRC
+```{r CCL19 EYFP mCOV-FIt31-g33 differentiation trajectories}
+#Calculation of CCL19-EYFP`r knitr::asis_output("\U207A")` mCOV-FIt31-g33 cell differentiation trajectories
+clustering <- CCL19_EYFP_mCOV@meta.data$annot_numeric
+dimred <- CCL19_EYFP_mCOV@reductions$umap@cell.embeddings
+
+# Slingshot for TRC (Sulf1, TLS)
+pto_TRC <- slingshot(dimred, clustering, start.clus = '2', end.clus = '8', reducedDim = 'umap',extend="n",stretch=0.07,thresh=0.05)
+pto_TRC <- as.SlingshotDataSet(pto_TRC)
+
+# Slingshot for PRC
+pto_PRC <- slingshot(dimred, clustering, start.clus = '7', end.clus = '6' ,reducedDim = 'umap',extend="n",stretch=0.07,thresh=0.05)
+pto_PRC <- as.SlingshotDataSet(pto_PRC)
+
+plot(dimred, col = palet_new[clustering], asp = 1, pch = 16)
+lines(pto_PRC@curves$Lineage3, lwd = 3, col = 'magenta')
+lines(pto_TRC@curves$Lineage3, lwd = 3, col = 'gold')
+lines(pto_TRC@curves$Lineage1, lwd = 3, col = 'black')
+legend("bottomright", legend = c("T3"), col = c('gold'), lty = 1, lwd = 2.5, cex = 1.1)
+legend("topright", legend = names(cols), col = cols, pch = 2, pt.cex = 1, cex = 0.8)
+```
+
+### Combine gene signatures in T3 differentiation trajectory (Figure 6H)
+```{r Step 1}
+counts <- CCL19_EYFP_mCOV@assays$RNA@counts
+
+CCL19_EYFP_mCOV <- FindVariableFeatures(CCL19_EYFP_mCOV, selection.method = "vst", nfeatures = 1000)
+
+new_counts <-counts[rownames(counts) %in% CCL19_EYFP_mCOV@assays$RNA@var.features,]
+sds <- as.SlingshotDataSet(pto_TRC)
+pseudotime <- slingPseudotime(pto_TRC, na = FALSE)
+cellWeights <- slingCurveWeights(pto_TRC)
+
+BPPARAM <- BiocParallel::bpparam()
+BPPARAM$workers <- 4 # use 2 cores
+control <- gam.control()
+control$maxit <- 1000 
+```
+```{r fitGAm, eval=FALSE}
+set.seed(3)
+sce <- fitGAM(counts = new_counts, pseudotime = pseudotime, cellWeights = cellWeights,
+                 nknots = 6, verbose = TRUE,parallel=TRUE, BPPARAM = BPPARAM, sds = sds,control = control)
+
+```
+
+### Save sce object
+```{r save sce}
+#saveRDS(sce, paste0(basedir,"/data/Mouse/Trajectory_fitGAM_T3_1000.rds"))
+```
+
+### Read sce object
+We provide the sce object because the fitGAM commnand took time to run
+```{r read sce}
+sce <- readRDS(paste0(basedir,"/data/Mouse/Trajectory_fitGAM_T3_1000.rds"))
+```
+
+We focus on genes whose expression changes across the T3 trajectory in the pseudotime. In particular, on those genes that are upregulated in TLS TRC. We use the startVsEndTest statistical test.
+
+### Gene expression changes in T3 trajectory
+```{r startVsEndTest}
+pseudotime_start_end_association <- startVsEndTest(sce) 
+```
+
+### Calculate log-transformed counts and fitted values for a particular gene across the T3 lineage 
+```{r Step 2}
+data_Ccl21a <-plotSmoothers1(sce, counts, gene = "ENSMUSG00000094686.Ccl21a", lineagesToPlot = c(3))
+data_Srgn <-plotSmoothers1(sce, counts, gene = "ENSMUSG00000020077.Srgn", lineagesToPlot = c(3)) 
+data_Il33 <-plotSmoothers1(sce, counts, gene = "ENSMUSG00000024810.Il33", lineagesToPlot = c(3)) 
+data_Cxcl12 <-plotSmoothers1(sce, counts, gene = "ENSMUSG00000061353.Cxcl12", lineagesToPlot = c(3)) 
+data_Ccl19 <-plotSmoothers1(sce, counts, gene = "ENSMUSG00000071005.Ccl19", lineagesToPlot = c(3))
+
+data_Ccl21a$gene <- "Ccl21a"
+data_Srgn$gene <-"Srgn"
+data_Il33$gene <-"Il33"
+data_Cxcl12$gene <-"Cxcl12"
+data_Ccl19$gene <-"Ccl19"
+```
+
+### Plot gene curves
+```{r Step 3 plot}
+cols_pal <- c("orange","#00B0F6","#00BB4E","#C09B00", "#FF6A98")
+names(cols_pal) <-c("Ccl19","Il33","Cxcl12","Ccl21a","Srgn")
+
+visual12 <- rbind(data_Ccl21a,data_Srgn,data_Il33,data_Cxcl12,data_Ccl19)
+end_val <-round(max(visual12$time)) + 1
+end_y_axis <-round(max(log1p(visual12$gene_count)))
+
+ggplot(visual12, aes(x=time, y=log1p(gene_count), group=gene, col = gene, fill=gene)) +
+  labs(x = "Pseudotime (T3)", y = "Log(expression + 1)") +
+      geom_line(lwd = 2) +
+  scale_y_continuous(expand = expansion(c(0,0)), limits = c(0.0, end_y_axis),breaks = c(0,1,2,3,4,end_y_axis)) +
+  scale_x_continuous(limits = c(0.0, end_val + 0.5), expand = expansion(c(0,0)), breaks = c(0,5,end_val)) + 
+ theme(aspect.ratio=1.3, axis.text.y = element_text(angle = 0,colour = "black")) + 
+  theme(axis.line = element_line(colour = "black"),
+panel.grid.major = element_blank(),
+panel.grid.minor = element_blank(),
+panel.border = element_blank(),
+panel.background = element_blank(),
+legend.title = element_blank(),axis.text.x = element_text(angle = 0, vjust = 0.5,colour = "black")) +
+  scale_color_manual(values = cols_pal)+ 
+  ggtitle(paste0("Cd34", "\U207A ", "AdvFB >> TLS TRC (T3)"))
+```
+
+### Multidimensional scaling (MDS) plot 
+
+Multidimensional scaling (MDS) visualizes the level of similarity of variables in a data set. MDS recognizes the structure of the dataset in 2D, as it maintains the pairwise distances between data points.
+
+### Read CCL19-EYFP`r knitr::asis_output("\U207A")` cell data from naïve lungs and excised LLC-gp33 tumors on day 23
+```{r read CCL19 FRC data}
+CCL19_EYFP <- readRDS(paste0(basedir,"/data/Mouse/CCL19_EYFP_nonmCOV.rds"))
+```
+
+### Merge CCL19-EYFP`r knitr::asis_output("\U207A")` cells from mCOV-FIt31-g33 and non immunization
+```{r merge nomCOV mCOV data}
+data_merge <- merge(CCL19_EYFP, y = c(CCL19_EYFP_mCOV),
+             add.cell.ids = c("CCL19_EYFP","CCL19_EYFP_mCOV"),
+             project = "merge_no_mcov_mcov")
+
+#Preprocessing
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.8, 1.)
+data_merge  <- preprocessing(data_merge,resolution)
+```
+
+### **Integrate data to correct for batch effects due to different condition (naive vs mCOV-FIt31-g33) via seurat**
+### Step 1
+```{r integrate data step 1}
+#Split object by Patient as we see batch effects coming from different patients
+obj.list <-SplitObject(data_merge, split.by = 'condition')
+#For each object in list we see to run normalization and identify highly variable features
+for (i in 1:length(obj.list)){
+  #Normalization
+  obj.list[[i]] <- NormalizeData(obj.list[[i]], normalization.method = "LogNormalize", scale.factor = 10000) 
+  #Find high variable genes
+  obj.list[[i]] <- FindVariableFeatures(obj.list[[i]], selection.method = "vst", nfeatures = 2000)#The purpose of this is to id
+}
+```
+
+### Step 2
+```{r integrate data step 2}
+#select features that are repeatedly variable across datasets for integration
+features <- SelectIntegrationFeatures(object.list = obj.list)
+#Find anchors to integrate the data across different patients (Canonical correlation analysis)
+anchors <- FindIntegrationAnchors(object.list = obj.list, anchor.features = features)
+# this command creates an 'integrated' data assay
+seurat_integrated <- IntegrateData(anchorset = anchors)
+```
+
+### Step 3
+```{r integrate data step 3}
+# We run a single integrated analysis on all cells!
+DefaultAssay(seurat_integrated) <- "integrated"
+
+# Run the standard workflow for visualization and clustering
+seurat_integrated <- ScaleData(seurat_integrated, verbose = FALSE)
+seurat_integrated <- RunPCA(object = seurat_integrated, npcs = 30, verbose = FALSE,seed.use = 8734)
+seurat_integrated <- RunTSNE(object = seurat_integrated, reduction = "pca", dims = 1:20, seed.use = 8734)
+seurat_integrated<- RunUMAP(object = seurat_integrated, reduction = "pca", dims = 1:20, seed.use = 8734)
+ seurat_integrated <- FindNeighbors(object = seurat_integrated, reduction = "pca", dims = 1:20, seed.use = 8734)
+#Clustering 
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.8, 1.)
+for(k in 1:length(resolution)){
+  seurat_integrated <- FindClusters(object = seurat_integrated, resolution = resolution[k], random.seed = 8734)
+}
+```
+
+### Batch effects based on condition are corrected {.tabset}
+#### Color per condition
+```{r umap per condition}
+DimPlot(seurat_integrated, reduction = "umap", group.by = "condition")+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") 
+
+```
+
+#### Existing cell type annotation
+```{r umap visualization}
+DimPlot(seurat_integrated, reduction = "umap", group.by = "annot")+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") 
+
+```
+
+### Plot gene signatures {.tabset}
+```{r get full gene names}
+DefaultAssay(seurat_integrated)<- "RNA"
+
+genes <- c("NPNT","HHIP","CD34","ACTA2","SULF1","CLU","CCL21A","CCL19","IL33","SMOC1","CXCL13","RGS5")
+genes <-str_to_sentence(genes)
+
+genes <- unlist(lapply(genes, function(x) {
+  get_full_gene_name(x,seurat_integrated)
+}))
+```
+
+#### NPNT HHIP CD34 ACTA2
+```{r NPNT HHIP CD34 ACTA2}
+DefaultAssay(seurat_integrated)<- "RNA"
+
+FeaturePlot(seurat_integrated, reduction = "umap", 
+          features = genes[1:4],
+          cols=c("lightgrey", "darkred"),
+          order = T )+
+theme(legend.position="right", legend.title=element_text(size=5)) 
+```
+
+#### SULF1 CLU CCL21A CCL19
+```{r SULF1 CLU CCL21A CCL19}
+DefaultAssay(seurat_integrated)<- "RNA"
+
+FeaturePlot(seurat_integrated, reduction = "umap", 
+          features = genes[5:8],
+          cols=c("lightgrey", "darkred"),
+          order = T )+
+theme(legend.position="right", legend.title=element_text(size=5)) 
+```
+
+#### IL33 SMOC1 CXCL13 RGS5
+```{r IL33 SMOC1 CXCL13 RGS5}
+DefaultAssay(seurat_integrated)<- "RNA"
+
+FeaturePlot(seurat_integrated, reduction = "umap", 
+          features = genes[9:12],
+          cols=c("lightgrey", "darkred"),
+          order = T )+
+theme(legend.position="right", legend.title=element_text(size=5)) 
+
+```
+
+### Perform new cell type annotation based on the previous gene signatures
+```{r new cell type assignment}
+DefaultAssay(seurat_integrated) <- "integrated"
+
+seurat_integrated@meta.data$new_annot <--1
+seurat_integrated$new_annot[which(seurat_integrated$integrated_snn_res.0.25 == 0)] <- paste0("Cd34", "\u207A ", "AdvFB")
+
+seurat_integrated$new_annot[which(seurat_integrated$integrated_snn_res.0.25 == 1)] <- paste0("Hhip", "\u207A ", "AdvFB")
+
+seurat_integrated$new_annot[which(seurat_integrated$integrated_snn_res.0.25 == 2)] <- paste0("Npnt", "\u207A ", "AlvFB")
+
+seurat_integrated$new_annot[which(seurat_integrated$integrated_snn_res.0.25 == 3)] <- "SMC/PC"
+
+seurat_integrated$new_annot[which(seurat_integrated$integrated_snn_res.0.25 == 4)] <- paste0("Sulf1", "\u207A ", "TRC")
+
+seurat_integrated$new_annot[which(seurat_integrated$integrated_snn_res.0.25 == 5)] <- paste0("Rgs5", "\u207A ", "PRC")
+
+seurat_integrated$new_annot[which(seurat_integrated$integrated_snn_res.0.25 == 6)] <- paste0("Npnt", "\u207A ", "AlvFB")
+
+seurat_integrated$new_annot[which(seurat_integrated$integrated_snn_res.0.25 == 7)] <- paste0("TLS ", "TRC")
+```
+
+### Visualize new cell type annotation
+```{r plot new cell type annotation}
+DimPlot(seurat_integrated, reduction = "umap", group.by = "new_annot", cols = cols)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") #+ NoLegend()
+
+```
+
+### MDS computation
+```{r MDS computation, , eval=FALSE}
+# Before running MDS, we first calculate a distance matrix between all pairs of cells.
+# Here we use a simple euclidean distance metric on all genes, using scale.data as input
+d <- dist(t(GetAssayData(seurat_integrated, slot = 'scale.data')))
+d_mat <-as.matrix(d)
+# Run the MDS procedure, k determines the number of dimensions
+mds <- cmdscale(d = d, k = 2)
+# cmdscale returns the cell embeddings, we first label the columns to ensure downstream consistency
+colnames(mds) <- paste0("MDS_", 1:2)
+# We will now store this as a custom dimensional reduction called "mds"
+seurat_integrated[['mds']] <- CreateDimReducObject(embeddings = mds, key = 'MDS_', assay = DefaultAssay(seurat_integrated))
+```
+
+```{r save integrated MDS data, eval=FALSE}
+#saveRDS(seurat_integrated, "/Users/immbio/Documents/PhD/Lung_Tumour/Chrysa_Human_LLC/CCL19_FRCs_lung_cancer/data/Mouse/integrated_naive_mcov_mds_new.rds")
+```
+
+We provide the integrated object with MDS representation as the classical MDS algorithm takes a long time to run.
+
+### Read integrated object with MDS representation
+```{r read integrated MDS data}
+seurat_integrated <- readRDS(paste0(basedir,"/data/Mouse/integrated_naive_mcov_mds_new.rds"))
+```
+
+### Visualize MDS plot (Figure 6E)
+```{r MDS visualization}
+mds_tx_condition = seurat_integrated@reductions$mds@cell.embeddings %>% 
+as.data.frame() %>% cbind(tx = seurat_integrated@meta.data$condition)
+
+mds_tx_celltype = seurat_integrated@reductions$mds@cell.embeddings %>% 
+as.data.frame() %>% cbind(tx = seurat_integrated@meta.data$new_annot)
+
+mds_tx_TOTAL <-merge(mds_tx_condition, mds_tx_celltype, by=c("MDS_1", "MDS_2"), all.x=T, all.y=T)
+colnames(mds_tx_TOTAL) <-c("MDS_1", "MDS_2", "Condition","Celltype")
+
+mds_tx_TOTAL <- mds_tx_TOTAL %>% 
+  group_by(Celltype,Condition) %>% 
+  mutate(count_mds1 = mean(MDS_1)) %>%
+  mutate(count_mds2 = mean(MDS_2))
+
+test <-mds_tx_TOTAL %>%
+  group_by(Celltype) %>%
+  filter(!(Celltype == 'TLS TRC' & Condition == 'Not immunized'))
+
+ggplot(test, aes(x=count_mds1, y=count_mds2, color=Celltype, shape = Condition)) + geom_point(stroke = 1.5) + ylab("MDS2") + xlab("MDS1") +  
+scale_color_manual(values=cols) + scale_shape_manual(values = c(2, 3)) + 
+  theme(aspect.ratio = 1.3, axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    axis.text.y = element_text(angle = 0, vjust = 0.5,colour = "black",size = 10),
+    axis.text.x = element_text(angle = 0, vjust = 0.5,colour = "black",size = 10),
+    
+) 
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
