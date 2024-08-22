@@ -147,15 +147,15 @@ for (sce_nam in sce_names) {
 ```
 
 ### Visualize genes along pseudotime {.tabset}
-### DES MHY11 (Figure 4C)
-```{r DES MHY11}
+#### DES MYH11 (Figure 4C)
+```{r DES MYH11}
 for (sce_nam in sce_names) {
   p <- plot_top_de(sce_nam, "1", gene_list = c("DES", "MYH11"))
   print(p)
 }
 ```
 
-### RGS5 NOTCH3 ACTA2 (Figure 4E)
+#### RGS5 NOTCH3 ACTA2 (Figure 4E)
 ```{r RGS5 NOTCH3 ACTA2}
 for (sce_nam in sce_names) {
   p <- plot_top_de(sce_nam, "1", gene_list = c("RGS5","NOTCH3","ACTA2"))
@@ -163,7 +163,7 @@ for (sce_nam in sce_names) {
 }
 ```
 
-### TNC CCL21 CXCL12 (Figure 4G)
+#### TNC CCL21 CXCL12 (Figure 4G)
 ```{r TNC CCL21 CXCL12}
 for (sce_nam in sce_names) {
   p <- plot_top_de(sce_nam, "1", gene_list = c("TNC","CCL21","CXCL12"))
@@ -171,7 +171,7 @@ for (sce_nam in sce_names) {
 }
 ```
 
-### CLU POSTN SULF1 (Figure 4I)
+#### CLU POSTN SULF1 (Figure 4I)
 ```{r CLU POSTN SULF1}
 for (sce_nam in sce_names) {
   p <- plot_top_de(sce_nam, "1", gene_list = c("CLU","POSTN","SULF1"))
