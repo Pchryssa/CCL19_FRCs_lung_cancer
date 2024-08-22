@@ -883,4 +883,490 @@ Visualize_GeneSignatures_sc <- function(object, genes_list, slot_type, score_typ
   return(p)
   
 }
+# Written by Almut Lütge
+prep_sce <- function(sce_nam, red_dim = "UMAP"){
+  sceSub <- sce_list[[sce_nam]]
+  rowData(sceSub)$gene_short_name <- gsub("^.*\\.", "", rownames(sceSub))
+  colData(sceSub) <- colData(sceSub)[unique(names(colData(sceSub)))]
+  cds <- new_cell_data_set(as.matrix(logcounts(sceSub)),
+                           cell_metadata = colData(sceSub),
+                           gene_metadata = rowData(sceSub))
+  
+  reducedDims(cds)$UMAP <- reducedDims(sceSub)[["UMAP"]]
+  reducedDims(cds)$PCA <- reducedDims(sceSub)[["PCA"]]
+  reducedDims(cds)$tSNE <- reducedDims(sceSub)[["TSNE"]]
+  cds <- cluster_cells(cds, k=400, partition_qval = 0.05, reduction_method = red_dim,
+                       cluster_method = c("louvain"), weight = T)
+}
+
+# Written by Almut Lütge
+plot_trajectory <- function(col_var, cds, palet,dim_red= "UMAP"){
+  col_fac <- levels(as.factor(colData(cds)[,col_var]))
+  colPal <- palet[1:length(col_fac)]
+  colPalDat <- data.frame(color=colPal, cluster=col_fac)
+  clusterCol <- data.frame(cluster=colData(cds)[,col_var]) %>%
+    left_join(., colPalDat, by=c("cluster"))
+  colData(cds)$colCluster <- clusterCol$color
+  p <- plot_cells_mod(cds,
+                      reduction_method = dim_red,
+                      color_cells_by = col_var,
+                      label_groups_by_cluster=FALSE,
+                      label_leaves=FALSE,
+                      label_branch_points=FALSE,
+                      trajectory_graph_segment_size = 1.5,
+                      trajectory_graph_color = "black",
+                      cell_size = 1.8,
+                      colPalette = colPal,
+                      alpha=1,
+                      colVec = colData(cds)$colCluster,
+                      legendPos = "right")
+}
+
+# Written by Almut Lütge
+plot_pseudo <- function(cds){
+  p <- plot_cells_mod(cds,
+                      color_cells_by = "pseudotime",
+                      label_groups_by_cluster=FALSE,
+                      label_leaves=FALSE,
+                      label_branch_points=FALSE,
+                      trajectory_graph_segment_size = 1.5,
+                      trajectory_graph_color = "black",
+                      cell_size = 1.8,
+                      alpha=1,
+                      legendPos = "right")
+  p
+}
+
+# Written by Almut Lütge
+#plot cluster function
+group_trajectory <- function(cds, dim_red = "UMAP"){
+  p1 <- plot_trajectory(col_var = "group", cds = cds, dim_red = dim_red)
+  p2 <- plot_trajectory(col_var = "patient", cds = cds, dim_red = dim_red)
+  plot_grid(p1,"", p2, ncol = 3, rel_widths = c(1, 0.1, 1))
+}
+
+# Written by Almut Lütge
+plot_cells_mod <- function (cds, x = 1, y = 2,
+                            reduction_method = c("UMAP", "tSNE", "PCA", "LSI",
+                                                 "Aligned"),
+                            color_cells_by = "cluster",
+                            group_cells_by = c("cluster", "partition"),
+                            genes = NULL, show_trajectory_graph = TRUE, 
+                            trajectory_graph_color = "grey28",
+                            trajectory_graph_segment_size = 0.75, 
+                            norm_method = c("log", "size_only"),
+                            label_cell_groups = F, 
+                            label_groups_by_cluster = F,
+                            group_label_size = 2, labels_per_group = 1, 
+                            label_branch_points = F,
+                            label_leaves = F, graph_label_size = 2,
+                            cell_size = 0.35, cell_stroke = I(cell_size/2), 
+                            alpha = 1, min_expr = 0.1, rasterize = FALSE,
+                            colPalette = "black",
+                            colVec = NULL,
+                            legendPos = "none",
+                            maxVal = 5){
+  reduction_method <- match.arg(reduction_method)
+  assertthat::assert_that(methods::is(cds, "cell_data_set"))
+  assertthat::assert_that(!is.null(reducedDims(cds)[[reduction_method]]), 
+                          msg = paste("No dimensionality reduction for", reduction_method, 
+                                      "calculated. Please run reduce_dimensions with reduction_method =",
+                                      reduction_method, "before attempting to plot."))
+  low_dim_coords <- reducedDims(cds)[[reduction_method]]
+  assertthat::assert_that(ncol(low_dim_coords) >= max(x, y), 
+                          msg = paste("x and/or y is too large. x and y must", 
+                                      "be dimensions in reduced dimension", "space."))
+  if (!is.null(color_cells_by)) {
+    assertthat::assert_that(color_cells_by %in% c("cluster", 
+                                                  "partition", "pseudotime") | color_cells_by %in% 
+                              names(colData(cds)), msg = paste("color_cells_by must one of", 
+                                                               "'cluster', 'partition', 'pseudotime,",
+                                                               "or a column in the colData table."))
+    if (color_cells_by == "pseudotime") {
+      tryCatch({
+        pseudotime(cds, reduction_method = reduction_method)
+      }, error = function(x) {
+        stop(paste("No pseudotime for", reduction_method, 
+                   "calculated. Please run order_cells with", 
+                   "reduction_method =", reduction_method,
+                   "before attempting to color by pseudotime."))
+      })
+    }
+  }
+  assertthat::assert_that(!is.null(color_cells_by) || !is.null(markers), 
+                          msg = paste("Either color_cells_by or markers must", 
+                                      "be NULL, cannot color by both!"))
+  norm_method = match.arg(norm_method)
+  group_cells_by = match.arg(group_cells_by)
+  assertthat::assert_that(!is.null(color_cells_by) || !is.null(genes), 
+                          msg = paste("Either color_cells_by or genes must be", 
+                                      "NULL, cannot color by both!"))
+  if (show_trajectory_graph &&
+      is.null(principal_graph(cds)[[reduction_method]])) {
+    message("No trajectory to plot. Has learn_graph() been called yet?")
+    show_trajectory_graph = FALSE
+  }
+  gene_short_name <- NA
+  sample_name <- NA
+  data_dim_1 <- NA
+  data_dim_2 <- NA
+  if (rasterize) {
+    plotting_func <- ggrastr::geom_point_rast
+  }
+  else {
+    plotting_func <- ggplot2::geom_point
+  }
+  S_matrix <- reducedDims(cds)[[reduction_method]]
+  data_df <- data.frame(S_matrix[, c(x, y)])
+  colnames(data_df) <- c("data_dim_1", "data_dim_2")
+  data_df$sample_name <- row.names(data_df)
+  data_df <- as.data.frame(cbind(data_df, colData(cds)))
+  if (group_cells_by == "cluster") {
+    data_df$cell_group <- tryCatch({
+      clusters(cds,
+               reduction_method = reduction_method)[data_df$sample_name]
+    }, error = function(e) {
+      NULL
+    })
+  }
+  else if (group_cells_by == "partition") {
+    data_df$cell_group <- tryCatch({
+      partitions(cds,
+                 reduction_method = reduction_method)[data_df$sample_name]
+    }, error = function(e) {
+      NULL
+    })
+  }
+  else {
+    stop("Error: unrecognized way of grouping cells.")
+  }
+  if (color_cells_by == "cluster") {
+    data_df$cell_color <- tryCatch({
+      clusters(cds,
+               reduction_method = reduction_method)[data_df$sample_name]
+    }, error = function(e) {
+      NULL
+    })
+  }
+  else if (color_cells_by == "partition") {
+    data_df$cell_color <- tryCatch({
+      partitions(cds,
+                 reduction_method = reduction_method)[data_df$sample_name]
+    }, error = function(e) {
+      NULL
+    })
+  }
+  else if (color_cells_by == "pseudotime") {
+    data_df$cell_color <- tryCatch({
+      pseudotime(cds,
+                 reduction_method = reduction_method)[data_df$sample_name]
+    }, error = function(e) {
+      NULL
+    })
+  }
+  else {
+    data_df$cell_color <- colData(cds)[data_df$sample_name, 
+                                       color_cells_by]
+  }
+  if (show_trajectory_graph) {
+    ica_space_df <- t(cds@principal_graph_aux[[reduction_method]]$dp_mst)%>% 
+      as.data.frame() %>% dplyr::select_(prin_graph_dim_1 = x, 
+                                         prin_graph_dim_2 = y) %>% dplyr::mutate(sample_name = rownames(.), 
+                                                                                 sample_state = rownames(.))
+    dp_mst <- cds@principal_graph[[reduction_method]]
+    edge_df <- dp_mst %>% igraph::as_data_frame() %>%
+      dplyr::select_(source = "from", target = "to") %>%
+      dplyr::left_join(ica_space_df %>% 
+                         dplyr::select_(source = "sample_name",
+                                        source_prin_graph_dim_1 = "prin_graph_dim_1", 
+                                        source_prin_graph_dim_2 = "prin_graph_dim_2"), 
+                       by = "source") %>% dplyr::left_join(ica_space_df %>% 
+                                                             dplyr::select_(target = "sample_name",
+                                                                            target_prin_graph_dim_1 = "prin_graph_dim_1", 
+                                                                            target_prin_graph_dim_2 = "prin_graph_dim_2"), 
+                                                           by = "target")
+  }
+  markers_exprs <- NULL
+  expression_legend_label <- NULL
+  if (!is.null(genes)) {
+    if (!is.null(dim(genes)) && dim(genes) >= 2) {
+      markers = unlist(genes[, 1], use.names = FALSE)
+    }
+    else {
+      markers = genes
+    }
+    markers_rowData <- as.data.frame(subset(rowData(cds), 
+                                            gene_short_name %in% markers | row.names(rowData(cds)) %in% 
+                                              markers))
+    if (nrow(markers_rowData) == 0) {
+      stop("None of the provided genes were found in the cds")
+    }
+    if (nrow(markers_rowData) >= 1) {
+      cds_exprs <- SingleCellExperiment::counts(cds)[row.names(
+        markers_rowData), 
+        , drop = FALSE]
+      cds_exprs <- Matrix::t(Matrix::t(cds_exprs)/size_factors(cds))
+      if (!is.null(dim(genes)) && dim(genes) >= 2) {
+        genes = as.data.frame(genes)
+        row.names(genes) = genes[, 1]
+        genes = genes[row.names(cds_exprs), ]
+        agg_mat = as.matrix(my.aggregate.Matrix(cds_exprs, 
+                                                as.factor(genes[, 2]), fun = "sum"))
+        agg_mat = t(scale(t(log10(agg_mat + 1))))
+        agg_mat[agg_mat < -2] = -2
+        agg_mat[agg_mat > 2] = 2
+        markers_exprs = agg_mat
+        markers_exprs <- reshape2::melt(markers_exprs)
+        colnames(markers_exprs)[1:2] <- c("feature_id", 
+                                          "cell_id")
+        if (is.factor(genes[, 2])) 
+          markers_exprs$feature_id = factor(markers_exprs$feature_id, 
+                                            levels = levels(genes[, 2]))
+        markers_exprs$feature_label <- markers_exprs$feature_id
+        norm_method = "size_only"
+        expression_legend_label = "Expression score"
+      }
+      else {
+        cds_exprs@x = round(cds_exprs@x)
+        markers_exprs = matrix(cds_exprs, nrow = nrow(markers_rowData))
+        colnames(markers_exprs) = colnames(
+          SingleCellExperiment::counts(cds))
+        row.names(markers_exprs) = row.names(markers_rowData)
+        markers_exprs <- reshape2::melt(markers_exprs)
+        colnames(markers_exprs)[1:2] <- c("feature_id", 
+                                          "cell_id")
+        markers_exprs <- merge(markers_exprs, markers_rowData, 
+                               by.x = "feature_id", by.y = "row.names")
+        if (is.null(markers_exprs$gene_short_name)) {
+          markers_exprs$feature_label <- as.character(
+            markers_exprs$feature_id)
+        }
+        else {
+          markers_exprs$feature_label <- as.character(
+            markers_exprs$gene_short_name)
+        }
+        markers_exprs$feature_label <- ifelse(is.na(
+          markers_exprs$feature_label) | 
+            !as.character(markers_exprs$feature_label) %in% 
+            markers, as.character(markers_exprs$feature_id), 
+          as.character(markers_exprs$feature_label))
+        markers_exprs$feature_label<-factor(markers_exprs$feature_label, 
+                                            levels = markers)
+        if (norm_method == "size_only") 
+          expression_legend_label = "Expression"
+        else expression_legend_label = "log10(Expression)"
+      }
+    }
+  }
+  if (label_cell_groups && is.null(color_cells_by) == FALSE) {
+    if (is.null(data_df$cell_color)) {
+      if (is.null(genes)) {
+        message(paste(color_cells_by, "not found in colData(cds),", 
+                      " cells will not be colored"))
+      }
+      text_df = NULL
+      label_cell_groups = FALSE
+    }
+    else {
+      if (is.character(data_df$cell_color) ||
+          is.factor(data_df$cell_color)) {
+        if (label_groups_by_cluster && is.null(data_df$cell_group) == 
+            FALSE) {
+          text_df = data_df %>% dplyr::group_by(cell_group) %>% 
+            dplyr::mutate(cells_in_cluster = dplyr::n()) %>% 
+            dplyr::group_by(cell_color, add = TRUE) %>% 
+            dplyr::mutate(per = dplyr::n()/cells_in_cluster)
+          median_coord_df = text_df %>%
+            dplyr::summarize(fraction_of_group = dplyr::n(), 
+                             text_x = stats::median(x = data_dim_1),
+                             text_y = stats::median(x = data_dim_2))
+          text_df = suppressMessages(text_df %>% dplyr::select(per) %>% 
+                                       dplyr::distinct())
+          text_df = suppressMessages(dplyr::inner_join(text_df, 
+                                                       median_coord_df))
+          text_df = text_df %>% dplyr::group_by(cell_group) %>% 
+            dplyr::top_n(labels_per_group, per)
+        }
+        else {
+          text_df = data_df %>% dplyr::group_by(cell_color) %>% 
+            dplyr::mutate(per = 1)
+          median_coord_df = text_df %>%
+            dplyr::summarize(fraction_of_group = dplyr::n(), 
+                             text_x = stats::median(x = data_dim_1),
+                             text_y = stats::median(x = data_dim_2))
+          text_df = suppressMessages(text_df %>% dplyr::select(per) %>% 
+                                       dplyr::distinct())
+          text_df = suppressMessages(dplyr::inner_join(text_df, 
+                                                       median_coord_df))
+          text_df = text_df %>% dplyr::group_by(cell_color) %>% 
+            dplyr::top_n(labels_per_group, per)
+        }
+        text_df$label = as.character(text_df %>%
+                                       dplyr::pull(cell_color))
+      }
+      else {
+        message(paste("Cells aren't colored in a way that allows them", 
+                      " to be grouped."))
+        text_df = NULL
+        label_cell_groups = FALSE
+      }
+    }
+  }
+  if (!is.null(markers_exprs) && nrow(markers_exprs) > 0) {
+    data_df <- merge(data_df, markers_exprs, by.x = "sample_name", 
+                     by.y = "cell_id")
+    data_df$value <- with(data_df, ifelse(value >= min_expr, 
+                                          value, 0))
+    data_df$value2 <- with(data_df, ifelse(value >= min_expr, 
+                                           log10(value + min_expr), 0))
+    data_df$value[which(data_df$value > maxVal)] <- maxVal
+    na_sub <- data_df[is.na(data_df$value), ]
+    if (norm_method == "size_only") {
+      g <- ggplot(data = data_df, aes(x = data_dim_1, y = data_dim_2)) + 
+        plotting_func(aes(data_dim_1, data_dim_2), size = I(cell_size), 
+                      stroke = 0.7, shape = 21, fill = "grey80", color = "grey20", 
+                      alpha = alpha, data = data_df) + 
+        plotting_func(aes(color = value), 
+                      size = I(cell_size)-0.5, na.rm = TRUE) +
+        viridis::scale_color_viridis(option = "viridis", 
+                                     name = expression_legend_label, na.value = "grey80", 
+                                     end = 0.8, alpha = alpha) + guides(alpha = FALSE) + 
+        facet_wrap(~feature_label)
+    }
+    else {
+      g <- ggplot(data = data_df, aes(x = data_dim_1, y = data_dim_2)) + 
+        plotting_func(aes(data_dim_1, data_dim_2), size = I(cell_size), 
+                      stroke = 0.7, shape = 21, fill = "grey80", color = "grey20", 
+                      data = data_df, alpha = alpha) +
+        plotting_func(aes(color = value), size = I(cell_size)-0.5, 
+                      na.rm = TRUE, alpha = alpha) + 
+        #              scale_color_distiller(palette = "RdYlBu") +
+        scale_color_distiller(palette = "RdYlBu", limits = c(0, maxVal)) +
+        guides(alpha = FALSE) #+ facet_wrap(~feature_label) 
+    }
+  }
+  else {
+    g <- ggplot(data = data_df, aes(x = data_dim_1, y = data_dim_2))
+    if (color_cells_by %in% c("cluster", "partition")) {
+      if (is.null(data_df$cell_color)) {
+        g <- g + geom_point(color = I("gray"), size = I(cell_size), 
+                            stroke = I(cell_stroke), na.rm = TRUE, alpha = I(alpha))
+        message(paste("cluster_cells() has not been called yet, can't", 
+                      "color cells by cluster"))
+      }
+      else {
+        g <- g + geom_point(aes(color = cell_color, fill = cell_color), 
+                            size = I(cell_size), stroke = 1, 
+                            na.rm = TRUE, alpha = alpha, shape=21, color = I("grey12")) +
+          scale_fill_manual(values = colPalette)
+      }
+      g <- g + guides(color = guide_legend(title = color_cells_by, 
+                                           override.aes = list(size = 4)))
+    }
+    else if (class(data_df$cell_color) == "numeric") {
+      g <- g + geom_point(aes(color = cell_color), size = I(cell_size), 
+                          stroke = I(cell_stroke), na.rm = TRUE, alpha = alpha)
+      g <- g + viridis::scale_color_viridis(name = color_cells_by, 
+                                            option = "C")
+    }
+    else {
+      g <- g + geom_point(aes(fill = cell_color),
+                          size = I(cell_size), 
+                          stroke = 0.7, na.rm = TRUE, alpha = alpha,
+                          shape=21, color = I("grey20")) +
+        scale_fill_manual(values = colPalette)
+      g <- g + geom_point(col = colVec,
+                          size = I(cell_size)-0.5)
+      g <- g + guides(color = guide_legend(title = color_cells_by, 
+                                           override.aes = list(size = 4)))
+    }
+  }
+  if (show_trajectory_graph) {
+    g <- g + geom_curve(aes_string(x = "source_prin_graph_dim_1", 
+                                   y = "source_prin_graph_dim_2", xend = "target_prin_graph_dim_1", 
+                                   yend = "target_prin_graph_dim_2"),
+                        size = trajectory_graph_segment_size, 
+                        color = I(trajectory_graph_color), linetype = "solid",
+                        alpha = 1, lineend = "round",
+                        curvature = 0.05, angle = 90, ncp = 15,
+                        na.rm = TRUE, data = edge_df)
+    if (label_branch_points) {
+      mst_branch_nodes <- branch_nodes(cds)
+      branch_point_df <- ica_space_df %>% 
+        dplyr::slice(match(names(mst_branch_nodes), sample_name)) %>%
+        dplyr::mutate(branch_point_idx = seq_len(dplyr::n()))
+      g <- g + geom_point(aes_string(x = "prin_graph_dim_1", 
+                                     y = "prin_graph_dim_2"), shape = 21,
+                          stroke = I(trajectory_graph_segment_size), 
+                          color = "white", fill = "black", size = I(graph_label_size * 
+                                                                      1.5), na.rm = TRUE, branch_point_df) + 
+        geom_text(aes_string(x = "prin_graph_dim_1", 
+                             y = "prin_graph_dim_2", label = "branch_point_idx"), 
+                  size = I(graph_label_size), color = "white", 
+                  na.rm = TRUE, branch_point_df)
+    }
+    if (label_leaves) {
+      mst_leaf_nodes <- leaf_nodes(cds)
+      leaf_df <- ica_space_df %>%
+        dplyr::slice(match(names(mst_leaf_nodes),sample_name)) %>% 
+        dplyr::mutate(leaf_idx = seq_len(dplyr::n()))
+      g <- g + geom_point(aes_string(x = "prin_graph_dim_1", 
+                                     y = "prin_graph_dim_2"), shape = 21,
+                          stroke = I(trajectory_graph_segment_size), 
+                          color = "black", fill = "lightgray",
+                          size = I(graph_label_size * 
+                                     1.5), na.rm = TRUE, leaf_df) +
+        geom_text(aes_string(x = "prin_graph_dim_1", 
+                             y = "prin_graph_dim_2", label = "leaf_idx"), 
+                  size = I(graph_label_size), color = "black", 
+                  na.rm = TRUE, leaf_df)
+    }
+  }
+  if (label_cell_groups) {
+    g <- g + ggrepel::geom_text_repel(data = text_df,
+                                      mapping = aes_string(x = "text_x",
+                                                           y = "text_y",
+                                                           label = "label"),
+                                      size = I(group_label_size))
+    if (is.null(markers_exprs)) 
+      g <- g + theme(legend.position = "none")
+  }
+  g <- g + theme_void() + theme(legend.key = element_blank()) + 
+    theme(panel.background = element_rect(fill = "white")) +
+    theme(legend.position = legendPos)
+  g
+}
+
+
+# Written by Almut Lütge
+get_earliest_principal_node <- function(cds, cell_type){
+  cell_ids <- which(colData(cds)[, "cell_type"] == cell_type)
+  closest_vertex <-
+    cds@principal_graph_aux[["UMAP"]]$pr_graph_cell_proj_closest_vertex
+  closest_vertex <- as.matrix(closest_vertex[colnames(cds), ])
+  root_pr_nodes <-
+    igraph::V(principal_graph(cds)[["UMAP"]])$name[as.numeric(names
+                                                              (which.max(table(closest_vertex[cell_ids,]))))]
+  
+  root_pr_nodes
+}
+
+
+# Written by Almut Lütge
+plot_top_de <- function(sce_nam, part, gene_list){
+  cds <- cds_list[[sce_nam]]
+  genSel <- gene_list
+  purrr::map(genSel, function(feature_oi) {
+    plot_cells_mod(cds,
+                   genes = feature_oi,
+                   label_groups_by_cluster=FALSE,
+                   label_leaves=FALSE,
+                   label_branch_points=FALSE,
+                   trajectory_graph_segment_size = 1.5,
+                   trajectory_graph_color = "black",
+                   cell_size = 2,
+                   alpha=1) +
+      ggtitle(gsub("^.*\\.", "", feature_oi))
+  }) %>% patchwork::wrap_plots()
+}
 
