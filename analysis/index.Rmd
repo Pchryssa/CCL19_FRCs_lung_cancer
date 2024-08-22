@@ -33,7 +33,8 @@ knitr::asis_output("\U207A","\U2212")
 
 **Figure 4 and Supplementary Figure 5**
 
-* NSCLC differentiation: 
+* NSCLC differentiation: [NSCLC_trajectory_analysis.html](NSCLC_trajectory_analysis.html)
+
 
 
 ### **Murine Lung Tumors** :

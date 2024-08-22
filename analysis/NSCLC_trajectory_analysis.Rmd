@@ -1,0 +1,222 @@
+---
+title: "Differentiation anaylsis in NSCLC"
+author: "Chrysa Papadopoulou, Almut Lütge"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(ggsci)
+  library(monocle3)
+  library(SeuratWrappers)
+  library(ggplot2)
+  library(scCustomize)
+})
+```
+
+## **Trajectory analysis in NSCLC**
+
+## Set directory
+```{r set directory}
+basedir <- here()
+```
+
+### Read CCL19`r knitr::asis_output("\U207A")` FRC data
+```{r read CCL19 FRC data}
+NSCLC_CCL19_data <- readRDS(paste0(basedir,"/data/Human/NSCLC_CCL19_FRCs_CAFs.rds"))
+```
+
+### Color palette per celltype
+```{r color palet celltype}
+palet_CCL19_FRC <- c("#1B9E77", "#54B0E4","#E3BE00", "#E41A1C")
+names(palet_CCL19_FRC) <- c("CAF2/TRC","CAF1/PRC","AdvFB" ,"SMC/PC")
+```
+
+### CCL19`r knitr::asis_output("\U207A")` fibroblasts
+```{r umap CCL19 FRCs)}
+palet_region <- c("#C77CFF","#B79F00","#F8766D")
+names(palet_region) <- c("Central Margin","Subpleural Margin","Lung (unaffected)")
+
+DimPlot(NSCLC_CCL19_data, reduction = "umap", group.by = "group",cols = palet_region)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("CCL19", "\U207A ", "fibroblasts"))
+
+```
+
+
+### **Differentiation trajectories on NSCLC CCL19`r knitr::asis_output("\U207A")` cells based on Monocle3**
+
+### Monocle3 preparation
+```{r monocle3 preparation}
+sceSub <-as.SingleCellExperiment(NSCLC_CCL19_data)
+
+sce_list <- list("all" = sceSub)
+sce_names <- names(sce_list)
+
+test = rownames(rowData(sce_list$all))
+test_new = as.data.frame(test)
+
+test_new <- gsub("^.*\\.", "", test)
+
+cds_list <- lapply(sce_names, prep_sce) %>% set_names(sce_names)
+```
+
+### Visulaize partitions
+```{r show partitions}
+for (sce_nam in sce_names) {
+  p <-plot_cells(cds_list[[sce_nam]], color_cells_by = "partition")
+  print(p)
+}
+```
+
+### Learn graph
+```{r learn graph}
+cds_list <- lapply(cds_list, function(cds){
+  cds <- learn_graph(cds, learn_graph_control = list(minimal_branch_len = 30,
+                                                   L1.gamma = 0.08,
+                                                   L1.sigma = 0.01,
+                                                   nn.n_trees = 20
+                                                   )) 
+  })
+```
+
+### Learn pseudotime
+```{r learn pseudotime}
+# Written by Almut Lütge
+cds_list <- lapply(cds_list, function(cds){
+  mu_start <- get_earliest_principal_node(cds, "SMC/PC")
+  lu_start <- get_earliest_principal_node(cds, "AdvFB")
+  cds <- order_cells(cds, root_pr_nodes=c(mu_start, lu_start))
+}) %>% set_names(sce_names)
+
+```
+
+### Visualize trajectories {.tabset}
+#### Origin (Figure 4A)
+```{r show trajectories origin}
+for (sce_nam in sce_names) {
+  p <- plot_trajectory(col_var = "group", cds = cds_list[[sce_nam]], palet_region)
+  print(p)
+}
+```
+
+#### Visualize pseudotime (Figure 4B)
+```{r show pseudotime}
+for (sce_nam in sce_names) {
+  p <- plot_pseudo(cds_list[[sce_nam]])
+  print(p)
+}
+```
+
+#### Celltype
+```{r show trajectories celltype}
+for (sce_nam in sce_names) {
+  p <- plot_trajectory(col_var = "cell_type", cds = cds_list[[sce_nam]], palet_CCL19_FRC)
+  print(p)
+}
+```
+
+### Visualize genes along pseudotime {.tabset}
+### DES MHY11 (Figure 4C)
+```{r DES MHY11}
+for (sce_nam in sce_names) {
+  p <- plot_top_de(sce_nam, "1", gene_list = c("DES", "MYH11"))
+  print(p)
+}
+```
+
+### RGS5 NOTCH3 ACTA2 (Figure 4E)
+```{r RGS5 NOTCH3 ACTA2}
+for (sce_nam in sce_names) {
+  p <- plot_top_de(sce_nam, "1", gene_list = c("RGS5","NOTCH3","ACTA2"))
+  print(p)
+}
+```
+
+### TNC CCL21 CXCL12 (Figure 4G)
+```{r TNC CCL21 CXCL12}
+for (sce_nam in sce_names) {
+  p <- plot_top_de(sce_nam, "1", gene_list = c("TNC","CCL21","CXCL12"))
+  print(p)
+}
+```
+
+### CLU POSTN SULF1 (Figure 4I)
+```{r CLU POSTN SULF1}
+for (sce_nam in sce_names) {
+  p <- plot_top_de(sce_nam, "1", gene_list = c("CLU","POSTN","SULF1"))
+  print(p)
+}
+```
+
+### Unaffected Lung vs Tumor (Supplementary Figure 5A) {.tabset}
+#### Umap
+```{r split per tissue type umap}
+DimPlot(NSCLC_CCL19_data, reduction = "umap", group.by = "type", split.by = "type")+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2")
+```
+
+#### DES
+```{r split per tissue type DES}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", split.by = "type",
+          features = get_full_gene_name('DES',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5)
+```
+
+
+### Signatures (Supplementary Figure 5B) {.tabset}
+#### CD34
+```{r feature plot CD34}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('CD34',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("CD34")
+```
+
+#### LEPR
+```{r feature plot LEPR}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
+          features = get_full_gene_name('LEPR',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("LEPR")
+```
+
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
