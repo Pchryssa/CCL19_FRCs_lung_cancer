@@ -190,7 +190,7 @@ remove(data)
 
 ## **CCL19`r knitr::asis_output("\U207A")` FRCs in NSCLC**
 
-### Read CCL19 FRC data
+### Read CCL19`r knitr::asis_output("\U207A")` FRC data
 ```{r read CCL19 FRC data}
 NSCLC_CCL19_data <- readRDS(paste0(basedir,"/data/Human/NSCLC_CCL19_FRCs_CAFs.rds"))
 ```
@@ -314,41 +314,6 @@ FeaturePlot(NSCLC_CCL19_data, reduction = "umap",
 FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
           features = get_full_gene_name('LUM',NSCLC_CCL19_data),raster=FALSE,
           cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("LUM")
-```
-
-### Unaffected Lung vs Tumor (Supplementary Figure 5A) {.tabset}
-#### Umap
-```{r split per tissue type umap}
-DimPlot(NSCLC_CCL19_data, reduction = "umap", group.by = "type", split.by = "type")+
-  theme_bw() +
-  theme(axis.text = element_blank(), axis.ticks = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.grid.major = element_blank()) +
-  xlab("UMAP1") +
-  ylab("UMAP2")
-```
-
-#### DES
-```{r split per tissue type DES}
-FeaturePlot(NSCLC_CCL19_data, reduction = "umap", split.by = "type",
-          features = get_full_gene_name('DES',NSCLC_CCL19_data),raster=FALSE,
-          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5)
-```
-
-
-### Signatures (Supplementary Figure 5B) {.tabset}
-#### CD34
-```{r feature plot CD34}
-FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
-          features = get_full_gene_name('CD34',NSCLC_CCL19_data),raster=FALSE,
-          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("CD34")
-```
-
-#### LEPR
-```{r feature plot LEPR}
-FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
-          features = get_full_gene_name('LEPR',NSCLC_CCL19_data),raster=FALSE,
-          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5) + ggtitle("LEPR")
 ```
 
 ### Extract NSCLC TRC and PRC
