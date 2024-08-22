@@ -511,15 +511,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertreed9b353604b6da33f113bc8cf89c6beb69e84b15btargetblankd9b3536a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree7246b5006fd37ac6980f6dbd5cd8eba3241b42e0targetblank7246b50a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/d9b353604b6da33f113bc8cf89c6beb69e84b15b" target="_blank">d9b3536</a>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/7246b5006fd37ac6980f6dbd5cd8eba3241b42e0" target="_blank">7246b50</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertreed9b353604b6da33f113bc8cf89c6beb69e84b15btargetblankd9b3536a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree7246b5006fd37ac6980f6dbd5cd8eba3241b42e0targetblank7246b50a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -529,7 +529,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/d9b353604b6da33f113bc8cf89c6beb69e84b15b" target="_blank">d9b3536</a>.
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/7246b5006fd37ac6980f6dbd5cd8eba3241b42e0" target="_blank">7246b50</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -564,10 +564,6 @@ Untracked files:
     Untracked:  analysis/Total_CD8_DTR_Tetra.Rmd
     Untracked:  analysis/index_hidden.Rmd
     Untracked:  analysis/mcov_R.Rmd
-
-Unstaged changes:
-    Modified:   analysis/NSCLC_stroma_CCCL19_FRC.Rmd
-    Modified:   analysis/extra_functions.R
 
 </code></pre>
 <p>
@@ -614,6 +610,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/7246b5006fd37ac6980f6dbd5cd8eba3241b42e0/analysis/NSCLC_trajectory_analysis.Rmd" target="_blank">7246b50</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-22
+</td>
+<td>
+NSCLC differentiation
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/Pchryssa/CCL19_FRCs_lung_cancer/685739418bd6ce95d4dc796655f8c6f57c40dafb/docs/NSCLC_trajectory_analysis.html" target="_blank">6857394</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -771,38 +801,38 @@ cds_list &lt;- lapply(cds_list, function(cds){
 <div id="visualize-genes-along-pseudotime"
 class="section level3 tabset">
 <h3 class="tabset">Visualize genes along pseudotime</h3>
-</div>
-<div id="des-mhy11-figure-4c" class="section level3">
-<h3>DES MHY11 (Figure 4C)</h3>
+<div id="des-myh11-figure-4c" class="section level4">
+<h4>DES MYH11 (Figure 4C)</h4>
 <pre class="r"><code>for (sce_nam in sce_names) {
   p &lt;- plot_top_de(sce_nam, &quot;1&quot;, gene_list = c(&quot;DES&quot;, &quot;MYH11&quot;))
   print(p)
 }</code></pre>
-<p><img src="figure/NSCLC_trajectory_analysis.Rmd/DES%20MHY11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/NSCLC_trajectory_analysis.Rmd/DES%20MYH11-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="rgs5-notch3-acta2-figure-4e" class="section level3">
-<h3>RGS5 NOTCH3 ACTA2 (Figure 4E)</h3>
+<div id="rgs5-notch3-acta2-figure-4e" class="section level4">
+<h4>RGS5 NOTCH3 ACTA2 (Figure 4E)</h4>
 <pre class="r"><code>for (sce_nam in sce_names) {
   p &lt;- plot_top_de(sce_nam, &quot;1&quot;, gene_list = c(&quot;RGS5&quot;,&quot;NOTCH3&quot;,&quot;ACTA2&quot;))
   print(p)
 }</code></pre>
 <p><img src="figure/NSCLC_trajectory_analysis.Rmd/RGS5%20NOTCH3%20ACTA2-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="tnc-ccl21-cxcl12-figure-4g" class="section level3">
-<h3>TNC CCL21 CXCL12 (Figure 4G)</h3>
+<div id="tnc-ccl21-cxcl12-figure-4g" class="section level4">
+<h4>TNC CCL21 CXCL12 (Figure 4G)</h4>
 <pre class="r"><code>for (sce_nam in sce_names) {
   p &lt;- plot_top_de(sce_nam, &quot;1&quot;, gene_list = c(&quot;TNC&quot;,&quot;CCL21&quot;,&quot;CXCL12&quot;))
   print(p)
 }</code></pre>
 <p><img src="figure/NSCLC_trajectory_analysis.Rmd/TNC%20CCL21%20CXCL12-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="clu-postn-sulf1-figure-4i" class="section level3">
-<h3>CLU POSTN SULF1 (Figure 4I)</h3>
+<div id="clu-postn-sulf1-figure-4i" class="section level4">
+<h4>CLU POSTN SULF1 (Figure 4I)</h4>
 <pre class="r"><code>for (sce_nam in sce_names) {
   p &lt;- plot_top_de(sce_nam, &quot;1&quot;, gene_list = c(&quot;CLU&quot;,&quot;POSTN&quot;,&quot;SULF1&quot;))
   print(p)
 }</code></pre>
 <p><img src="figure/NSCLC_trajectory_analysis.Rmd/CLU%20POSTN%20SULF1-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="unaffected-lung-vs-tumor-supplementary-figure-5a"
 class="section level3 tabset">
@@ -934,7 +964,7 @@ loaded via a namespace (and not attached):
 [145] highr_0.10              ROCR_1.0-11             igraph_1.5.0.1         
 [148] bslib_0.5.0            </code></pre>
 <pre class="r"><code>date()</code></pre>
-<pre><code>[1] &quot;Thu Aug 22 11:48:24 2024&quot;</code></pre>
+<pre><code>[1] &quot;Thu Aug 22 23:23:25 2024&quot;</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
