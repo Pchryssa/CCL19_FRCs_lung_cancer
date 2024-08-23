@@ -1,4 +1,4 @@
-# CCL19<sup>+</sup> fibroblastic niches cells in lung cancer
+# CCL19<sup>+</sup> fibroblastic reticular cell niches in lung cancer
 
 
 This repository contains scripts to reproduce our results. 
