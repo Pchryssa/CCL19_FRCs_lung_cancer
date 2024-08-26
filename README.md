@@ -4,7 +4,7 @@
 This repository contains scripts to reproduce our results. 
 
 
-A graphical representation of the analysis is displayed here: [https://pchryssa.github.io/CCL19_FRCs_lung_cancer/] (https://pchryssa.github.io/CCL19_FRCs_lung_cancer/) 
+A graphical representation of the analysis is displayed here: https://pchryssa.github.io/CCL19_FRCs_lung_cancer/ 
 
 
 Rawdata files are available in ArrayExpress under accession numbers :
