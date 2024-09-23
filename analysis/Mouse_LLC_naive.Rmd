@@ -157,7 +157,7 @@ DimPlot(CCL19_EYFP_d23, reduction = "umap", group.by = "TimePoint", cols = c("gr
   ylab("UMAP2") + ggtitle("Day 23")
 ```
 
-### Des in Day 15 vs Day 23 (Supplementary Figure 6C)
+### Des in Day 15 vs Day 23
 ```{r DES split by timepoint}
 CCL19_EYFP_15_vs_23 <- subset(CCL19_EYFP, TimePoint %in% c("Day 15","Day 23"))
 
