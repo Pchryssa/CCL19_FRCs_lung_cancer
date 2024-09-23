@@ -49,7 +49,7 @@ basedir <- here()
 NSCLS_TIL_data <-readRDS(paste0(basedir,"/data/Human/NSCLC_TILs.rds"))
 ```
 
-### NSCLC infiltrating lymphocytes (Supplementary Figure 4C) {.tabset}
+### NSCLC infiltrating lymphocytes (Supplementary Figure 5C) {.tabset}
 #### umap 
 ```{r NSCLC TILS}
 #Define color palet
@@ -166,7 +166,7 @@ DimPlot(NCLS_TIL_FRC_cd8, reduction = "umap", group.by = "cell_type", cols = pal
 saveRDS(NCLS_TIL_FRC_cd8,paste0(basedir,"/data/Human/NSCLC_TILs_CD8_pop.rds"))
 ```
 
-### Dotplot CD8`r knitr::asis_output("\U207A")` T cells (Supplementary Figure 4F)
+### Dotplot CD8`r knitr::asis_output("\U207A")` T cells (Supplementary Figure 5F)
 ```{r dotplot CD8 T}
 genes <-c("CCR7","SELL","TCF7","NKG7","GZMA","GZMB","GZMM","GZMK","CX3CR1","GNLY","FCGR3A",  "KIR3DL2","KLRF1","TIGIT","CTLA4","LAG3","ZEB2","TOP2A","MKI67","PCLAF")
 
