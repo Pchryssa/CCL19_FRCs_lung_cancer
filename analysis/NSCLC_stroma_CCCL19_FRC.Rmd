@@ -57,7 +57,7 @@ cols<- pal_igv()(51)
 names(cols) <- c(0:50)
 ```
 
-### NSCLC Stroma cells (Supplementary Figure 2A-2B){.tabset}
+### NSCLC Stroma cells (Supplementary Figure 2B-2C){.tabset}
 #### Patients
 
 ```{r umap per patient}
@@ -118,7 +118,7 @@ DimPlot(data, reduction = "tsne", group.by = "cell_type", cols= palet)+
 ylab("TSNE2") 
 ```
 
-### Dotplots (Supplementary Figure 2C and 2F) {.tabset}
+### Dotplots (Supplementary Figure 2D and 2G) {.tabset}
 #### Cell type assignment 
 ```{r dotplot stroma}
 data_conv <-data
@@ -144,7 +144,7 @@ gg <- dittoDotPlot(data_conv, vars = gene_list, group.by = "cell_type", size = 9
 gg + ggtitle("Chemokines")
 ```
 
-### Stacked Barplots (Supplementary Figure 2D and 2E) {.tabset}
+### Stacked Barplots (Supplementary Figure 2E and 2F) {.tabset}
 #### Number of cells per patient 
 ```{r stacked barplot cells per patient}
 df <-data@meta.data %>% count(patient, cell_type) %>%    # Group by patient and cell_type, then count number in each group
@@ -245,7 +245,7 @@ object <- AddModuleScore(object = data_conv, features = SLO_TRC, name = "SLO_TRC
 FeaturePlot(object = object, features = "SLO_TRC_signature8",min.cutoff = -1, max.cutoff = 2.5) + ggtitle("SLO-TRC signature")
 ```
 
-### Signatures (Supplementary Figure 2G) {.tabset}
+### Signatures (Supplementary Figure 2H and 2I) {.tabset}
 #### CCL21
 ```{r feature plot CCL21}
 FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
