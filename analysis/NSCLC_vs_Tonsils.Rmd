@@ -64,7 +64,7 @@ cols<- pal_igv()(51)
 names(cols) <- c(0:50)
 ```
 
-### Tonsilar FRCs (Supplementary Figure 2I)
+### Tonsilar FRCs (Supplementary Figure 3A)
 ```{r umap Tonsilar FRC}
 Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_1"] <- paste0("ACTA2", expression("\U207A"),"PRC_1")
 Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_2"] <- paste0("ACTA2", expression("\U207A"),"PRC_2")
@@ -186,7 +186,7 @@ Please note that we provide the integrated object with the MDS representation gi
 seurat_integrated <- readRDS(paste0(basedir,"/data/Human/Tonsil_Ccl19_TRC_PRC_final_mds.rds"))
 ```
 
-### Visualize MDS plot (Supplementary Figure 2J)
+### Visualize MDS plot (Supplementary Figure 3B)
 ```{r MDS visualization}
 mds_tx_condition <- seurat_integrated@reductions$mds_div_conq@cell.embeddings %>% 
 as.data.frame() %>% cbind(tx = seurat_integrated@meta.data$Disease_short)
