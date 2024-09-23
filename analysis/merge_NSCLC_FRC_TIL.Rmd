@@ -100,10 +100,10 @@ cellchat <-CellChatDownstreamAnalysis(cellchat,"human",thresh = 0.05)
 
 ### Save cellchat data
 ```{r save cellchat data}
-#saveRDS(cellchat,paste0(basedir,"/data/Human/CCL19_FRC_TIL_SIF4_cellchat.rds"))
+#saveRDS(cellchat,paste0(basedir,"/data/Human/CCL19_FRC_TIL_SIF5_cellchat.rds"))
 ```
 
-### Interactome analysis (Supplementary Figure 4D)
+### Interactome analysis (Supplementary Figure 5D)
 ```{r interactome analysis, message=FALSE }
 gg <- netAnalysis_signalingRole_scatter(cellchat,color.use = palet)
 gg <- gg + ggtitle("Interactome analysis (Cellchat)")
@@ -127,7 +127,7 @@ cellchat <- identifyCommunicationPatterns(cellchat, pattern = "outgoing", k = nP
 cellchat <- identifyCommunicationPatterns(cellchat, pattern = "incoming", k = nPatterns, color.use = palet)
 ```
 
-### Joint dotplot for incoming and outcoming communication patterns (Supplementary Figure 4E)
+### Joint dotplot for incoming and outcoming communication patterns (Supplementary Figure 5E)
 ```{r joint dotplot in out signaling}
 
 pathways <-c("CXCL","CCL","ICAM","VCAM","MK","FGF","NECTIN","TIGIT","SELL","ITGB2","NOTCH","BAFF","SEMA3","SEMA4","LIGHT","EGF","IFN-II","CD226","IGF","FASLG")
@@ -194,7 +194,7 @@ cellchat <-CellChatDownstreamAnalysis(cellchat,"human",thresh=0.08)
 #saveRDS(cellchat,paste0(basedir,"/data/Human/CCL19_FRC_TIL_F3E_cellchat.rds"))
 ```
 
-### Interactome analysis (Figure 4E)
+### Interactome analysis (Figure 3E)
 ```{r interactome analysis NSCLC FRC CD8, message=FALSE }
 gg <- netAnalysis_signalingRole_scatter(cellchat,color.use = palet)
 gg <- gg + ggtitle("Interactome analysis (Cellchat)")
