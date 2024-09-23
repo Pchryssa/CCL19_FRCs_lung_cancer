@@ -1,0 +1,253 @@
+---
+title: "Total CD8 T cells in mCOV-FIt31-gp33"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A","\U2212")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(gridExtra)
+  library(gsubfn)
+  library(ggsci)
+  library(biomaRt)
+  library(tidyverse)
+  library(msigdbr)
+  library(stats)
+  library(clusterProfiler)
+  library(dict)
+  library(openxlsx)
+  library(DOSE)
+  library(enrichplot)
+  library(dittoSeq)
+  library(CellChat)
+})
+```
+
+### Set directory
+```{r set directory}
+basedir <- here()
+```
+ 
+## **Total CD8 T cells in DTR**
+
+### Read CD8`r knitr::asis_output("\U207A")` T cells in mCOV-FIt31-gp33
+```{r read CD8 T cells}
+CD8_T <- readRDS(paste0(basedir,"/data/Mouse/CD3_CD8_annot_final.rds"))
+```
+
+### Set color palette
+```{r color vec}
+cluster_palette <- Polychrome::palette36.colors()
+names(cluster_palette) <-unique(CD8_T$annot) 
+```
+
+### CD8`r knitr::asis_output("\U207A")` T cells mCOV-FIt31-gp33 {.tabset}
+#### Supplementary Figure 11G
+```{r umap CD8 T cells}
+DimPlot(CD8_T, reduction = "umap", group.by = "annot")+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("CD8", "\U207A ", "T cells (mCOV-FIt31-g33)"))
+```
+
+#### Dotplot CD8`r knitr::asis_output("\U207A")` T cell subsets (Supplementary Figure 11H)
+```{r dotplot CD8 T cells}
+data_conv <-CD8_T
+data_conv <-Remove_ensebl_id(data_conv)
+
+gene_list <-c("Pclaf","Top2a","Mki67","Klrg1","Gzma","Cxcr3","Gzmk","Ly6a","Ifng","Ccl4","Xcl1","Gzmb","Havcr2","Ctla4","Prf1","Lag3","Pdcd1","Tigit", "Tox","Ccl5","Bcl2","Il7r","Ccr7","Tcf7","Sell")
+
+dittoDotPlot(data_conv, vars = gene_list, group.by = "annot", size = 5,legend.size.title = "Expression (%)",scale = TRUE) + theme(text = element_text(size = 10)) +ylab( " ") 
+```
+
+#### Pathway analysis (Supplementary Figure 11I)
+```{r Ccl19-EYFP CD8}
+# Step 1 : Set output directory
+subDir <- "GSEA_CD8_T/"
+saving_path <- paste0(basedir,"/output/")
+final_dir <- file.path(saving_path, subDir)
+dir.create(final_dir, showWarnings = FALSE,recursive = TRUE)
+map_df <- ExtractMouseGeneSets(final_dir)
+
+# Step 2: Customize parameters
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
+organism <- "org.Mm.eg.db"
+
+disease_phase <- "Depl_vs_NDepl"
+datatype <- "SYMBOL"
+
+
+Idents(CD8_T) <- CD8_T$depleted
+  
+DEmarkers <-FindAllMarkers(CD8_T, only.pos=T, logfc.threshold = 0.25,
+                           min.pct = 0.25)
+
+Vec <-unique(CD8_T$depleted)
+EnrichParameters_TLS <-customize_parameters(Vec,DEmarkers,organism,datatype,disease_phase,saving_path) 
+
+# Step 3: Enrichment Analysis
+for (i in seq(1,length(EnrichParameters_TLS$enrichcl_list))){
+  terms<- EnrichParameters_TLS$enrichcl_list[[i]]
+  # Filter on the most significant pathways (keep rows where p.adjust<= 0.05)
+  terms<- terms@result[terms@result$p.adjust <= 0.05,]
+  population <- Vec[i]
+  population<- gsub("/", "_", population)
+  write.xlsx(terms, paste0(final_dir,"/","GO_Pathways_",population,".xlsx"),row.names = TRUE)
+}
+
+#Step 4: Plot enriched pathways
+pathways <-c("cytokine-mediated signaling pathway", "canonical Wnt signaling pathway","V(D)J recombination",
+             "alpha-beta T cell differentiation", "interleukin-4 production", "alpha-beta T cell activation")
+
+CD8_terms <- EnrichParameters_TLS$enrichcl_list[[2]]@result
+
+selec_pathways <- CD8_terms[CD8_terms$Description %in% pathways,]
+
+selec_pathways$Description <- factor(selec_pathways$Description, levels = rev(pathways))
+selec_pathways <- selec_pathways[order(selec_pathways$Description), ]
+
+ggplot(data=selec_pathways, aes(x=Description, y=qscore, fill = analysis)) + xlab(NULL) +
+    geom_bar(stat="identity",position="dodge",colour = "black",show.legend = FALSE, width= 0.8, size = 1 ) + coord_flip() +
+    scale_y_continuous(expand = expansion(c(0,0)), limits = c(0.0, 3),breaks = c(0,1,2,3)) +
+    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 80)) +
+    theme(aspect.ratio = 1.5, legend.justification = "top",
+           plot.title = element_text(hjust = 0.5,size = 12,face="bold"),axis.line = element_line(colour = "black"),
+           panel.grid.major = element_blank(),
+           panel.grid.minor = element_blank(),
+           axis.text.x = element_text(angle = 0, vjust = 0.5,colour = "black", size = 10),
+           axis.text.y = element_text(angle = 0, vjust = 0.8,colour = "black", size = 10),
+           axis.title.y = element_text(size = rel(2), angle = 45),
+           axis.title.x = element_text(size = rel(1.5), angle = 0),
+           axis.text = element_text(size = 8),
+           panel.background = element_blank(), legend.position = "none") +
+    scale_fill_manual(values = "dark gray") + ggtitle(paste0("Enriched in Ccl19-EYFP (DTR","\U2212)"))
+```
+
+## **Interactome analysis with Cellchat (Suoqin Jin et al., 2021) between TLS TRC, Sulf1`r knitr::asis_output("\U207A")` TRC and Tetramer`r knitr::asis_output("\U207A")` CD8`r knitr::asis_output("\U207A")` T cells**
+
+### Read GP33/34`r knitr::asis_output("\U207A")` CD8`r knitr::asis_output("\U207A")` T cells sorted from LLC-gp33 bearing DTR`r knitr::asis_output("\U207A")` and DTR$^`r knitr::asis_output("\U2212")`$ lungs on day 23, after mCOV-Flt3l-gp33 immunization 
+```{r read Tetra CD8 T cells}
+Tetra_CD8 <- readRDS(paste0(basedir,"/data/Mouse/Tetra_CD8_EXH.rds"))
+```
+
+### Read CCL19-EYFP`r knitr::asis_output("\U207A")` mCOV-FIt31-g33 cell data
+```{r read CCL19 FRC mCOV-FIt31-g33 data}
+CCL19_EYFP_mCOV <- readRDS(paste0(basedir,"/data/Mouse/mCOV.rds"))
+```
+
+### Subset mCOV-FIt31-g33 data on Sulf1`r knitr::asis_output("\U207A")` TRC and TLS TRC
+```{r subset on TRC}
+TRCs <- subset(CCL19_EYFP_mCOV, annot %in% c(paste0("Sulf1", "\u207A ", "TRC"), "TLS TRC"))
+```
+
+### Merge data
+```{r merge data}
+data_merge <- merge(Tetra_CD8, y = c(TRCs),
+             add.cell.ids = c("Tetra_CD8","TRCs"),
+             project = "merge_TRC_CD8_T")
+
+#Preprocessing
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.8, 1.)
+data_merge  <- preprocessing(data_merge,resolution)
+```
+
+### Convert seurat object to cellchat object
+
+```{r conv seurat to cellchat}
+data_merge$cell_type <-data_merge$annot
+
+cellchat <- Cellchat_Analysis(data_merge)
+cellchat <-CellChatDownstreamAnalysis(cellchat,"mouse",thresh = 0.05)
+```
+
+### Set color palette
+```{r color palet}
+palet <-c("#16FF32", "#3283FE", "#FEAF16" , "#B00068" ,"#1CFFCE","#E41A1C","#1B9E77")
+names(palet) <-c("Effector T cells",paste0("Ccr7", "\U207A ","T cells"),"Exhausted T cells","Cycling T cells","Eff. Mem. T cells",paste0("Sulf1", "\u207A ", "TRC"), "TLS TRC") 
+```
+
+### Interactome analysis (Supplementary Figure 11J)
+```{r interactome analysis, message=FALSE}
+gg <- netAnalysis_signalingRole_scatter(cellchat,color.use = palet)
+gg <- gg + theme(aspect.ratio = 1.3) + ggtitle("mCOV-FIt31-gp33")
+gg
+```
+
+We can take a look at all significant interactions and involved signaling pathways
+
+### Significant L-R pairs and related signaling genes for all involved signaling pathways
+```{r sign LR pairs}
+pathways.show.all <- cellchat@netP$pathways
+pairLR.CXCL <- extractEnrichedLR(cellchat, signaling = pathways.show.all, geneLR.return = FALSE)
+head(pairLR.CXCL,10)
+```
+
+### Cell-cell communication mediated by specific ligand-receptor (L-R) pairs {.tabset}
+#### Icam1 - (Itgal+/tgb2) (Supplementary Figure 11K)
+```{r ICAM1_ITGAL_ITGB2}
+palet<-palet[order(match(names(palet),rownames(cellchat@net$count)))]
+
+# Circle plot
+netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "ICAM1_ITGAL_ITGB2", color.use = palet,  layout = "circle")
+```
+#### Vcam1 - (Itga4+Itgb1) (Supplementary Figure 11K) 
+```{r ITGA4_ITGB1_VCAM1}
+# Circle plot
+netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "ITGA4_ITGB1_VCAM1", color.use = palet,  layout = "circle")
+```
+#### Cxcl16 - Cxcr6 (Supplementary Figure 11L) 
+```{r CXCL16_CXCR6}
+# Circle plot
+netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "CXCL16_CXCR6", color.use = palet,  layout = "circle")
+```
+#### Tslp - (Il7r+Crlf2) (Supplementary Figure 11L) 
+```{r TSLP_IL7R_CRLF2}
+# Circle plot
+netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "TSLP_IL7R_CRLF2", color.use = palet,  layout = "circle")
+```
+#### Tgfb1 - (Tgfbr1+Tgfbr2) (Supplementary Figure 11M) 
+```{r TGFB1_TGFBR1_TGFBR2}
+# Circle plot
+netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "TGFB1_TGFBR1_TGFBR2", color.use = palet,  layout = "circle")
+```
+
+#### Mif - (Cd74+ Cd44) (Supplementary Figure 11M) 
+```{r MIF_CD74_CD44}
+# Circle plot
+netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "MIF_CD74_CD44", color.use = palet,  layout = "circle")
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
