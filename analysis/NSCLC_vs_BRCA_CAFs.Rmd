@@ -128,6 +128,92 @@ Visualize_GeneSignatures_sc(NSCLC_CCL19_data, myCAF_genes, slot_type, 'average.m
 ```
 
 
+### BRCA (breast cancer) CAFs
+
+### Read BRCA data from Cords et al, 2023
+```{r read breast stroma cell data}
+data_breast <- readRDS(paste0(basedir,"/data/Public/BREAST_fibro_tumour.rds"))
+```
+
+### Define color palette
+```{r color vector}
+cols<- pal_igv()(51)
+names(cols) <- c(0:50)
+```
+
+### CAF annotation
+```{r umap CAFs breast}
+DimPlot(data_breast, reduction = "umap", group.by = "CAFtype")+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("CAFs in breast cancer"))
+```
+
+### Signatures related to SLOs (Supplementary Figure 3E)  {.tabset}
+#### CCL19
+```{r feature plot CCL19 total data breast}
+FeaturePlot(data_breast, reduction = "umap", 
+          features = "CCL19",
+          cols=c("lightgrey", "darkred")) + ggtitle("CAF (BRCA)")
+```
+
+### Subset on CCL19`r knitr::asis_output("\U207A")` cells
+```{r subset on CCL19 and preprocessing}
+ccl19_data<-subset(x=data_breast,subset=CCL19>0, invert=FALSE)
+
+
+resolution <- c(0.1, 0.25, 0.4, 0.5,0.6,0.8, 1.,1.2,1.4,1.6,1.8,2.)
+
+# run sctransform
+ccl19_data  <- SCTransform(ccl19_data, vars.to.regress = "percent.mt", verbose = FALSE)
+ccl19_data <- RunPCA(object = ccl19_data, assay = "SCT",npcs = 30, verbose = FALSE,seed.use = 8734)
+ccl19_data <- RunTSNE(object = ccl19_data, assay = "SCT",reduction = "pca", dims = 1:20, seed.use = 8734)
+ccl19_data <- RunUMAP(object = ccl19_data, assay = "SCT", reduction = "pca", dims = 1:20, seed.use = 8734)
+ccl19_data <- FindNeighbors(object = ccl19_data, reduction = "pca", dims = 1:20, seed.use = 8734)
+for(k in 1:length(resolution)){
+  ccl19_data <- FindClusters(object = ccl19_data, resolution = resolution[k], random.seed = 8734)
+}
+```
+
+### Annotate CCL19`r knitr::asis_output("\U207A")` breast cancer data
+```{r data annotation}
+ccl19_data$cell_type <- -1
+ccl19_data$cell_type[which(ccl19_data$SCT_snn_res.0.1 == 1)] <- "CAF1/PRC"
+ccl19_data$cell_type[which(ccl19_data$SCT_snn_res.0.1 == 0)] <- "CAF2/TRC"
+ccl19_data$cell_type[which(ccl19_data$SCT_snn_res.0.1 == 2)] <- "CAF2/TRC"
+```
+
+### CCL19`r knitr::asis_output("\U207A")` fibroblasts (BRCA) (Supplementary Figure 3F)
+```{r umap CCL19 TRC PRC}
+palet <- cols[4:10]
+names(palet) <- c("CAF1/PRC","CAF2/TRC")
+
+DimPlot(ccl19_data, reduction = "umap", group.by = "cell_type", cols= palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+         panel.grid.major = element_blank()) +
+ xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("CCL19", expression("\u207A"), " fibroblasts (BRCA)"))
+```
+
+### Dotplot (Supplementary Figure 3G)
+```{r dotplot breast cancer}
+data_conv <-ccl19_data
+
+Idents(data_conv) <- data_conv$cell_type
+levels(data_conv)<-levels(data_conv)[order(match(levels(data_conv),c("CAF1/PRC","CAF2/TRC")))]
+data_conv$cell_type <- factor(as.character(data_conv@active.ident), levels = rev(c("CAF1/PRC","CAF2/TRC")))
+
+gene_list <-c("CCL19","CCL21","PDPN","FAP","POSTN","CLU","LEPR","CD34","SULF1","DPT","ICAM1","VCAM1","ACTA2","MYH11","MCAM","NOTCH3","RGS5","DES")
+
+dittoDotPlot(data_conv, vars = gene_list, group.by = "cell_type", size = 8,legend.size.title = "Expression (%)",scale = FALSE, max = 3.5) + ylab(" ")
+```
+
+
 ### Session info
 ```{r session info}
 sessionInfo()
