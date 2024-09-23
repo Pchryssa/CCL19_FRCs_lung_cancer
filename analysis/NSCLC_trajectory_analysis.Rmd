@@ -179,7 +179,7 @@ for (sce_nam in sce_names) {
 }
 ```
 
-### Unaffected Lung vs Tumor (Supplementary Figure 5A) {.tabset}
+### Unaffected Lung vs Tumor (Supplementary Figure 7A and 7B) {.tabset}
 #### Umap
 ```{r split per tissue type umap}
 DimPlot(NSCLC_CCL19_data, reduction = "umap", group.by = "type", split.by = "type")+
@@ -198,8 +198,15 @@ FeaturePlot(NSCLC_CCL19_data, reduction = "umap", split.by = "type",
           cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5)
 ```
 
+#### ACTA2
+```{r split per tissue type ACTA2}
+FeaturePlot(NSCLC_CCL19_data, reduction = "umap", split.by = "type",
+          features = get_full_gene_name('ACTA2',NSCLC_CCL19_data),raster=FALSE,
+          cols=c("lightgrey", "darkred"), min.cutoff = 0, max.cutoff = 4.5)
+```
 
-### Signatures (Supplementary Figure 5B) {.tabset}
+
+### Signatures (Supplementary Figure 7E) {.tabset}
 #### CD34
 ```{r feature plot CD34}
 FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
