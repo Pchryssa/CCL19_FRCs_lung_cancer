@@ -1,0 +1,335 @@
+---
+title: "Comparison of naive CCL19-EYFP cells vs mCOV-FIt31-g33 CCL19-EYFP cells"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(gridExtra)
+  library(gsubfn)
+  library(ggsci)
+  library(biomaRt)
+  library(tidyverse)
+  library(msigdbr)
+  library(stats)
+  library(clusterProfiler)
+  library(dict)
+  library(openxlsx)
+  library(DOSE)
+  library(enrichplot)
+})
+```
+
+### Set directory
+```{r set directory}
+basedir <- here()
+```
+
+### Read CCL19-EYFP`r knitr::asis_output("\U207A")` cell data from naïve lungs and excised LLC-gp33 tumors on day 23
+```{r read CCL19 FRC data}
+CCL19_EYFP <- readRDS(paste0(basedir,"/data/Mouse/CCL19_EYFP_nonmCOV.rds"))
+```
+
+### Read CCL19-EYFP`r knitr::asis_output("\U207A")` mCOV-FIt31-g33 cell data
+```{r read CCL19 FRC mCOV-FIt31-g33 data}
+CCL19_EYFP_mCOV <- readRDS(paste0(basedir,"/data/Mouse/mCOV.rds"))
+```
+
+### Feature plots {.tabset}
+#### Cxcl13 LLC naive
+```{r CXCL13 LLC naive}
+FeaturePlot(CCL19_EYFP, reduction = "umap",
+          features = get_full_gene_name('Cxcl13',CCL19_EYFP),raster=FALSE,
+          cols=c("lightgrey", "darkred"),min.cutoff = 0, max.cutoff = 6) + ggtitle(paste0("Ccl19-EYFP", "\U207A ", "cells (Naive)"))
+```
+
+#### Cxcl13 mCOV-FIt31-g33
+```{r CXCL13 mCOV}
+FeaturePlot(CCL19_EYFP_mCOV, reduction = "umap", 
+          features = get_full_gene_name('Cxcl13',CCL19_EYFP_mCOV),raster=FALSE,
+          cols=c("lightgrey", "darkred")) + ggtitle(paste0("Ccl19-EYFP", "\U207A ", "cells (mCOV-FIt31-g33)"))
+```
+
+#### Cr2 mCOV-FIt31-g33
+```{r CR2 mCOV}
+FeaturePlot(CCL19_EYFP_mCOV, reduction = "umap", 
+          features = get_full_gene_name('Cr2',CCL19_EYFP_mCOV),raster=FALSE,
+          cols=c("lightgrey", "darkred")) + ggtitle(paste0("Ccl19-EYFP", "\U207A ", "cells (mCOV-FIt31-g33)"))
+```
+
+**Let's compare the gene expression between TRC/PRC (d23) and their progenitor subsets (d15) to identify gene programs that may be relevant for their function in supporting the T cell niches**
+
+```{r progenitors d15 and d23}
+#Set new annotation: Change Smoc1 AdvFB to Cd34 AdvFB
+CCL19_EYFP@meta.data$annot[CCL19_EYFP@meta.data$annot == paste0("Smoc1", expression("\u207A "), "AdvFB") ] <- paste0("Cd34", expression("\u207A "), "AdvFB")
+
+progenitors_d15 <- subset(CCL19_EYFP, TimePoint == "d15" & annot %in% c(paste0("Cd34", expression("\u207A "), "AdvFB"),"SMC/PC"))
+
+progenitors_mCOV <- subset(CCL19_EYFP_mCOV, annot %in% c(paste0("Rgs5", expression("\u207A "), "PRC"),paste0("Sulf1", expression("\u207A "), "TRC"),"TLS TRC"))
+
+data_merge <- merge(progenitors_d15, y = c(progenitors_mCOV),
+             add.cell.ids = c("progenitors_d15","progenitors_mCOV"),
+             project = "progenitors_d15_mCOV")
+
+#Preprocessing
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.8, 1.)
+data_merge  <- preprocessing(data_merge,resolution)
+```
+
+### Save merged data progenitors Day 15 (naive) and Day 23 (mCOV-FIt31-g33)
+```{r save progenit d15 d23}
+#saveRDS(data_merge,paste0(basedir,"/data/Human/progenitors_d15_mCOV.rds"))
+```
+
+### Pathway analysis{.tabset}
+#### **CD34`r knitr::asis_output("\U207A")` AdvFB (Day 15) vs TLS TRC (Day 23)** (Supplementary Figure 10C)
+```{r AdvFB_TLS}
+# Step 1 : Set output directory
+subDir <- "GSEA_AdvFB_TLS/"
+saving_path <- paste0(basedir,"/output/")
+final_dir <- file.path(saving_path, subDir)
+dir.create(final_dir, showWarnings = FALSE,recursive = TRUE)
+map_df <- ExtractMouseGeneSets(final_dir)
+
+# Step 2: Customize parameters
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
+organism <- "org.Mm.eg.db"
+
+disease_phase <- "d15vsd23_AdvFB_TLS"
+datatype <- "SYMBOL"
+
+advfb_tls <-subset(data_merge, annot %in% c(paste0("Cd34", expression("\u207A "), "AdvFB"),"TLS TRC"))
+
+Idents(advfb_tls) <- advfb_tls$annot
+  
+DEmarkers <-FindAllMarkers(advfb_tls, only.pos=T, logfc.threshold = 0.1,
+                           min.pct = 0.1)
+
+Vec <-unique(advfb_tls$annot)
+EnrichParameters_TLS <-customize_parameters(Vec,DEmarkers,organism,datatype,disease_phase,saving_path) 
+
+# Step 3: Enrichment Analysis
+for (i in seq(1,length(EnrichParameters_TLS$enrichcl_list))){
+  terms<- EnrichParameters_TLS$enrichcl_list[[i]]
+  # Filter on the most significant pathways (keep rows where p.adjust<= 0.05)
+  terms<- terms@result[terms@result$p.adjust <= 0.05,]
+  population <- Vec[i]
+  population<- gsub("/", "_", population)
+  write.xlsx(terms, paste0(final_dir,"/","GO_Pathways_",population,".xlsx"),row.names = TRUE)
+}
+
+#Step 4: Plot enriched pathways
+pathways <-c("cell chemotaxis", "tissue remodeling","activation of immune response",
+             "leukocyte mediated immunity", "interleukin-1 production", "tumor necrosis factor production")
+
+TLS_terms <- EnrichParameters_TLS$enrichcl_list[[2]]@result
+
+selec_pathways <- TLS_terms[TLS_terms$Description %in% pathways,]
+
+selec_pathways$Description <- factor(selec_pathways$Description, levels = rev(pathways))
+selec_pathways <- selec_pathways[order(selec_pathways$Description), ]
+
+ggplot(data=selec_pathways, aes(x=Description, y=qscore, fill = analysis)) + xlab(NULL) +
+    geom_bar(stat="identity",position="dodge",colour = "black",show.legend = FALSE, width= 0.8, size = 1 ) + coord_flip() +
+    scale_y_continuous(expand = expansion(c(0,0)), limits = c(0.0, 6),breaks = c(0,2,4,6)) +
+    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 80)) +
+    theme( legend.justification = "top",
+           plot.title = element_text(hjust = 0.5,size = 12,face="bold"),axis.line = element_line(colour = "black"),
+           panel.grid.major = element_blank(),
+           panel.grid.minor = element_blank(),
+           axis.text.x = element_text(angle = 0, vjust = 0.5,colour = "black", size = 10),
+           axis.text.y = element_text(angle = 0, vjust = 0.8,colour = "black", size = 10, face=ifelse(levels(selec_pathways$Description)=="tumor necrosis factor production","bold","plain")),
+           axis.title.y = element_text(size = rel(2), angle = 45),
+           axis.title.x = element_text(size = rel(1.5), angle = 0),
+           axis.text = element_text(size = 8),
+           panel.background = element_blank(), legend.position = "none") +
+    scale_fill_manual(values = "dark gray") + ggtitle("Enriched in TLS TRC (vs. AdvFB day 15)")
+```
+
+#### **CD34`r knitr::asis_output("\U207A")` AdvFB (Day 15) vs Sulf1`r knitr::asis_output("\U207A")` TRC (Day 23)** (Supplementary Figure 10D)
+```{r AdvFB_SULF1_TRC}
+# Step 1 : Set output directory
+subDir <- "GSEA_AdvFB_SULF1/"
+saving_path <- paste0(basedir,"/output/")
+final_dir <- file.path(saving_path, subDir)
+dir.create(final_dir, showWarnings = FALSE,recursive = TRUE)
+map_df <- ExtractMouseGeneSets(final_dir)
+
+# Step 2: Customize parameters
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
+organism <- "org.Mm.eg.db"
+
+disease_phase <- "d15vsd23_AdvFB_SULF1"
+datatype <- "SYMBOL"
+
+AdvFB_sulf1 <-subset(data_merge, annot %in% c(paste0("Cd34", expression("\u207A "), "AdvFB"),paste0("Sulf1", expression("\u207A "), "TRC")))
+
+Idents(AdvFB_sulf1) <- AdvFB_sulf1$annot
+  
+DEmarkers <-FindAllMarkers(AdvFB_sulf1, only.pos=T, logfc.threshold = 0.1,
+                           min.pct = 0.1)
+
+Vec <-unique(AdvFB_sulf1$annot)
+EnrichParameters_Sulf1 <-customize_parameters(Vec,DEmarkers,organism,datatype,disease_phase,saving_path) 
+
+# Step 3: Enrichment Analysis
+for (i in seq(1,length(EnrichParameters_Sulf1$enrichcl_list))){
+  terms<- EnrichParameters_Sulf1$enrichcl_list[[i]]
+  # Filter on the most significant pathways (keep rows where p.adjust<= 0.05)
+  terms<- terms@result[terms@result$p.adjust <= 0.05,]
+  population <- Vec[i]
+  population<- gsub("/", "_", population)
+  write.xlsx(terms, paste0(final_dir,"/","GO_Pathways_",population,".xlsx"),row.names = TRUE)
+}
+
+#Step 4: Plot enriched pathways
+pathways <-c("regulation of cytokine-mediated signaling pathway", "lymphocyte homeostasis","actin filament bundle organization",
+             "positive regulation of cell-cell adhesion", "regulation of T cell activation", "tissue remodeling")
+
+TRC_term_sulf1 <- EnrichParameters_Sulf1$enrichcl_list[[2]]@result
+
+selec_pathways <- TRC_term_sulf1[TRC_term_sulf1$Description %in% pathways,]
+
+selec_pathways$Description <- factor(selec_pathways$Description, levels = rev(pathways))
+selec_pathways <- selec_pathways[order(selec_pathways$Description), ]
+
+ggplot(data=selec_pathways, aes(x=Description, y=qscore, fill = analysis)) + xlab(NULL) +
+    geom_bar(stat="identity",position="dodge",colour = "black",show.legend = FALSE, width= 0.8, size = 1 ) + coord_flip() +
+    scale_y_continuous(expand = expansion(c(0,0)), limits = c(0.0, 6),breaks = c(0,2,4,6)) +
+    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 80)) +
+    theme( legend.justification = "top",
+           plot.title = element_text(hjust = 0.5,size = 12,face="bold"),axis.line = element_line(colour = "black"),
+           panel.grid.major = element_blank(),
+           panel.grid.minor = element_blank(),
+           axis.text.x = element_text(angle = 0, vjust = 0.5,colour = "black", size = 10),
+           axis.text.y = element_text(angle = 0, vjust = 0.8,colour = "black", size = 10, face=ifelse(levels(selec_pathways$Description)=="regulation of T cell activation","bold","plain")),
+           axis.title.y = element_text(size = rel(2), angle = 45),
+           axis.title.x = element_text(size = rel(1.5), angle = 0),
+           axis.text = element_text(size = 8),
+           panel.background = element_blank(), legend.position = "none") +
+    scale_fill_manual(values = "dark gray") + ggtitle(paste0("Enriched in Sulf1", "\U207A ", "TRC (vs. AdvFB day 15)")) 
+```
+
+#### **SMC/PC (Day 15) vs PRC (Day 23)** (Supplementary Figure 10E)
+```{r SMC_PRC}
+# Step 1 : Set output directory
+subDir <- "GSEA_SMC_PRC/"
+saving_path <- paste0(basedir,"/output/")
+final_dir <- file.path(saving_path, subDir)
+dir.create(final_dir, showWarnings = FALSE,recursive = TRUE)
+map_df <- ExtractMouseGeneSets(saving_path)
+
+# Step 2: Customize parameters
+httr::set_config(httr::config(ssl_verifypeer = FALSE))
+organism <- "org.Mm.eg.db"
+
+disease_phase <- "d15vsd23_SMC_PRC"
+datatype <- "SYMBOL"
+
+smc_prc <-subset(data_merge, annot %in% c("SMC/PC", paste0("Rgs5", expression("\u207A "), "PRC")))
+
+Idents(smc_prc) <- smc_prc$annot
+  
+DEmarkers <-FindAllMarkers(smc_prc, only.pos=T, logfc.threshold = 0.1,
+                           min.pct = 0.1)
+
+Vec <-unique(smc_prc$annot)
+EnrichParameters <-customize_parameters(Vec,DEmarkers,organism,datatype,disease_phase,saving_path) 
+
+# Step 3: Enrichment Analysis
+for (i in seq(1,length(EnrichParameters$enrichcl_list))){
+  terms<- EnrichParameters$enrichcl_list[[i]]
+  # Filter on the most significant pathways (keep rows where p.adjust<= 0.05)
+  terms<- terms@result[terms@result$p.adjust <= 0.05,]
+  population <- Vec[i]
+  population<- gsub("/", "_", population)
+  write.xlsx(terms, paste0(final_dir,"/","GO_Pathways_",population,".xlsx"),row.names = TRUE)
+}
+
+# Step 4: Plot enriched pathways 
+pathways <-c("T cell proliferation", "leukocyte migration","T cell mediated immunity",
+             "response to type II interferon", "regulation of angiogenesis", "cytokine-mediated signaling pathway")
+
+PRC_terms <- EnrichParameters$enrichcl_list[[2]]@result
+
+selec_pathways <- PRC_terms[PRC_terms$Description %in% pathways,]
+
+selec_pathways$Description <- factor(selec_pathways$Description, levels = rev(pathways))
+selec_pathways <- selec_pathways[order(selec_pathways$Description), ]
+
+ggplot(data=selec_pathways, aes(x=Description, y=qscore, fill = analysis)) + xlab(NULL) +
+    geom_bar(stat="identity",position="dodge",colour = "black",show.legend = FALSE, width= 0.8, size = 1 ) + coord_flip() +
+    scale_y_continuous(expand = expansion(c(0,0)), limits = c(0.0, 15),breaks = c(0,5,10,15)) +
+    scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 80)) +
+    theme( legend.justification = "top",
+           plot.title = element_text(hjust = 0.5,size = 12,face="bold"),axis.line = element_line(colour = "black"),
+           panel.grid.major = element_blank(),
+           panel.grid.minor = element_blank(),
+           axis.text.x = element_text(angle = 0, vjust = 0.5,colour = "black", size = 10),
+           axis.text.y = element_text(angle = 0, vjust = 0.8,colour = "black", size = 10, face=ifelse(levels(selec_pathways$Description)=="cytokine-mediated signaling pathway","bold","plain")),
+           axis.title.y = element_text(size = rel(2), angle = 45),
+           axis.title.x = element_text(size = rel(1.5), angle = 0),
+           axis.text = element_text(size = 8),
+           panel.background = element_blank(), legend.position = "none") +
+    scale_fill_manual(values = "dark gray") + ggtitle("Enriched in PRC (vs. SMC/PC day 15)")
+```
+
+### Gene-Concept Networks {.tabset}
+#### Enriched in TLS TRC (vs. AdvFB day 15) (Supplementary Figure 10F)
+```{r network plot AdvFB_TLS}
+pathways <- c("tumor necrosis factor production")
+
+cnetplot(EnrichParameters_TLS$enrichcl_list[[2]], node_label="gene", layout = "kk", showCategory = pathways,
+        max.overlaps=Inf,color.params = list(gene ="black",
+                                             category = "red",
+                                             edge = TRUE),
+                          cex.params = list(category_label = 0.0000001,
+                                            label_gene = 0.000001, gene_label= 0.6)) + theme(legend.text=element_text(size=8))
+```
+
+#### Enriched in Sulf1`r knitr::asis_output("\U207A")` TRC (vs. AdvFB day 15) (Supplementary Figure 10G)
+```{r network plot AdvFB_Sulf1}
+pathways <- c("regulation of T cell activation")
+
+cnetplot(EnrichParameters_Sulf1$enrichcl_list[[2]], node_label="gene", layout = "kk", showCategory = pathways,
+        max.overlaps=Inf,color.params = list(gene ="black",
+                                             category = "red",
+                                             edge = TRUE),
+                          cex.params = list(category_label = 0.0000001,
+                                            label_gene = 0.000001, gene_label= 0.6)) + theme(legend.text=element_text(size=8))
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
+
+
