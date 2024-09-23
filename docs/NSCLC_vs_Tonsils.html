@@ -380,7 +380,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-08-21
+<strong>Last updated:</strong> 2024-09-23
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -511,15 +511,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree3d8b8f0d35e4f20d95e7319b4607c9d05d5f2c30targetblank3d8b8f0a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree6c3350ab5cb6c56c42350131890c3c4bf5187d8atargetblank6c3350aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/3d8b8f0d35e4f20d95e7319b4607c9d05d5f2c30" target="_blank">3d8b8f0</a>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/6c3350ab5cb6c56c42350131890c3c4bf5187d8a" target="_blank">6c3350a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree3d8b8f0d35e4f20d95e7319b4607c9d05d5f2c30targetblank3d8b8f0a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree6c3350ab5cb6c56c42350131890c3c4bf5187d8atargetblank6c3350aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -529,7 +529,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/3d8b8f0d35e4f20d95e7319b4607c9d05d5f2c30" target="_blank">3d8b8f0</a>.
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/6c3350ab5cb6c56c42350131890c3c4bf5187d8a" target="_blank">6c3350a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -546,8 +546,10 @@ were generated:
 Ignored files:
     Ignored:    .DS_Store
     Ignored:    analysis/.DS_Store
+    Ignored:    data/Final_submission/
     Ignored:    data/Human/
     Ignored:    data/Mouse/
+    Ignored:    data/Public/
     Ignored:    output/GSEA_AdvFB_SULF1/
     Ignored:    output/GSEA_AdvFB_TLS/
     Ignored:    output/GSEA_CCR7_T/
@@ -558,11 +560,19 @@ Ignored files:
 
 Untracked files:
     Untracked:  README.html
+    Untracked:  analysis/.h5seurat
+    Untracked:  analysis/Compare_tumors.Rmd
     Untracked:  analysis/NSCLC_PDAC_CAFs.Rmd
-    Untracked:  analysis/NSCLC_trajectory_analysis.Rmd
+    Untracked:  analysis/NSCLC_vs_BRCA_CAFs.Rmd
+    Untracked:  analysis/Seurat_to_SCE.Rmd
     Untracked:  analysis/Total_CD8_DTR_Tetra.Rmd
+    Untracked:  analysis/compression.Rmd
     Untracked:  analysis/index_hidden.Rmd
     Untracked:  analysis/mcov_R.Rmd
+
+Unstaged changes:
+    Modified:   analysis/Tetra_CD8_T_cells.Rmd
+    Modified:   analysis/merge_NSCLC_FRC_TIL.Rmd
 
 </code></pre>
 <p>
@@ -608,6 +618,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/6c3350ab5cb6c56c42350131890c3c4bf5187d8a/analysis/NSCLC_vs_Tonsils.Rmd" target="_blank">6c3350a</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-09-23
+</td>
+<td>
+Modify figure order
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/Pchryssa/CCL19_FRCs_lung_cancer/83b3e382634870286f0790131c4afa2a05444c66/docs/NSCLC_vs_Tonsils.html" target="_blank">83b3e38</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -705,8 +749,8 @@ FRCs</strong></h2>
 <pre class="r"><code>cols&lt;- pal_igv()(51)
 names(cols) &lt;- c(0:50)</code></pre>
 </div>
-<div id="tonsilar-frcs-supplementary-figure-2i" class="section level3">
-<h3>Tonsilar FRCs (Supplementary Figure 2I)</h3>
+<div id="tonsilar-frcs-supplementary-figure-3a" class="section level3">
+<h3>Tonsilar FRCs (Supplementary Figure 3A)</h3>
 <pre class="r"><code>Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == &quot;ACTA2+PRC_1&quot;] &lt;- paste0(&quot;ACTA2&quot;, expression(&quot;\U207A&quot;),&quot;PRC_1&quot;)
 Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == &quot;ACTA2+PRC_2&quot;] &lt;- paste0(&quot;ACTA2&quot;, expression(&quot;\U207A&quot;),&quot;PRC_2&quot;)
 Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == &quot;ACTA2+PRC_3&quot;] &lt;- paste0(&quot;ACTA2&quot;, expression(&quot;\U207A&quot;),&quot;PRC_3&quot;)
@@ -731,6 +775,43 @@ DimPlot(Tons_FRC_data, reduction = &quot;umap&quot;, group.by = &quot;clusterLab
   xlab(&quot;UMAP1&quot;) +
   ylab(&quot;UMAP2&quot;) + ggtitle(&quot;Tonsilar FRCs (De Martin et al 2023)&quot;)</code></pre>
 <p><img src="figure/NSCLC_vs_Tonsils.Rmd/umap%20Tonsilar%20FRC-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-umap-Tonsilar-FRC-1">
+Past versions of "umap Tonsilar FRC-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-umap-Tonsilar-FRC-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/NSCLC_vs_Tonsils.Rmd/umap Tonsilar FRC-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="merge-nsclc-trc-and-prc-with-tonsilar-frcs"
 class="section level3">
@@ -763,7 +844,7 @@ Number of edges: 1098322
 Running Louvain algorithm...
 Maximum modularity in 10 random starts: 0.9342
 Number of communities: 12
-Elapsed time: 7 seconds
+Elapsed time: 6 seconds
 Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 
 Number of nodes: 33594
@@ -772,7 +853,7 @@ Number of edges: 1098322
 Running Louvain algorithm...
 Maximum modularity in 10 random starts: 0.9153
 Number of communities: 13
-Elapsed time: 6 seconds
+Elapsed time: 5 seconds
 Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 
 Number of nodes: 33594
@@ -896,9 +977,9 @@ class="section level3">
 <h3>Read integrated object with MDS representation</h3>
 <pre class="r"><code>seurat_integrated &lt;- readRDS(paste0(basedir,&quot;/data/Human/Tonsil_Ccl19_TRC_PRC_final_mds.rds&quot;))</code></pre>
 </div>
-<div id="visualize-mds-plot-supplementary-figure-2j"
+<div id="visualize-mds-plot-supplementary-figure-3b"
 class="section level3">
-<h3>Visualize MDS plot (Supplementary Figure 2J)</h3>
+<h3>Visualize MDS plot (Supplementary Figure 3B)</h3>
 <pre class="r"><code>mds_tx_condition &lt;- seurat_integrated@reductions$mds_div_conq@cell.embeddings %&gt;% 
 as.data.frame() %&gt;% cbind(tx = seurat_integrated@meta.data$Disease_short)
 
@@ -928,13 +1009,50 @@ scale_color_manual(values=colDataset) + scale_shape_manual(values = c(2, 3)) +
     axis.text.y = element_text(angle = 0, vjust = 0.5,colour = &quot;black&quot;,size = 10),
     axis.text.x = element_text(angle = 0, vjust = 0.5,colour = &quot;black&quot;,size = 10)) </code></pre>
 <p><img src="figure/NSCLC_vs_Tonsils.Rmd/MDS%20visualization-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-MDS-visualization-1">
+Past versions of "MDS visualization-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-MDS-visualization-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/NSCLC_vs_Tonsils.Rmd/MDS visualization-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="session-info" class="section level3">
 <h3>Session info</h3>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.3.1 (2023-06-16)
 Platform: aarch64-apple-darwin20 (64-bit)
-Running under: macOS Ventura 13.6.7
+Running under: macOS Ventura 13.6.9
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
@@ -1031,7 +1149,7 @@ loaded via a namespace (and not attached):
 [141] ROCR_1.0-11                 igraph_1.5.0.1             
 [143] bslib_0.5.0                </code></pre>
 <pre class="r"><code>date()</code></pre>
-<pre><code>[1] &quot;Wed Aug 21 12:49:07 2024&quot;</code></pre>
+<pre><code>[1] &quot;Mon Sep 23 13:31:27 2024&quot;</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1043,7 +1161,7 @@ Session information
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.3.1 (2023-06-16)
 Platform: aarch64-apple-darwin20 (64-bit)
-Running under: macOS Ventura 13.6.7
+Running under: macOS Ventura 13.6.9
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
