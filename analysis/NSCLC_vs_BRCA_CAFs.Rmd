@@ -1,0 +1,135 @@
+---
+title: "NSCLC and BRCA CAFs"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: true
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(dplyr)
+  library(stringr)
+  library(patchwork)
+  library(Seurat)
+  library(Matrix)
+  library(dittoSeq)
+  library(gridExtra)
+  library(gsubfn)
+  library(ggsci)
+  library(bigmds)
+  library(tidyverse)
+})
+```
+
+## **Comparison between NSCLC CCL19`r knitr::asis_output("\U207A")` FRCs, NSCLC CCL19`r knitr::asis_output("\U207A")` CAFs and BRCA CAFs**
+
+### NSCLC CCL19`r knitr::asis_output("\U207A")` FRCs and NSCLC CCL19`r knitr::asis_output("\U207A")` CAFs
+
+### Set directory
+```{r set directory}
+basedir <- here()
+```
+
+### Read CCL19 FRC data
+```{r read CCL19 FRC data}
+NSCLC_CCL19_data <- readRDS(paste0(basedir,"/data/Human/NSCLC_CCL19_FRCs_CAFs.rds"))
+```
+
+### Read NSCLC CCL19`r knitr::asis_output("\U207A")` TRC PRC data
+```{r read  CCL19 TRC PRC}
+NSCLC_CCL19_TRC_PRC <- readRDS(paste0(basedir,"/data/Human/NSCLC_CCL19_TRC_PRC_CAFs.rds"))
+```
+
+### Define color palette
+```{r color palet}
+palet <- c("#1B9E77", "#54B0E4","#E3BE00", "#E41A1C")
+names(palet) <- c("CAF2/TRC","CAF1/PRC","AdvFB" ,"SMC/PC")
+```
+
+### Dotplot with apCAF, iCAF and myCAF gene signatures (Supplementary Figure 3C)
+```{r dotplot, fig.width=17, fig.height=4}
+data_conv <-NSCLC_CCL19_TRC_PRC
+data_conv <-Remove_ensebl_id(data_conv)
+
+CAF_subsets <- list("iCAF genes"= c("EFEMP1","IL6","C3","CFD","CLU","CXCL12","TNXB",
+                                    "HAS1","PLA2G2A","GSN","PCOLCE2","CD34","LEPR",
+                                    "CXCL14","CCL2","ADH1B","GPC3","VCAM1","TNC","ALDH1A2"),
+                     "apCAF genes" = c("CD74","HLA-DRB1","HLA-DRA","HLA-DQB1"),
+                    "myCAF genes"=c("FAP","POSTN","LRRC15","MMP11","COL10A1","COMP","COL8A1","GREM1","SULF1","COL13A1",
+                    "COL5A2","LRRC17","COL12A1","THBS2","GJB2","ACTA2","MYH11","ACTG2","DES","COL4A6","BCAM",
+                    "RGS5","MCAM","COL4A1","COL18A1","LAMC3","ARHGDIB"))
+
+DotPlot(object = data_conv, features=CAF_subsets,group.by = "cell_type" ,scale=FALSE,dot.scale = 4) +  theme(strip.placement = "outside") + 
+  theme(axis.text.x = element_text(angle = 90,hjust = 1,colour = NULL,face="bold"),axis.title.x.top=element_text(hjust = 1,face="bold")) +xlab(" ")+ylab(" ")
+```
+
+### CAF Signatures (Supplementary Figure 3D) {.tabset}
+#### apCAF signature
+```{r apCAF sign, results='hide'}
+apCAF_genes <-c("CD74","HLA-DRB1","HLA-DRA","HLA-DQB1")
+
+#Get full gene name (together with the ensembl id)
+apCAF_genes <- unlist(lapply(apCAF_genes, function(x) {
+  get_full_gene_name(x,NSCLC_CCL19_data)
+})) 
+
+slot_type <-"data"
+gn <- "apCAF"
+Visualize_GeneSignatures_sc(NSCLC_CCL19_data, apCAF_genes, slot_type, 'average.mean',gn) + ggtitle("apCAF signature")
+```
+
+#### iCAF signature 
+```{r iCAF sign, results='hide'}
+iCAF_genes <-c("EFEMP1","IL6","C3","CFD","CLU","CXCL12","TNXB","HAS1","PLA2G2A","GSN","PCOLCE2","CD34","LEPR","CXCL14","CCL2","ADH1B","GPC3","VCAM1","TNC","ALDH1A2")
+
+#Get full gene name (together with the ensembl id)
+iCAF_genes <- unlist(lapply(iCAF_genes, function(x) {
+  get_full_gene_name(x,NSCLC_CCL19_data)
+})) 
+
+slot_type <-"data"
+gn <- "iCAF"
+Visualize_GeneSignatures_sc(NSCLC_CCL19_data, iCAF_genes, slot_type, 'average.mean',gn) + ggtitle("iCAF signature")
+```
+
+
+#### myCAF signature
+```{r myCAF sign, results='hide'}
+myCAF_genes <-c("FAP","POSTN","LRRC15","Mmp11","COL10A1","COMP","COL8A1","GREM1","SULF1","COL13A1","COL5A2","LRRC17","COL12A1","Thbs2","GJB2","ACTA2","MYH11","ACTG2","DES","COL4A6","BCAM","RGS5","MCAM","COL4A1","COL18A1","LAMC3","ARHGDIB")
+
+#Get full gene name (together with the ensembl id)
+myCAF_genes <- unlist(lapply(myCAF_genes, function(x) {
+  get_full_gene_name(x,NSCLC_CCL19_data)
+})) 
+
+slot_type <-"data"
+gn <- "myCAF"
+Visualize_GeneSignatures_sc(NSCLC_CCL19_data, myCAF_genes, slot_type, 'average.mean',gn) + ggtitle("myCAF signature")
+```
+
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
