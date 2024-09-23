@@ -381,7 +381,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-08-21
+<strong>Last updated:</strong> 2024-09-23
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -512,15 +512,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree09ceaf16815aebf5fbe66f9ae5d95e1757b310cetargetblank09ceaf1a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree41217c2c204930f1e6849551e73897937761ca3atargetblank41217c2a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/09ceaf16815aebf5fbe66f9ae5d95e1757b310ce" target="_blank">09ceaf1</a>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/41217c2c204930f1e6849551e73897937761ca3a" target="_blank">41217c2</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree09ceaf16815aebf5fbe66f9ae5d95e1757b310cetargetblank09ceaf1a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree41217c2c204930f1e6849551e73897937761ca3atargetblank41217c2a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -530,7 +530,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/09ceaf16815aebf5fbe66f9ae5d95e1757b310ce" target="_blank">09ceaf1</a>.
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/41217c2c204930f1e6849551e73897937761ca3a" target="_blank">41217c2</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -547,8 +547,10 @@ were generated:
 Ignored files:
     Ignored:    .DS_Store
     Ignored:    analysis/.DS_Store
+    Ignored:    data/Final_submission/
     Ignored:    data/Human/
     Ignored:    data/Mouse/
+    Ignored:    data/Public/
     Ignored:    output/GSEA_AdvFB_SULF1/
     Ignored:    output/GSEA_AdvFB_TLS/
     Ignored:    output/GSEA_CCR7_T/
@@ -559,11 +561,23 @@ Ignored files:
 
 Untracked files:
     Untracked:  README.html
+    Untracked:  analysis/.h5seurat
+    Untracked:  analysis/Compare_tumors.Rmd
     Untracked:  analysis/NSCLC_PDAC_CAFs.Rmd
-    Untracked:  analysis/NSCLC_trajectory_analysis.Rmd
+    Untracked:  analysis/NSCLC_vs_BRCA_CAFs.Rmd
+    Untracked:  analysis/Seurat_to_SCE.Rmd
     Untracked:  analysis/Total_CD8_DTR_Tetra.Rmd
+    Untracked:  analysis/compression.Rmd
     Untracked:  analysis/index_hidden.Rmd
     Untracked:  analysis/mcov_R.Rmd
+
+Unstaged changes:
+    Modified:   analysis/NSCLC_TILS.Rmd
+    Modified:   analysis/NSCLC_stroma_CCCL19_FRC.Rmd
+    Modified:   analysis/NSCLC_trajectory_analysis.Rmd
+    Modified:   analysis/NSCLC_vs_Tonsils.Rmd
+    Modified:   analysis/Tetra_CD8_T_cells.Rmd
+    Modified:   analysis/merge_NSCLC_FRC_TIL.Rmd
 
 </code></pre>
 <p>
@@ -609,6 +623,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/41217c2c204930f1e6849551e73897937761ca3a/analysis/Mouse_mCOV.Rmd" target="_blank">41217c2</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-09-23
+</td>
+<td>
+Modify figure order
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/Pchryssa/CCL19_FRCs_lung_cancer/31727316684c527736daf804c64e3544b47c5c47/docs/Mouse_mCOV.html" target="_blank">3172731</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -701,9 +749,9 @@ names(cols) &lt;-c(paste0(&quot;Smoc1&quot;, expression(&quot;\u207A &quot;), &q
 </div>
 <div id="ccl19-eyfp-mcov-fit31-g33-cells" class="section level3">
 <h3>CCL19-EYFP⁺ mCOV-FIt31-g33 cells</h3>
-<div id="umap-colored-per-celltype-supplementary-figure-7c"
+<div id="umap-colored-per-celltype-supplementary-figure-9c"
 class="section level4">
-<h4>Umap colored per celltype (Supplementary Figure 7C)</h4>
+<h4>Umap colored per celltype (Supplementary Figure 9C)</h4>
 <pre class="r"><code>DimPlot(CCL19_EYFP_mCOV, reduction = &quot;umap&quot;, group.by = &quot;annot&quot;, cols=cols)+
   theme_bw() +
   theme(axis.text = element_blank(), axis.ticks = element_blank(),
@@ -712,6 +760,44 @@ class="section level4">
   xlab(&quot;UMAP1&quot;) +
   ylab(&quot;UMAP2&quot;) + ggtitle(paste0(&quot;Ccl19-EYFP&quot;, &quot;\U207A &quot;, &quot;cells (mCOV-FIt31-g33 cells)&quot;))</code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/CCL19%20EYFP%20umap%20mCOV-FIt31-g33%20cells-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-CCL19-EYFP-umap-mCOV-FIt31-g33-cells-1">
+Past versions of "CCL19 EYFP umap mCOV-FIt31-g33 cells-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-CCL19-EYFP-umap-mCOV-FIt31-g33-cells-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/CCL19 EYFP umap mCOV-FIt31-g33 cells-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="dotplot-figure-6f" class="section level3 tabset">
@@ -730,6 +816,44 @@ gg &lt;-DotPlot(data_conv, features = gene_list, group.by = &quot;annot&quot;, s
 
 gg + theme(axis.text.x = element_text(angle = 45,hjust = 1))</code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/dotplot%20mouse%20tumor%20mCOV%20scale%20true-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-dotplot-mouse-tumor-mCOV-scale-true-1">
+Past versions of "dotplot mouse tumor mCOV scale true-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-dotplot-mouse-tumor-mCOV-scale-true-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/dotplot mouse tumor mCOV scale true-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div
 id="differentiation-trajectories-on-ccl19-eyfp-mcov-fit31-g33-cells-based-on-slingshot-algorithm-figure-6g"
@@ -762,6 +886,46 @@ DimPlot(CCL19_EYFP_mCOV, reduction = &quot;umap&quot;, group.by = &quot;annot_nu
   xlab(&quot;UMAP1&quot;) +
   ylab(&quot;UMAP2&quot;) + ggtitle(&quot;New annotation&quot;)</code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/umap%20CCL19%20EYFP%20umap%20map%20annotation%20%20mCOV-FIt31-g33-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-umap-CCL19-EYFP-umap-map-annotation--mCOV-FIt31-g33-1">
+Past versions of "umap CCL19 EYFP umap map annotation
+mCOV-FIt31-g33-1.png"
+</button>
+</p>
+<div
+id="fig-no-spaces-umap-CCL19-EYFP-umap-map-annotation--mCOV-FIt31-g33-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/umap CCL19 EYFP umap map annotation  mCOV-FIt31-g33-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div
 id="differentiation-trajectories-for-sulf1-trc-tls-trc-and-rgs5-prc"
@@ -787,6 +951,46 @@ lines(pto_TRC@curves$Lineage1, lwd = 3, col = &#39;black&#39;)
 legend(&quot;bottomright&quot;, legend = c(&quot;T3&quot;), col = c(&#39;gold&#39;), lty = 1, lwd = 2.5, cex = 1.1)
 legend(&quot;topright&quot;, legend = names(cols), col = cols, pch = 2, pt.cex = 1, cex = 0.8)</code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/CCL19%20EYFP%20mCOV-FIt31-g33%20differentiation%20trajectories-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-CCL19-EYFP-mCOV-FIt31-g33-differentiation-trajectories-1">
+Past versions of "CCL19 EYFP mCOV-FIt31-g33 differentiation
+trajectories-1.png"
+</button>
+</p>
+<div
+id="fig-no-spaces-CCL19-EYFP-mCOV-FIt31-g33-differentiation-trajectories-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/CCL19 EYFP mCOV-FIt31-g33 differentiation trajectories-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div
@@ -870,6 +1074,43 @@ legend.title = element_blank(),axis.text.x = element_text(angle = 0, vjust = 0.5
   scale_color_manual(values = cols_pal)+ 
   ggtitle(paste0(&quot;Cd34&quot;, &quot;\U207A &quot;, &quot;AdvFB &gt;&gt; TLS TRC (T3)&quot;))</code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/Step%203%20plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-Step-3-plot-1">
+Past versions of "Step 3 plot-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-Step-3-plot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/Step 3 plot-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="multidimensional-scaling-mds-plot" class="section level3">
 <h3>Multidimensional scaling (MDS) plot</h3>
@@ -1062,6 +1303,43 @@ class="section level3 tabset">
   xlab(&quot;UMAP1&quot;) +
   ylab(&quot;UMAP2&quot;) </code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/umap%20per%20condition-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-umap-per-condition-1">
+Past versions of "umap per condition-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-umap-per-condition-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/umap per condition-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="existing-cell-type-annotation" class="section level4">
 <h4>Existing cell type annotation</h4>
@@ -1073,6 +1351,43 @@ class="section level3 tabset">
   xlab(&quot;UMAP1&quot;) +
   ylab(&quot;UMAP2&quot;) </code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/umap%20visualization-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-umap-visualization-1">
+Past versions of "umap visualization-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-umap-visualization-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/umap visualization-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="plot-gene-signatures" class="section level3 tabset">
@@ -1095,6 +1410,43 @@ FeaturePlot(seurat_integrated, reduction = &quot;umap&quot;,
           order = T )+
 theme(legend.position=&quot;right&quot;, legend.title=element_text(size=5)) </code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/NPNT%20HHIP%20CD34%20ACTA2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-NPNT-HHIP-CD34-ACTA2-1">
+Past versions of "NPNT HHIP CD34 ACTA2-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-NPNT-HHIP-CD34-ACTA2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/NPNT HHIP CD34 ACTA2-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="sulf1-clu-ccl21a-ccl19" class="section level4">
 <h4>SULF1 CLU CCL21A CCL19</h4>
@@ -1106,6 +1458,43 @@ FeaturePlot(seurat_integrated, reduction = &quot;umap&quot;,
           order = T )+
 theme(legend.position=&quot;right&quot;, legend.title=element_text(size=5)) </code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/SULF1%20CLU%20CCL21A%20CCL19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-SULF1-CLU-CCL21A-CCL19-1">
+Past versions of "SULF1 CLU CCL21A CCL19-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-SULF1-CLU-CCL21A-CCL19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/SULF1 CLU CCL21A CCL19-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="il33-smoc1-cxcl13-rgs5" class="section level4">
 <h4>IL33 SMOC1 CXCL13 RGS5</h4>
@@ -1117,6 +1506,43 @@ FeaturePlot(seurat_integrated, reduction = &quot;umap&quot;,
           order = T )+
 theme(legend.position=&quot;right&quot;, legend.title=element_text(size=5)) </code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/IL33%20SMOC1%20CXCL13%20RGS5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-IL33-SMOC1-CXCL13-RGS5-1">
+Past versions of "IL33 SMOC1 CXCL13 RGS5-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-IL33-SMOC1-CXCL13-RGS5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/IL33 SMOC1 CXCL13 RGS5-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div
@@ -1153,6 +1579,44 @@ seurat_integrated$new_annot[which(seurat_integrated$integrated_snn_res.0.25 == 7
   xlab(&quot;UMAP1&quot;) +
   ylab(&quot;UMAP2&quot;) #+ NoLegend()</code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/plot%20new%20cell%20type%20annotation-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-plot-new-cell-type-annotation-1">
+Past versions of "plot new cell type annotation-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-plot-new-cell-type-annotation-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/plot new cell type annotation-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="mds-computation" class="section level3">
 <h3>MDS computation</h3>
@@ -1207,13 +1671,50 @@ scale_color_manual(values=cols) + scale_shape_manual(values = c(2, 3)) +
     
 ) </code></pre>
 <p><img src="figure/Mouse_mCOV.Rmd/MDS%20visualization-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-MDS-visualization-1">
+Past versions of "MDS visualization-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-MDS-visualization-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/80d46cf78223b1660290f3fefa56ae7d3f101135/docs/figure/Mouse_mCOV.Rmd/MDS visualization-1.png" target="_blank">80d46cf</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-08-26
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="session-info" class="section level3">
 <h3>Session info</h3>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.3.1 (2023-06-16)
 Platform: aarch64-apple-darwin20 (64-bit)
-Running under: macOS Ventura 13.6.7
+Running under: macOS Ventura 13.6.9
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
@@ -1318,7 +1819,7 @@ loaded via a namespace (and not attached):
 [131] ROCR_1.0-11               igraph_1.5.0.1           
 [133] bslib_0.5.0              </code></pre>
 <pre class="r"><code>date()</code></pre>
-<pre><code>[1] &quot;Wed Aug 21 13:40:49 2024&quot;</code></pre>
+<pre><code>[1] &quot;Mon Sep 23 13:03:57 2024&quot;</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1330,7 +1831,7 @@ Session information
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.3.1 (2023-06-16)
 Platform: aarch64-apple-darwin20 (64-bit)
-Running under: macOS Ventura 13.6.7
+Running under: macOS Ventura 13.6.9
 
 Matrix products: default
 BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
