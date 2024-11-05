@@ -380,7 +380,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-09-23
+<strong>Last updated:</strong> 2024-11-05
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -511,15 +511,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree7e218c6e05d46c6de593b8bf3ae221dc899ceae4targetblank7e218c6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree683e44a1a4a02e7d4631c5aee6632a4862c287eatargetblank683e44aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/7e218c6e05d46c6de593b8bf3ae221dc899ceae4" target="_blank">7e218c6</a>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/683e44a1a4a02e7d4631c5aee6632a4862c287ea" target="_blank">683e44a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree7e218c6e05d46c6de593b8bf3ae221dc899ceae4targetblank7e218c6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree683e44a1a4a02e7d4631c5aee6632a4862c287eatargetblank683e44aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -529,7 +529,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/7e218c6e05d46c6de593b8bf3ae221dc899ceae4" target="_blank">7e218c6</a>.
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/683e44a1a4a02e7d4631c5aee6632a4862c287ea" target="_blank">683e44a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -563,12 +563,9 @@ Untracked files:
     Untracked:  analysis/.h5seurat
     Untracked:  analysis/Compare_tumors.Rmd
     Untracked:  analysis/NSCLC_PDAC_CAFs.Rmd
-    Untracked:  analysis/NSCLC_vs_BRCA_CAFs.Rmd
     Untracked:  analysis/Seurat_to_SCE.Rmd
-    Untracked:  analysis/Total_CD8_DTR_Tetra.Rmd
     Untracked:  analysis/compression.Rmd
     Untracked:  analysis/index_hidden.Rmd
-    Untracked:  analysis/mcov_R.Rmd
 
 </code></pre>
 <p>
@@ -614,6 +611,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/683e44a1a4a02e7d4631c5aee6632a4862c287ea/analysis/merge_NSCLC_FRC_TIL.Rmd" target="_blank">683e44a</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-11-05
+</td>
+<td>
+Correct figure ordering
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/Pchryssa/CCL19_FRCs_lung_cancer/79d9795d666faf0bd87889c64bb0ce29a6d03f23/docs/merge_NSCLC_FRC_TIL.html" target="_blank">79d9795</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-09-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -912,16 +943,16 @@ Set cell identities for the new CellChat object
 The cell groups used for CellChat analysis are  AdvFB B cells CAF1/PRC CAF2/TRC CD4⁺ T cells CD8⁺ T cells Cycling CD8⁺ T cells Regulatory T cells SMC/PC </code></pre>
 <pre class="r"><code>cellchat &lt;-CellChatDownstreamAnalysis(cellchat,&quot;human&quot;,thresh = 0.05)</code></pre>
 <pre><code>triMean is used for calculating the average gene expression per cell group. 
-[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-09-23 13:43:57.793306]&quot;
-[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-09-23 13:45:30.823452]&quot;</code></pre>
+[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-11-05 21:52:19.838019]&quot;
+[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-11-05 21:53:53.902528]&quot;</code></pre>
 </div>
 <div id="save-cellchat-data" class="section level3">
 <h3>Save cellchat data</h3>
 <pre class="r"><code>#saveRDS(cellchat,paste0(basedir,&quot;/data/Human/CCL19_FRC_TIL_SIF5_cellchat.rds&quot;))</code></pre>
 </div>
-<div id="interactome-analysis-supplementary-figure-5d"
+<div id="interactome-analysis-supplementary-figure-3d"
 class="section level3">
-<h3>Interactome analysis (Supplementary Figure 5D)</h3>
+<h3>Interactome analysis (Supplementary Figure 3D)</h3>
 <pre class="r"><code>gg &lt;- netAnalysis_signalingRole_scatter(cellchat,color.use = palet)
 gg &lt;- gg + ggtitle(&quot;Interactome analysis (Cellchat)&quot;)
 gg</code></pre>
@@ -1055,10 +1086,10 @@ cellchat &lt;- identifyCommunicationPatterns(cellchat, pattern = &quot;outgoing&
 cellchat &lt;- identifyCommunicationPatterns(cellchat, pattern = &quot;incoming&quot;, k = nPatterns, color.use = palet)</code></pre>
 </div>
 <div
-id="joint-dotplot-for-incoming-and-outcoming-communication-patterns-supplementary-figure-5e"
+id="joint-dotplot-for-incoming-and-outcoming-communication-patterns-supplementary-figure-3e"
 class="section level3">
 <h3>Joint dotplot for incoming and outcoming communication patterns
-(Supplementary Figure 5E)</h3>
+(Supplementary Figure 3E)</h3>
 <pre class="r"><code>pathways &lt;-c(&quot;CXCL&quot;,&quot;CCL&quot;,&quot;ICAM&quot;,&quot;VCAM&quot;,&quot;MK&quot;,&quot;FGF&quot;,&quot;NECTIN&quot;,&quot;TIGIT&quot;,&quot;SELL&quot;,&quot;ITGB2&quot;,&quot;NOTCH&quot;,&quot;BAFF&quot;,&quot;SEMA3&quot;,&quot;SEMA4&quot;,&quot;LIGHT&quot;,&quot;EGF&quot;,&quot;IFN-II&quot;,&quot;CD226&quot;,&quot;IGF&quot;,&quot;FASLG&quot;)
 
 order_list &lt;-c(&quot;CAF2/TRC&quot;,&quot;CAF1/PRC&quot;,&quot;SMC/PC&quot;,&quot;AdvFB&quot;,&quot;Regulatory T cells&quot;, &quot;CD4⁺ T cells&quot;,&quot;CD8⁺ T cells&quot;,&quot;Cycling CD8⁺ T cells&quot;,&quot;B cells&quot;)
@@ -1180,7 +1211,7 @@ Number of edges: 356757
 Running Louvain algorithm...
 Maximum modularity in 10 random starts: 0.8585
 Number of communities: 22
-Elapsed time: 0 seconds
+Elapsed time: 1 seconds
 Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
 
 Number of nodes: 10459
@@ -1292,8 +1323,8 @@ Set cell identities for the new CellChat object
 The cell groups used for CellChat analysis are  AdvFB CAF1/PRC CAF2/TRC Cycling CD8⁺ T cells Effector CD8⁺ T cells Effector-memory CD8⁺ T cells Exhausted CD8⁺ T cells SMC/PC Stem-like/Naive CD8⁺ T cells </code></pre>
 <pre class="r"><code>cellchat &lt;-CellChatDownstreamAnalysis(cellchat,&quot;human&quot;,thresh=0.08)</code></pre>
 <pre><code>triMean is used for calculating the average gene expression per cell group. 
-[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-09-23 13:55:36.941103]&quot;
-[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-09-23 13:58:23.809179]&quot;</code></pre>
+[1] &quot;&gt;&gt;&gt; Run CellChat on sc/snRNA-seq data &lt;&lt;&lt; [2024-11-05 22:00:33.638104]&quot;
+[1] &quot;&gt;&gt;&gt; CellChat inference is done. Parameter values are stored in `object@options$parameter` &lt;&lt;&lt; [2024-11-05 22:02:02.135343]&quot;</code></pre>
 </div>
 <div id="save-cellchat-data-1" class="section level3">
 <h3>Save cellchat data</h3>
@@ -2047,7 +2078,7 @@ loaded via a namespace (and not attached):
 [155] ROCR_1.0-11                 broom_1.0.5                
 [157] bslib_0.5.0                </code></pre>
 <pre class="r"><code>date()</code></pre>
-<pre><code>[1] &quot;Mon Sep 23 14:21:00 2024&quot;</code></pre>
+<pre><code>[1] &quot;Tue Nov  5 22:05:11 2024&quot;</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
