@@ -27,14 +27,14 @@ knitr::asis_output("\U207A","\U2212")
 [NSCLC_vs_BRCA_CAFs.html](NSCLC_vs_BRCA_CAFs.html)
 
 
-**Figure 3 and Supplementary Figure 5**
+**Figure 3 and Supplementary Figure 3**
 
 * Characterize and visualize Tumor infiltrating lymphocytes (TILs), with a focus on CD8`r knitr::asis_output("\U207A")` T cell subsets : [NSCLC_TILS.html](NSCLC_TILS.html)
 
 * Combine NSCLS CCL19`r knitr::asis_output("\U207A")` FRCs and NSCLS TILs (special focus on CD8`r knitr::asis_output("\U207A")` T cells ) and perform interactome analysis to determine significant signaling L-R pairs and genes involved : [merge_NSCLC_FRC_TIL.html](merge_NSCLC_FRC_TIL.html)
 
 
-**Figure 4 and Supplementary Figure 7**
+**Figure 4 and Supplementary Figure 4**
 
 * NSCLC differentiation: [NSCLC_trajectory_analysis.html](NSCLC_trajectory_analysis.html)
 
@@ -48,12 +48,12 @@ knitr::asis_output("\U207A","\U2212")
 * Characterize CCL19-EYFP`r knitr::asis_output("\U207A")` cell data from naïve lungs and excised LLC-gp33 tumors on day 23 : [Mouse_LLC_naive.html](Mouse_LLC_naive.html)
 
 
-**Figure 6 and Supplementary Figure 9**
+**Figure 6 and Supplementary Figure 5**
 
 * Characterize CCL19-EYFP`r knitr::asis_output("\U207A")` FRC subsets in coronavirus-vector based immunotherapy : [Mouse_mCOV.html](Mouse_mCOV.html)
 
 
-**Figure 7, Supplementary Figure 10 and Supplementary Figure 11**
+**Figure 7, Supplementary Figure 5 and Supplementary Figure 6**
 
 * Characterize GP33/34`r knitr::asis_output("\U207A")` CD8`r knitr::asis_output("\U207A")` T cells sorted from LLC-gp33 bearing DTR`r knitr::asis_output("\U207A")` and DTR$^`r knitr::asis_output("\U2212")`$ lungs on day 23, after mCOV-Flt3l-gp33 immunization : [Tetra_CD8_T_cells.html](Tetra_CD8_T_cells.html)
 
