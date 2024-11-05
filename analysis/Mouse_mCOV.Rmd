@@ -60,7 +60,7 @@ names(cols) <-c(paste0("Smoc1", expression("\u207A "), "AdvFB"),paste0("Cd34", e
 
 
 ### CCL19-EYFP`r knitr::asis_output("\U207A")` mCOV-FIt31-g33 cells
-#### Umap colored per celltype (Supplementary Figure 9C)
+#### Umap colored per celltype (Supplementary Figure 5C)
 ```{r CCL19 EYFP umap mCOV-FIt31-g33 cells}
 DimPlot(CCL19_EYFP_mCOV, reduction = "umap", group.by = "annot", cols=cols)+
   theme_bw() +
