@@ -179,7 +179,7 @@ for (sce_nam in sce_names) {
 }
 ```
 
-### Unaffected Lung vs Tumor (Supplementary Figure 7A and 7B) {.tabset}
+### Unaffected Lung vs Tumor (Supplementary Figure 4A and 4B) {.tabset}
 #### Umap
 ```{r split per tissue type umap}
 DimPlot(NSCLC_CCL19_data, reduction = "umap", group.by = "type", split.by = "type")+
@@ -206,7 +206,7 @@ FeaturePlot(NSCLC_CCL19_data, reduction = "umap", split.by = "type",
 ```
 
 
-### Signatures (Supplementary Figure 7E) {.tabset}
+### Signatures (Supplementary Figure 4E) {.tabset}
 #### CD34
 ```{r feature plot CD34}
 FeaturePlot(NSCLC_CCL19_data, reduction = "umap", 
