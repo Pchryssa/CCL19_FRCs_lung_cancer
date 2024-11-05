@@ -109,7 +109,7 @@ data_merge  <- preprocessing(data_merge,resolution)
 ```
 
 ### Pathway analysis{.tabset}
-#### **CD34`r knitr::asis_output("\U207A")` AdvFB (Day 15) vs TLS TRC (Day 23)** (Supplementary Figure 10C)
+#### **CD34`r knitr::asis_output("\U207A")` AdvFB (Day 15) vs TLS TRC (Day 23)** (Supplementary Figure 5I)
 ```{r AdvFB_TLS}
 # Step 1 : Set output directory
 subDir <- "GSEA_AdvFB_TLS/"
@@ -173,7 +173,7 @@ ggplot(data=selec_pathways, aes(x=Description, y=qscore, fill = analysis)) + xla
     scale_fill_manual(values = "dark gray") + ggtitle("Enriched in TLS TRC (vs. AdvFB day 15)")
 ```
 
-#### **CD34`r knitr::asis_output("\U207A")` AdvFB (Day 15) vs Sulf1`r knitr::asis_output("\U207A")` TRC (Day 23)** (Supplementary Figure 10D)
+#### **CD34`r knitr::asis_output("\U207A")` AdvFB (Day 15) vs Sulf1`r knitr::asis_output("\U207A")` TRC (Day 23)** (Supplementary Figure 5J)
 ```{r AdvFB_SULF1_TRC}
 # Step 1 : Set output directory
 subDir <- "GSEA_AdvFB_SULF1/"
@@ -237,7 +237,7 @@ ggplot(data=selec_pathways, aes(x=Description, y=qscore, fill = analysis)) + xla
     scale_fill_manual(values = "dark gray") + ggtitle(paste0("Enriched in Sulf1", "\U207A ", "TRC (vs. AdvFB day 15)")) 
 ```
 
-#### **SMC/PC (Day 15) vs PRC (Day 23)** (Supplementary Figure 10E)
+#### **SMC/PC (Day 15) vs PRC (Day 23)** (Supplementary Figure 5K)
 ```{r SMC_PRC}
 # Step 1 : Set output directory
 subDir <- "GSEA_SMC_PRC/"
@@ -302,7 +302,7 @@ ggplot(data=selec_pathways, aes(x=Description, y=qscore, fill = analysis)) + xla
 ```
 
 ### Gene-Concept Networks {.tabset}
-#### Enriched in TLS TRC (vs. AdvFB day 15) (Supplementary Figure 10F)
+#### Enriched in TLS TRC (vs. AdvFB day 15) (Supplementary Figure 5L)
 ```{r network plot AdvFB_TLS}
 pathways <- c("tumor necrosis factor production")
 
@@ -314,7 +314,7 @@ cnetplot(EnrichParameters_TLS$enrichcl_list[[2]], node_label="gene", layout = "k
                                             label_gene = 0.000001, gene_label= 0.6)) + theme(legend.text=element_text(size=8))
 ```
 
-#### Enriched in Sulf1`r knitr::asis_output("\U207A")` TRC (vs. AdvFB day 15) (Supplementary Figure 10G)
+#### Enriched in Sulf1`r knitr::asis_output("\U207A")` TRC (vs. AdvFB day 15) (Supplementary Figure 5M)
 ```{r network plot AdvFB_Sulf1}
 pathways <- c("regulation of T cell activation")
 
