@@ -68,7 +68,7 @@ names(cluster_palette) <-unique(CD8_T$annot)
 ```
 
 ### CD8`r knitr::asis_output("\U207A")` T cells mCOV-FIt31-gp33 {.tabset}
-#### Supplementary Figure 11G
+#### Supplementary Figure 6G
 ```{r umap CD8 T cells}
 DimPlot(CD8_T, reduction = "umap", group.by = "annot")+
   theme_bw() +
@@ -79,7 +79,7 @@ DimPlot(CD8_T, reduction = "umap", group.by = "annot")+
   ylab("UMAP2") + ggtitle(paste0("CD8", "\U207A ", "T cells (mCOV-FIt31-g33)"))
 ```
 
-#### Dotplot CD8`r knitr::asis_output("\U207A")` T cell subsets (Supplementary Figure 11H)
+#### Dotplot CD8`r knitr::asis_output("\U207A")` T cell subsets (Supplementary Figure 6E)
 ```{r dotplot CD8 T cells}
 data_conv <-CD8_T
 data_conv <-Remove_ensebl_id(data_conv)
@@ -89,7 +89,7 @@ gene_list <-c("Pclaf","Top2a","Mki67","Klrg1","Gzma","Cxcr3","Gzmk","Ly6a","Ifng
 dittoDotPlot(data_conv, vars = gene_list, group.by = "annot", size = 5,legend.size.title = "Expression (%)",scale = TRUE) + theme(text = element_text(size = 10)) +ylab( " ") 
 ```
 
-#### Pathway analysis (Supplementary Figure 11I)
+#### Pathway analysis (Supplementary Figure 6I)
 ```{r Ccl19-EYFP CD8}
 # Step 1 : Set output directory
 subDir <- "GSEA_CD8_T/"
@@ -195,7 +195,7 @@ palet <-c("#16FF32", "#3283FE", "#FEAF16" , "#B00068" ,"#1CFFCE","#E41A1C","#1B9
 names(palet) <-c("Effector T cells",paste0("Ccr7", "\U207A ","T cells"),"Exhausted T cells","Cycling T cells","Eff. Mem. T cells",paste0("Sulf1", "\u207A ", "TRC"), "TLS TRC") 
 ```
 
-### Interactome analysis (Supplementary Figure 11J)
+### Interactome analysis (Supplementary Figure 6J)
 ```{r interactome analysis, message=FALSE}
 gg <- netAnalysis_signalingRole_scatter(cellchat,color.use = palet)
 gg <- gg + theme(aspect.ratio = 1.3) + ggtitle("mCOV-FIt31-gp33")
@@ -212,35 +212,35 @@ head(pairLR.CXCL,10)
 ```
 
 ### Cell-cell communication mediated by specific ligand-receptor (L-R) pairs {.tabset}
-#### Icam1 - (Itgal+/tgb2) (Supplementary Figure 11K)
+#### Icam1 - (Itgal+/tgb2) (Supplementary Figure 6K)
 ```{r ICAM1_ITGAL_ITGB2}
 palet<-palet[order(match(names(palet),rownames(cellchat@net$count)))]
 
 # Circle plot
 netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "ICAM1_ITGAL_ITGB2", color.use = palet,  layout = "circle")
 ```
-#### Vcam1 - (Itga4+Itgb1) (Supplementary Figure 11K) 
+#### Vcam1 - (Itga4+Itgb1) (Supplementary Figure 6K) 
 ```{r ITGA4_ITGB1_VCAM1}
 # Circle plot
 netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "ITGA4_ITGB1_VCAM1", color.use = palet,  layout = "circle")
 ```
-#### Cxcl16 - Cxcr6 (Supplementary Figure 11L) 
+#### Cxcl16 - Cxcr6 (Supplementary Figure 6L) 
 ```{r CXCL16_CXCR6}
 # Circle plot
 netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "CXCL16_CXCR6", color.use = palet,  layout = "circle")
 ```
-#### Tslp - (Il7r+Crlf2) (Supplementary Figure 11L) 
+#### Tslp - (Il7r+Crlf2) (Supplementary Figure 6L) 
 ```{r TSLP_IL7R_CRLF2}
 # Circle plot
 netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "TSLP_IL7R_CRLF2", color.use = palet,  layout = "circle")
 ```
-#### Tgfb1 - (Tgfbr1+Tgfbr2) (Supplementary Figure 11M) 
+#### Tgfb1 - (Tgfbr1+Tgfbr2) (Supplementary Figure 6M) 
 ```{r TGFB1_TGFBR1_TGFBR2}
 # Circle plot
 netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "TGFB1_TGFBR1_TGFBR2", color.use = palet,  layout = "circle")
 ```
 
-#### Mif - (Cd74+ Cd44) (Supplementary Figure 11M) 
+#### Mif - (Cd74+ Cd44) (Supplementary Figure 6M) 
 ```{r MIF_CD74_CD44}
 # Circle plot
 netVisual_individual(cellchat, signaling = pathways.show.all, pairLR.use = "MIF_CD74_CD44", color.use = palet,  layout = "circle")
