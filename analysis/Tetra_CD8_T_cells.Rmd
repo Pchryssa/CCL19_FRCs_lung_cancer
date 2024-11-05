@@ -103,7 +103,7 @@ DimPlot(DTRpos, reduction = "umap", group.by = "depleted",split.by = "depleted")
   ylab("UMAP2")
 ```
 
-### Dotplot CD8`r knitr::asis_output("\U207A")` T cell subsets (Supplementary Figure 11E)
+### Dotplot CD8`r knitr::asis_output("\U207A")` T cell subsets (Supplementary Figure 6E)
 ```{r dotplot CD8 T cells}
 data_conv <-Tetra_CD8
 data_conv <-Remove_ensebl_id(data_conv)
@@ -195,7 +195,7 @@ cnetplot(EnrichParameters_CYCL_T$enrichcl_list[[2]], node_label="gene", layout =
 
 ```
 
-#### Enriched in DTR$^`r knitr::asis_output("\U2212")`$ Ccr7`r knitr::asis_output("\U207A")` T cells (Supplementary Figure 11F)
+#### Enriched in DTR$^`r knitr::asis_output("\U2212")`$ Ccr7`r knitr::asis_output("\U207A")` T cells (Supplementary Figure 6F)
 ```{r Ccr7 T}
 # Step 1 : Set output directory
 subDir <- "GSEA_CCR7_T/"
