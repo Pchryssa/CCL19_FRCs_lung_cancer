@@ -380,7 +380,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-09-23
+<strong>Last updated:</strong> 2024-11-05
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -511,15 +511,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree20be9926342e8d7c425e28e777a0821dd2128f0atargetblank20be992a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree1014aa06e8ca2dd3449fc49da2718c6fe86a577dtargetblank1014aa0a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/20be9926342e8d7c425e28e777a0821dd2128f0a" target="_blank">20be992</a>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/1014aa06e8ca2dd3449fc49da2718c6fe86a577d" target="_blank">1014aa0</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree20be9926342e8d7c425e28e777a0821dd2128f0atargetblank20be992a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertree1014aa06e8ca2dd3449fc49da2718c6fe86a577dtargetblank1014aa0a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -529,7 +529,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/20be9926342e8d7c425e28e777a0821dd2128f0a" target="_blank">20be992</a>.
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/1014aa06e8ca2dd3449fc49da2718c6fe86a577d" target="_blank">1014aa0</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -564,10 +564,8 @@ Untracked files:
     Untracked:  analysis/Compare_tumors.Rmd
     Untracked:  analysis/NSCLC_PDAC_CAFs.Rmd
     Untracked:  analysis/Seurat_to_SCE.Rmd
-    Untracked:  analysis/Total_CD8_DTR_Tetra.Rmd
     Untracked:  analysis/compression.Rmd
     Untracked:  analysis/index_hidden.Rmd
-    Untracked:  analysis/mcov_R.Rmd
 
 </code></pre>
 <p>
@@ -613,6 +611,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/1014aa06e8ca2dd3449fc49da2718c6fe86a577d/analysis/NSCLC_vs_BRCA_CAFs.Rmd" target="_blank">1014aa0</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-11-05
+</td>
+<td>
+Correct figure ordering
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/Pchryssa/CCL19_FRCs_lung_cancer/a3026067b2004d329d858dea1cc7f4a4ef14d248/docs/NSCLC_vs_BRCA_CAFs.html" target="_blank">a302606</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-09-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -715,10 +747,10 @@ BRCA CAFs</strong></h2>
 names(palet) &lt;- c(&quot;CAF2/TRC&quot;,&quot;CAF1/PRC&quot;,&quot;AdvFB&quot; ,&quot;SMC/PC&quot;)</code></pre>
 </div>
 <div
-id="dotplot-with-apcaf-icaf-and-mycaf-gene-signatures-supplementary-figure-3c"
+id="dotplot-with-apcaf-icaf-and-mycaf-gene-signatures-supplementary-figure-2c"
 class="section level3">
 <h3>Dotplot with apCAF, iCAF and myCAF gene signatures (Supplementary
-Figure 3C)</h3>
+Figure 2C)</h3>
 <pre class="r"><code>data_conv &lt;-NSCLC_CCL19_TRC_PRC
 data_conv &lt;-Remove_ensebl_id(data_conv)
 
@@ -771,9 +803,9 @@ Pchryssa
 </div>
 </div>
 </div>
-<div id="caf-signatures-supplementary-figure-3d"
+<div id="caf-signatures-supplementary-figure-2d"
 class="section level3 tabset">
-<h3 class="tabset">CAF Signatures (Supplementary Figure 3D)</h3>
+<h3 class="tabset">CAF Signatures (Supplementary Figure 2D)</h3>
 <div id="apcaf-signature" class="section level4">
 <h4>apCAF signature</h4>
 <pre class="r"><code>apCAF_genes &lt;-c(&quot;CD74&quot;,&quot;HLA-DRB1&quot;,&quot;HLA-DRA&quot;,&quot;HLA-DQB1&quot;)
@@ -950,17 +982,92 @@ names(cols) &lt;- c(0:50)</code></pre>
   xlab(&quot;UMAP1&quot;) +
   ylab(&quot;UMAP2&quot;) + ggtitle(paste0(&quot;CAFs in breast cancer&quot;))</code></pre>
 <p><img src="figure/NSCLC_vs_BRCA_CAFs.Rmd/umap%20CAFs%20breast-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-umap-CAFs-breast-1">
+Past versions of "umap CAFs breast-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-umap-CAFs-breast-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/a3026067b2004d329d858dea1cc7f4a4ef14d248/docs/figure/NSCLC_vs_BRCA_CAFs.Rmd/umap CAFs breast-1.png" target="_blank">a302606</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-09-23
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="signatures-related-to-slos-supplementary-figure-3e"
+</div>
+</div>
+<div id="signatures-related-to-slos-supplementary-figure-2e"
 class="section level3 tabset">
 <h3 class="tabset">Signatures related to SLOs (Supplementary Figure
-3E)</h3>
+2E)</h3>
 <div id="ccl19" class="section level4">
 <h4>CCL19</h4>
 <pre class="r"><code>FeaturePlot(data_breast, reduction = &quot;umap&quot;, 
           features = &quot;CCL19&quot;,
           cols=c(&quot;lightgrey&quot;, &quot;darkred&quot;)) + ggtitle(&quot;CAF (BRCA)&quot;)</code></pre>
 <p><img src="figure/NSCLC_vs_BRCA_CAFs.Rmd/feature%20plot%20CCL19%20total%20data%20breast-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-feature-plot-CCL19-total-data-breast-1">
+Past versions of "feature plot CCL19 total data breast-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-feature-plot-CCL19-total-data-breast-1"
+class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/a3026067b2004d329d858dea1cc7f4a4ef14d248/docs/figure/NSCLC_vs_BRCA_CAFs.Rmd/feature plot CCL19 total data breast-1.png" target="_blank">a302606</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="subset-on-ccl19-cells" class="section level3">
@@ -1095,9 +1202,9 @@ ccl19_data$cell_type[which(ccl19_data$SCT_snn_res.0.1 == 1)] &lt;- &quot;CAF1/PR
 ccl19_data$cell_type[which(ccl19_data$SCT_snn_res.0.1 == 0)] &lt;- &quot;CAF2/TRC&quot;
 ccl19_data$cell_type[which(ccl19_data$SCT_snn_res.0.1 == 2)] &lt;- &quot;CAF2/TRC&quot;</code></pre>
 </div>
-<div id="ccl19-fibroblasts-brca-supplementary-figure-3f"
+<div id="ccl19-fibroblasts-brca-supplementary-figure-2f"
 class="section level3">
-<h3>CCL19⁺ fibroblasts (BRCA) (Supplementary Figure 3F)</h3>
+<h3>CCL19⁺ fibroblasts (BRCA) (Supplementary Figure 2F)</h3>
 <pre class="r"><code>palet &lt;- cols[4:10]
 names(palet) &lt;- c(&quot;CAF1/PRC&quot;,&quot;CAF2/TRC&quot;)
 
@@ -1109,9 +1216,46 @@ DimPlot(ccl19_data, reduction = &quot;umap&quot;, group.by = &quot;cell_type&quo
  xlab(&quot;UMAP1&quot;) +
   ylab(&quot;UMAP2&quot;) + ggtitle(paste0(&quot;CCL19&quot;, expression(&quot;\u207A&quot;), &quot; fibroblasts (BRCA)&quot;))</code></pre>
 <p><img src="figure/NSCLC_vs_BRCA_CAFs.Rmd/umap%20CCL19%20TRC%20PRC-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-umap-CCL19-TRC-PRC-1">
+Past versions of "umap CCL19 TRC PRC-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-umap-CCL19-TRC-PRC-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/a3026067b2004d329d858dea1cc7f4a4ef14d248/docs/figure/NSCLC_vs_BRCA_CAFs.Rmd/umap CCL19 TRC PRC-1.png" target="_blank">a302606</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-09-23
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="dotplot-supplementary-figure-3g" class="section level3">
-<h3>Dotplot (Supplementary Figure 3G)</h3>
+</div>
+</div>
+<div id="dotplot-supplementary-figure-2g" class="section level3">
+<h3>Dotplot (Supplementary Figure 2G)</h3>
 <pre class="r"><code>data_conv &lt;-ccl19_data
 
 Idents(data_conv) &lt;- data_conv$cell_type
@@ -1122,6 +1266,43 @@ gene_list &lt;-c(&quot;CCL19&quot;,&quot;CCL21&quot;,&quot;PDPN&quot;,&quot;FAP&
 
 dittoDotPlot(data_conv, vars = gene_list, group.by = &quot;cell_type&quot;, size = 8,legend.size.title = &quot;Expression (%)&quot;,scale = FALSE, max = 3.5) + ylab(&quot; &quot;)</code></pre>
 <p><img src="figure/NSCLC_vs_BRCA_CAFs.Rmd/dotplot%20breast%20cancer-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-spaces-dotplot-breast-cancer-1">
+Past versions of "dotplot breast cancer-1.png"
+</button>
+</p>
+<div id="fig-no-spaces-dotplot-breast-cancer-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/a3026067b2004d329d858dea1cc7f4a4ef14d248/docs/figure/NSCLC_vs_BRCA_CAFs.Rmd/dotplot breast cancer-1.png" target="_blank">a302606</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2024-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="session-info" class="section level3">
 <h3>Session info</h3>
@@ -1225,7 +1406,7 @@ loaded via a namespace (and not attached):
 [141] ROCR_1.0-11                 igraph_1.5.0.1             
 [143] bslib_0.5.0                </code></pre>
 <pre class="r"><code>date()</code></pre>
-<pre><code>[1] &quot;Mon Sep 23 15:08:11 2024&quot;</code></pre>
+<pre><code>[1] &quot;Tue Nov  5 21:36:47 2024&quot;</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
