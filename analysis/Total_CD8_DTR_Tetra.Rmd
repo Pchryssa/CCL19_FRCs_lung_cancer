@@ -79,7 +79,7 @@ DimPlot(CD8_T, reduction = "umap", group.by = "annot")+
   ylab("UMAP2") + ggtitle(paste0("CD8", "\U207A ", "T cells (mCOV-FIt31-g33)"))
 ```
 
-#### Dotplot CD8`r knitr::asis_output("\U207A")` T cell subsets (Supplementary Figure 6E)
+#### Dotplot CD8`r knitr::asis_output("\U207A")` T cell subsets (Supplementary Figure 6H)
 ```{r dotplot CD8 T cells}
 data_conv <-CD8_T
 data_conv <-Remove_ensebl_id(data_conv)
