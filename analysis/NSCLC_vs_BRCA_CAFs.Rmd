@@ -66,7 +66,7 @@ palet <- c("#1B9E77", "#54B0E4","#E3BE00", "#E41A1C")
 names(palet) <- c("CAF2/TRC","CAF1/PRC","AdvFB" ,"SMC/PC")
 ```
 
-### Dotplot with apCAF, iCAF and myCAF gene signatures (Supplementary Figure 3C)
+### Dotplot with apCAF, iCAF and myCAF gene signatures (Supplementary Figure 2C)
 ```{r dotplot, fig.width=17, fig.height=4}
 data_conv <-NSCLC_CCL19_TRC_PRC
 data_conv <-Remove_ensebl_id(data_conv)
@@ -83,7 +83,7 @@ DotPlot(object = data_conv, features=CAF_subsets,group.by = "cell_type" ,scale=F
   theme(axis.text.x = element_text(angle = 90,hjust = 1,colour = NULL,face="bold"),axis.title.x.top=element_text(hjust = 1,face="bold")) +xlab(" ")+ylab(" ")
 ```
 
-### CAF Signatures (Supplementary Figure 3D) {.tabset}
+### CAF Signatures (Supplementary Figure 2D) {.tabset}
 #### apCAF signature
 ```{r apCAF sign, results='hide'}
 apCAF_genes <-c("CD74","HLA-DRB1","HLA-DRA","HLA-DQB1")
@@ -152,7 +152,7 @@ DimPlot(data_breast, reduction = "umap", group.by = "CAFtype")+
   ylab("UMAP2") + ggtitle(paste0("CAFs in breast cancer"))
 ```
 
-### Signatures related to SLOs (Supplementary Figure 3E)  {.tabset}
+### Signatures related to SLOs (Supplementary Figure 2E)  {.tabset}
 #### CCL19
 ```{r feature plot CCL19 total data breast}
 FeaturePlot(data_breast, reduction = "umap", 
@@ -186,7 +186,7 @@ ccl19_data$cell_type[which(ccl19_data$SCT_snn_res.0.1 == 0)] <- "CAF2/TRC"
 ccl19_data$cell_type[which(ccl19_data$SCT_snn_res.0.1 == 2)] <- "CAF2/TRC"
 ```
 
-### CCL19`r knitr::asis_output("\U207A")` fibroblasts (BRCA) (Supplementary Figure 3F)
+### CCL19`r knitr::asis_output("\U207A")` fibroblasts (BRCA) (Supplementary Figure 2F)
 ```{r umap CCL19 TRC PRC}
 palet <- cols[4:10]
 names(palet) <- c("CAF1/PRC","CAF2/TRC")
@@ -200,7 +200,7 @@ DimPlot(ccl19_data, reduction = "umap", group.by = "cell_type", cols= palet)+
   ylab("UMAP2") + ggtitle(paste0("CCL19", expression("\u207A"), " fibroblasts (BRCA)"))
 ```
 
-### Dotplot (Supplementary Figure 3G)
+### Dotplot (Supplementary Figure 2G)
 ```{r dotplot breast cancer}
 data_conv <-ccl19_data
 
