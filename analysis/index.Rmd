@@ -39,7 +39,7 @@ knitr::asis_output("\U207A","\U2212")
 * NSCLC differentiation: [NSCLC_trajectory_analysis.html](NSCLC_trajectory_analysis.html)
 
 
-## **Protocol to investigate fibroblastic reticular cell-immune cell interaction in human lung cancer**
+#### **Protocol to investigate fibroblastic reticular cell-immune cell interaction in human lung cancer**
 
 **Figure 3**
 
