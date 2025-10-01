@@ -3,6 +3,8 @@
 
 This repository contains scripts to reproduce the computational analysis from the paper ["Fibroblastic reticular cells generate protective intratumoral T cell environments in lung cancer"](https://doi.org/10.1016/j.cell.2024.10.042), published at Cell on 19 November 2024
 
+This repository also contains scripts to reproduce the computational analysis from the paper ["Protocol to investigate fibroblastic reticular cell-immune cell interaction in human lung cancer"]
+
 A graphical representation of the analysis is displayed here: https://pchryssa.github.io/CCL19_FRCs_lung_cancer/ 
 
 
