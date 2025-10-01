@@ -106,7 +106,7 @@ FeaturePlot(experiment.harmonized, reduction = "umap",
 ```
 
 ### CAF gene signatures (Figure 3B)
-```{r dotplot CAFs, fig.width=7}
+```{r dotplot CAFs, fig.width=10}
 data_conv <- experiment.harmonized
 data_conv <-Remove_ensebl_id(data_conv)
 
