@@ -39,6 +39,16 @@ knitr::asis_output("\U207A","\U2212")
 * NSCLC differentiation: [NSCLC_trajectory_analysis.html](NSCLC_trajectory_analysis.html)
 
 
+### **Protocol to investigate fibroblastic reticular cell-immune cell interaction in human lung cancer**
+
+**Figure 3**
+
+* Characterize CAFs and TILs in NSCLC : [FRC_TIL_landscape.html](FRC_TIL_landscape.html)
+
+**Figure 4**
+
+* Define CCL19`r knitr::asis_output("\U207A")` FRC subsets in NSCLC and infer their intercellular communication with immune cells  : [comparison_CCL19_FRC_NSCLC_tonsil.html](comparison_CCL19_FRC_NSCLC_tonsil.html)
+
 
 ### **Murine Lung Tumors** :
 
@@ -60,6 +70,5 @@ knitr::asis_output("\U207A","\U2212")
 * Characterize total CD8 T cells in DTR lungs and perform interactome analysis between TLS TRC, Sulf1⁺ TRC and Tetramer⁺ CD8⁺ T cells : [Total_CD8_DTR_Tetra.html](Total_CD8_DTR_Tetra.html)
 
 * Comparison of naive CCL19-EYFP cells vs mCOV-FIt31-g33 CCL19-EYFP cells : [mcov_R.html](mcov_R.html)
-
 
 
