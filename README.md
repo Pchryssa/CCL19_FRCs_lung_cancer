@@ -19,3 +19,5 @@ We compared NSCLC with tonsilar data taken from [this](https://doi.org/10.1038/s
 
 
 Processed R data objects can be downloaded from [figshare](https://doi.org/10.6084/m9.figshare.26827640)
+
+[![DOI](https://zenodo.org/badge/839786594.svg)](https://doi.org/10.5281/zenodo.17245490)
