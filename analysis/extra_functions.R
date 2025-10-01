@@ -1370,3 +1370,77 @@ plot_top_de <- function(sce_nam, part, gene_list){
   }) %>% patchwork::wrap_plots()
 }
 
+comAnalysis_joint_dot <-function (object, slot.name = "netP", cutoff = NULL, color.use = palet, pathway.show = NULL, 
+                                  group.show = NULL, shape = 21, dot.size = c(0.5, 3), dot.alpha = 1, 
+                                  main.title = NULL, font.size = 10, font.size.title = 10, 
+                                  pathways = pathways,order_list = order_list, exclude =NULL) 
+{
+  
+  if (!is.null(exclude)) {
+    order_list  <- order_list[!(order_list %in% exclude)]
+  }
+  palet <- palet[names(palet) %in% order_list]
+  df1 <-dotPlot_construct(cellchat, pattern = "outgoing",color.use = palet)
+  df2 <-dotPlot_construct(cellchat, pattern = "incoming",color.use = palet)
+  df <-rbind(df2,df1)
+  df <-df[df$Signaling %in% pathways,]
+  if (!is.null(exclude)) {
+    df <-df[df$CellGroup %in% order_list,]
+  }
+  
+  y_values_order <-c(rbind(paste0(order_list, " _ ", "out"),paste0(order_list, " _ ", "in")))
+  
+  df <-df[order(match(df$CellGroup, order_list)), ]
+  df <-df[rowSums(is.na(df[ , 3])) == 0, ]
+  
+  list_dfs <-df %>%
+    group_split(Signaling) %>% 
+    set_names(map_chr(., ~ paste0(.$Signaling[[1]])))
+  
+  list_dfs <- tapply(list_dfs, names(list_dfs), do.call, what = "rbind")
+  
+  list_immune <- c(paste0("CD8", "\u207A ", "T cells"),
+                   paste0("Cycling CD8", "\u207A ", "T cells"),
+                   paste0("CD4", "\u207A ", "T cells"),"B cells", "Regulatory T cells")
+  list_stroma <- c("CAF2/TRC","CAF1/PRC") 
+  
+  new_df_list <- lapply(list_dfs, function(z){
+    if (any((unique(z$CellGroup) %in% list_immune)) & any((unique(z$CellGroup) %in% list_stroma))) {
+    }else{
+      z[] <- NA
+    }
+    z
+  })
+  new_df_list <-new_df_list[!sapply(seq_len(length(new_df_list)), function (i) all(is.na(new_df_list[[i]])))]
+  
+  df <-df[df$Signaling %in% names(new_df_list),]
+  df$Signaling <- factor(df$Signaling, levels = names(new_df_list))
+  df$celltype_cond <- factor(df$celltype_cond, levels = y_values_order)
+  df$CellGroup <- droplevels(df$CellGroup)
+  gg <- ggplot(data = df, aes(x = Signaling, y = celltype_cond)) + 
+    geom_point(aes(size = Contribution, fill = CellGroup, 
+                   colour = CellGroup), shape = shape) + scale_size_continuous(range = dot.size) + 
+    theme_linedraw() + scale_x_discrete(position = "bottom") + 
+    ggtitle("In- and outcoming communication patterns") + theme(plot.title = element_text(hjust = 0.5)) + 
+    theme(text = element_text(size = font.size), plot.title = element_text(size = font.size.title, 
+                                                                           face = "plain"), axis.text.x = element_text(angle = 45, 
+                                                                                                                       hjust = 1), axis.text.y = element_text(angle = 0, 
+                                                                                                                                                              hjust = 1), axis.title.x = element_blank(), axis.title.y = element_blank()) + 
+    theme(axis.line.x = element_line(size = 0.25), axis.line.y = element_line(size = 0.25)) + 
+    theme(panel.grid.major = element_line(colour = "grey90", 
+                                          size = (0.1)),
+          axis.ticks.length=unit(.05, "cm")) + coord_fixed(ratio=0.8)
+  
+  gg <- gg + scale_fill_manual(values = ggplot2::alpha(color.use, 
+                                                       alpha = dot.alpha), drop = FALSE, na.value = "white")
+  gg <- gg + scale_colour_manual(values = color.use, drop = FALSE, 
+                                 na.value = "white")
+  gg <- gg + theme(legend.title = element_text(size = 8), 
+                   legend.text = element_text(size = 8))
+  gg <- gg + scale_shape_manual(values= c("25","50","70"))
+  gg <- gg + scale_y_discrete(label = function(x) {
+    x %>% gsub(".*_", " ", .) 
+  })
+  
+  return(list(new_df_list = names(new_df_list), gg = gg))
+}
