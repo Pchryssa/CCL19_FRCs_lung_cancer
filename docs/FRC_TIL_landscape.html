@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Chrysa Papadopoulou" />
+
+
+<title>Characterization of cancer-associated fibroblasts (CAFs) and tumor-infiltrating lymphocytes (TILs) in non-small cell lung cancer</title>
+
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">CCL19_FRCs_lung_cancer</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Characterization of cancer-associated
+fibroblasts (CAFs) and tumor-infiltrating lymphocytes (TILs) in
+non-small cell lung cancer</h1>
+<h4 class="author">Chrysa Papadopoulou</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-10-01
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>CCL19_FRCs_lung_cancer/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20240808code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20240808)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20240808code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20240808)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertreecb1c77d1b630ad166b8d13ae2072e1b4cd3afe9ctargetblankcb1c77da">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/cb1c77d1b630ad166b8d13ae2072e1b4cd3afe9c" target="_blank">cb1c77d</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomPchryssaCCL19FRCslungcancertreecb1c77d1b630ad166b8d13ae2072e1b4cd3afe9ctargetblankcb1c77da"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/tree/cb1c77d1b630ad166b8d13ae2072e1b4cd3afe9c" target="_blank">cb1c77d</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    analysis/.DS_Store
+    Ignored:    data/Final_submission/
+    Ignored:    data/Human/
+    Ignored:    data/Mouse/
+    Ignored:    data/Public/
+    Ignored:    output/GSEA_AdvFB_SULF1/
+    Ignored:    output/GSEA_AdvFB_TLS/
+    Ignored:    output/GSEA_CCR7_T/
+    Ignored:    output/GSEA_CD8_T/
+    Ignored:    output/GSEA_CYCL_T/
+    Ignored:    output/GSEA_EXH_T/
+    Ignored:    output/GSEA_SMC_PRC/
+
+Untracked files:
+    Untracked:  README.html
+    Untracked:  analysis/.h5seurat
+    Untracked:  analysis/Compare_tumors.Rmd
+    Untracked:  analysis/NSCLC_PDAC_CAFs.Rmd
+    Untracked:  analysis/QC_NSCLC.Rmd
+    Untracked:  analysis/Seurat_to_SCE.Rmd
+    Untracked:  analysis/comparison_CCL19_FRC_NSCLC_tonsil.Rmd
+    Untracked:  analysis/compression.Rmd
+    Untracked:  analysis/gene_metaprograms.Rmd
+    Untracked:  analysis/index_hidden.Rmd
+
+Unstaged changes:
+    Modified:   analysis/extra_functions.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/FRC_TIL_landscape.Rmd</code>) and
+HTML (<code>docs/FRC_TIL_landscape.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/Pchryssa/CCL19_FRCs_lung_cancer/blob/cb1c77d1b630ad166b8d13ae2072e1b4cd3afe9c/analysis/FRC_TIL_landscape.Rmd" target="_blank">cb1c77d</a>
+</td>
+<td>
+Pchryssa
+</td>
+<td>
+2025-10-01
+</td>
+<td>
+FRC TIL landscape
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="load-packages" class="section level3">
+<h3>Load packages</h3>
+<pre class="r"><code>suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(Seurat)
+  library(dittoSeq)
+  library(CellChat)
+  library(harmony)
+  library(ggsci)
+  library(bigmds)
+})</code></pre>
+</div>
+<div id="set-directory" class="section level2">
+<h2>Set directory</h2>
+<pre class="r"><code>basedir &lt;- here()</code></pre>
+</div>
+<div
+id="characterization-of-cancer-associated-fibroblasts-cafs-in-nsclc"
+class="section level2">
+<h2><strong>Characterization of cancer-associated fibroblasts (CAFs) in
+NSCLC</strong></h2>
+<div id="read-stroma-cell-data" class="section level3">
+<h3>Read Stroma cell data</h3>
+<pre class="r"><code>NSCLC_data &lt;- readRDS(paste0(basedir,&quot;/data/Human/NSCLC_stroma_total.rds&quot;))</code></pre>
+</div>
+<div id="subset-on-cafs-only" class="section level3">
+<h3>Subset on CAFs only</h3>
+<pre class="r"><code>CAFs_NSCLC &lt;- subset(NSCLC_data, cell_type %in% c(&quot;CAF2&quot;, &quot;CAF1&quot;))
+
+#Do preprocessing again without re normalization
+resolution &lt;- c(0.1, 0.25, 0.4, 0.6, 0.8, 1., 1.2, 1.4, 1.6, 2., 2.2, 2.4)
+CAFs_NSCLC &lt;- FindVariableFeatures(CAFs_NSCLC, selection.method = &quot;vst&quot;, nfeatures = 2000)
+CAFs_NSCLC &lt;- ScaleData(CAFs_NSCLC)
+CAFs_NSCLC &lt;- RunPCA(object = CAFs_NSCLC, npcs = 30, verbose = FALSE,seed.use = 8734)
+CAFs_NSCLC &lt;- RunTSNE(object = CAFs_NSCLC, reduction = &quot;pca&quot;, dims = 1:20, seed.use = 8734)
+CAFs_NSCLC &lt;- RunUMAP(object = CAFs_NSCLC, reduction = &quot;pca&quot;, dims = 1:20, seed.use = 8734)
+CAFs_NSCLC &lt;- FindNeighbors(object = CAFs_NSCLC, reduction = &quot;pca&quot;, dims = 1:20, seed.use = 8734)
+for(k in 1:length(resolution)){
+  CAFs_NSCLC &lt;- FindClusters(object = CAFs_NSCLC, resolution = resolution[k], random.seed = 8734)
+}</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9577
+Number of communities: 6
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9283
+Number of communities: 11
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9120
+Number of communities: 13
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8958
+Number of communities: 20
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8832
+Number of communities: 21
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8708
+Number of communities: 24
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8601
+Number of communities: 26
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8505
+Number of communities: 27
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8410
+Number of communities: 29
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8245
+Number of communities: 36
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8183
+Number of communities: 36
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1278142
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8112
+Number of communities: 42
+Elapsed time: 7 seconds</code></pre>
+</div>
+<div id="data-integration-with-harmony" class="section level3">
+<h3>Data integration with Harmony</h3>
+<pre class="r"><code>experiment.harmonized &lt;- RunHarmony(CAFs_NSCLC,
+                group.by.vars = c(&quot;patient&quot;),
+                reduction = &quot;pca&quot;, reduction.save = &quot;harmony&quot;, plot_convergence = TRUE)</code></pre>
+<p><img src="figure/FRC_TIL_landscape.Rmd/integration%20with%20harmony-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>harmony_embeddings &lt;- Embeddings(experiment.harmonized, &#39;harmony&#39;)
+
+experiment.harmonized &lt;- RunUMAP(experiment.harmonized, dims = 1:30,seed.use = 1753,reduction = &quot;harmony&quot;)
+experiment.harmonized &lt;- FindNeighbors(experiment.harmonized, dims = 1:30,seed.use = 1753, reduction = &quot;harmony&quot;)
+resolution &lt;- c(0.1, 0.15, 0.125, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45 , 0.5, 0.6, 0.8, 1., 1.2, 1.4, 1.6, 1.8, 2., 2.2, 2.5)
+for(k in 1:length(resolution)){
+  experiment.harmonized &lt;- FindClusters(object = experiment.harmonized, resolution = resolution[k], algorithm = 1,random.seed = 1753)
+}</code></pre>
+<pre><code>Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9550
+Number of communities: 6
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9404
+Number of communities: 8
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9479
+Number of communities: 7
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9285
+Number of communities: 8
+Elapsed time: 9 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9177
+Number of communities: 8
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9081
+Number of communities: 10
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.9001
+Number of communities: 11
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8912
+Number of communities: 11
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8844
+Number of communities: 12
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8774
+Number of communities: 12
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8661
+Number of communities: 13
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8475
+Number of communities: 16
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8340
+Number of communities: 21
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8223
+Number of communities: 24
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8127
+Number of communities: 27
+Elapsed time: 8 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.8033
+Number of communities: 26
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.7946
+Number of communities: 31
+Elapsed time: 6 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.7866
+Number of communities: 33
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.7782
+Number of communities: 34
+Elapsed time: 7 seconds
+Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+
+Number of nodes: 40477
+Number of edges: 1311218
+
+Running Louvain algorithm...
+Maximum modularity in 10 random starts: 0.7667
+Number of communities: 36
+Elapsed time: 7 seconds</code></pre>
+</div>
+<div id="cancer-associated-fibroblasts---cafs-subsets-figure-3a"
+class="section level3">
+<h3>Cancer associated fibroblasts - CAFs subsets (Figure 3A)</h3>
+<pre class="r"><code>cols&lt;- pal_igv()(51)
+names(cols) &lt;- c(0:50)
+palet &lt;- cols[4:6]
+names(palet) &lt;- c(&quot;CAF2&quot;,&quot;CAF1&quot;)
+
+DimPlot(experiment.harmonized, reduction = &quot;umap&quot;, group.by = &quot;cell_type&quot;, cols= palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+         panel.grid.major = element_blank()) +
+ xlab(&quot;UMAP1&quot;) +
+ylab(&quot;UMAP2&quot;) + ggtitle(&quot;Cancer associated fibroblasts&quot;)</code></pre>
+<p><img src="figure/FRC_TIL_landscape.Rmd/umap%20CAFs-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ccl19-expression-in-cafs-of-nsclc-figure-4a"
+class="section level3">
+<h3>CCL19 expression in CAFs of NSCLC (Figure 4A)</h3>
+<pre class="r"><code>FeaturePlot(experiment.harmonized, reduction = &quot;umap&quot;, 
+          features = get_full_gene_name(&#39;CCL19&#39;,experiment.harmonized),raster=FALSE,
+          cols=c(&quot;lightgrey&quot;, &quot;red&quot;))</code></pre>
+<p><img src="figure/FRC_TIL_landscape.Rmd/CCL19%20sign%20umap-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="caf-gene-signatures-figure-3b" class="section level3">
+<h3>CAF gene signatures (Figure 3B)</h3>
+<pre class="r"><code>data_conv &lt;- experiment.harmonized
+data_conv &lt;-Remove_ensebl_id(data_conv)
+
+gene_list &lt;- c(&quot;CCL19&quot;,&quot;CCL21&quot;,&quot;PDPN&quot;,&quot;FAP&quot;,&quot;POSTN&quot;,&quot;CLU&quot;,&quot;LEPR&quot;,&quot;CD34&quot;,&quot;SULF1&quot;,&quot;DPT&quot;,&quot;ICAM1&quot;,
+&quot;VCAM1&quot;,&quot;CXCL12&quot;,&quot;ALDH1A1&quot;,&quot;MMP2&quot;,&quot;ACTA2&quot;,&quot;MYH11&quot;,&quot;MCAM&quot;,&quot;NOTCH3&quot;,&quot;RGS5&quot;,
+&quot;DES&quot;,&quot;AIFM2&quot;,&quot;CSPG4&quot;, &quot;KCNJ8&quot;, &quot;ITGA7&quot;)
+
+dittoDotPlot(data_conv, vars = gene_list, group.by = &quot;cell_type&quot;, size = 8,legend.size.title = &quot;Expression (%)&quot;,scale = FALSE) + ylab(&quot; &quot;) </code></pre>
+<p><img src="figure/FRC_TIL_landscape.Rmd/dotplot%20CAFs-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div
+id="characterization-of-tumor-infiltrating-lymphocytes-tils-in-nsclc"
+class="section level2">
+<h2><strong>Characterization of tumor-infiltrating lymphocytes (TILs) in
+NSCLC</strong></h2>
+<div id="read-nsclc-til-data" class="section level3">
+<h3>Read NSCLC TIL data</h3>
+<pre class="r"><code>NSCLS_TIL_data &lt;- readRDS(paste0(basedir,&quot;/data/Human/NSCLC_TILs.rds&quot;))</code></pre>
+</div>
+<div id="tumor-infiltrating-lymphocytes-tils-subsets-figure-3c"
+class="section level3">
+<h3>Tumor-infiltrating lymphocytes (TILS) subsets (Figure 3C)</h3>
+<pre class="r"><code>#Define color palet
+palet &lt;- c(&quot;#5050FFFF&quot;, &quot;#CE3D32FF&quot;, &quot;#4DAF4A&quot;,&quot;#FB9A99&quot;,&quot;#377EB8&quot;,&quot;#A65628&quot;,&quot;#222F75&quot;)
+names(palet) &lt;- c( &quot;CAF2/TRC&quot;,&quot;CAF1/PRC&quot;, paste0(&quot;CD4&quot;, &quot;\u207A &quot;, &quot;T cells&quot;), paste0(&quot;CD8&quot;, &quot;\u207A &quot;, &quot;T cells&quot;), &quot;B cells&quot;, &quot;Regulatory T cells&quot;,paste0(&quot;Cycling CD8&quot;, &quot;\u207A &quot;, &quot;T cells&quot;))
+
+
+DimPlot(NSCLS_TIL_data, reduction = &quot;umap&quot;, group.by = &quot;cell_type&quot;, cols=palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+         panel.grid.major = element_blank()) +
+  xlab(&quot;UMAP1&quot;) +
+  ylab(&quot;UMAP2&quot;) + ggtitle(paste0(&quot;Tumor infiltrating lymphocytes&quot;))</code></pre>
+<p><img src="figure/FRC_TIL_landscape.Rmd/umap%20TILs-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="til-gene-signatures-figure-3d" class="section level3">
+<h3>TIL gene signatures (Figure 3D)</h3>
+<pre class="r"><code>data_conv &lt;-Remove_ensebl_id(NSCLS_TIL_data) 
+
+genes &lt;- c(&quot;CD79A&quot;,&quot;IGHM&quot;,&quot;IGHD&quot;,&quot;JCHAIN&quot;,&quot;CD4&quot;,&quot;CCR7&quot;,&quot;SELL&quot;,&quot;FOXP3&quot;,&quot;IKZF4&quot;,&quot;IL2RA&quot;,&quot;CTLA4&quot;,&quot;CD8A&quot;,&quot;CX3CR1&quot;,&quot;FCGR3A&quot;,&quot;KIR3DL2&quot;,&quot;KLRF1&quot;, &quot;NKG7&quot;,&quot;GZMB&quot;,&quot;GNLY&quot;,&quot;TIGIT&quot;,&quot;TOP2A&quot;,&quot;MKI67&quot;,&quot;PCLAF&quot;)
+
+data_conv$cell_type &lt;- factor(data_conv$cell_type, levels = c(&quot;B cells&quot;,paste0(&quot;CD4&quot;, &quot;\u207A &quot;, &quot;T cells&quot;),&quot;Regulatory T cells&quot;,paste0(&quot;CD8&quot;, &quot;\u207A &quot;, &quot;T cells&quot;), paste0(&quot;Cycling CD8&quot;, &quot;\u207A &quot;, &quot;T cells&quot;)))
+  
+gg &lt;-dittoDotPlot(data_conv, vars = genes, group.by = &quot;cell_type&quot;, size = 4)
+gg + coord_fixed(ratio=0.8) + ylab(&quot;&quot;)</code></pre>
+<p><img src="figure/FRC_TIL_landscape.Rmd/TILS%20dotplot-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="session-info" class="section level3">
+<h3>Session info</h3>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS 15.6.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Zurich
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] bigmds_3.0.0        ggsci_3.0.0         harmony_1.2.0      
+ [4] Rcpp_1.0.11         CellChat_1.6.1      Biobase_2.60.0     
+ [7] BiocGenerics_0.46.0 igraph_1.5.0.1      dplyr_1.1.2        
+[10] dittoSeq_1.12.1     ggplot2_3.4.2       SeuratObject_5.1.0 
+[13] Seurat_4.3.0.1      purrr_1.0.1         here_1.0.1         
+[16] magrittr_2.0.3      circlize_0.4.15     tidyr_1.3.0        
+[19] tibble_3.2.1        workflowr_1.7.1    
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.21            splines_4.3.1              
+  [3] later_1.3.1                 bitops_1.0-7               
+  [5] polyclip_1.10-4             ggnetwork_0.5.12           
+  [7] lifecycle_1.0.3             rstatix_0.7.2              
+  [9] doParallel_1.0.17           rprojroot_2.0.3            
+ [11] globals_0.16.2              processx_3.8.2             
+ [13] lattice_0.21-8              MASS_7.3-60                
+ [15] backports_1.4.1             plotly_4.10.2              
+ [17] sass_0.4.7                  rmarkdown_2.23             
+ [19] jquerylib_0.1.4             yaml_2.3.7                 
+ [21] httpuv_1.6.11               NMF_0.26                   
+ [23] sctransform_0.4.1           spam_2.10-0                
+ [25] sp_2.0-0                    spatstat.sparse_3.0-2      
+ [27] reticulate_1.36.1           cowplot_1.1.1              
+ [29] pbapply_1.7-2               RColorBrewer_1.1-3         
+ [31] abind_1.4-5                 zlibbioc_1.46.0            
+ [33] Rtsne_0.16                  GenomicRanges_1.52.0       
+ [35] RCurl_1.98-1.12             pracma_2.4.4               
+ [37] git2r_0.33.0                GenomeInfoDbData_1.2.10    
+ [39] IRanges_2.34.1              S4Vectors_0.38.1           
+ [41] svd_0.5.5                   ggrepel_0.9.3              
+ [43] irlba_2.3.5.1               listenv_0.9.0              
+ [45] spatstat.utils_3.1-0        pheatmap_1.0.12            
+ [47] RSpectra_0.16-1             goftest_1.2-3              
+ [49] spatstat.random_3.1-5       fitdistrplus_1.1-11        
+ [51] parallelly_1.36.0           svglite_2.1.1              
+ [53] leiden_0.4.3                codetools_0.2-19           
+ [55] DelayedArray_0.28.0         tidyselect_1.2.0           
+ [57] shape_1.4.6                 farver_2.1.1               
+ [59] matrixStats_1.0.0           stats4_4.3.1               
+ [61] spatstat.explore_3.2-1      jsonlite_1.8.7             
+ [63] GetoptLong_1.0.5            BiocNeighbors_1.18.0       
+ [65] ellipsis_0.3.2              progressr_0.13.0           
+ [67] ggalluvial_0.12.5           ggridges_0.5.4             
+ [69] survival_3.5-5              iterators_1.0.14           
+ [71] systemfonts_1.0.4           foreach_1.5.2              
+ [73] tools_4.3.1                 ragg_1.2.5                 
+ [75] sna_2.7-1                   ica_1.0-3                  
+ [77] glue_1.6.2                  gridExtra_2.3              
+ [79] SparseArray_1.2.4           xfun_0.39                  
+ [81] MatrixGenerics_1.12.3       GenomeInfoDb_1.36.1        
+ [83] withr_2.5.0                 BiocManager_1.30.21.1      
+ [85] fastmap_1.1.1               fansi_1.0.4                
+ [87] callr_3.7.3                 digest_0.6.33              
+ [89] R6_2.5.1                    mime_0.12                  
+ [91] textshaping_0.3.6           colorspace_2.1-0           
+ [93] scattermore_1.2             tensor_1.5                 
+ [95] spatstat.data_3.0-1         RhpcBLASctl_0.23-42        
+ [97] utf8_1.2.3                  generics_0.1.3             
+ [99] data.table_1.14.8           FNN_1.1.3.2                
+[101] httr_1.4.6                  htmlwidgets_1.6.2          
+[103] S4Arrays_1.2.1              whisker_0.4.1              
+[105] uwot_0.1.16                 pkgconfig_2.0.3            
+[107] gtable_0.3.3                registry_0.5-1             
+[109] ComplexHeatmap_2.16.0       lmtest_0.9-40              
+[111] SingleCellExperiment_1.22.0 XVector_0.40.0             
+[113] htmltools_0.5.5             carData_3.0-5              
+[115] dotCall64_1.1-1             clue_0.3-64                
+[117] scales_1.2.1                png_0.1-8                  
+[119] knitr_1.43                  rstudioapi_0.15.0          
+[121] rjson_0.2.21                reshape2_1.4.4             
+[123] coda_0.19-4                 statnet.common_4.9.0       
+[125] nlme_3.1-162                cachem_1.0.8               
+[127] zoo_1.8-12                  GlobalOptions_0.1.2        
+[129] stringr_1.5.0               KernSmooth_2.23-22         
+[131] parallel_4.3.1              miniUI_0.1.1.1             
+[133] pillar_1.9.0                grid_4.3.1                 
+[135] vctrs_0.6.3                 RANN_2.6.1                 
+[137] ggpubr_0.6.0                promises_1.2.0.1           
+[139] car_3.1-2                   xtable_1.8-4               
+[141] cluster_2.1.4               evaluate_0.21              
+[143] cli_3.6.1                   compiler_4.3.1             
+[145] rlang_1.1.1                 crayon_1.5.2               
+[147] rngtools_1.5.2              ggsignif_0.6.4             
+[149] future.apply_1.11.0         labeling_0.4.2             
+[151] ps_1.7.5                    getPass_0.2-4              
+[153] plyr_1.8.8                  fs_1.6.3                   
+[155] stringi_1.7.12              network_1.18.1             
+[157] BiocParallel_1.34.2         viridisLite_0.4.2          
+[159] deldir_1.0-9                gridBase_0.4-7             
+[161] munsell_0.5.0               lazyeval_0.2.2             
+[163] spatstat.geom_3.2-4         Matrix_1.6-4               
+[165] patchwork_1.1.2             future_1.33.0              
+[167] shiny_1.7.4.1               highr_0.10                 
+[169] SummarizedExperiment_1.30.2 ROCR_1.0-11                
+[171] broom_1.0.5                 bslib_0.5.0                </code></pre>
+<pre class="r"><code>date()</code></pre>
+<pre><code>[1] &quot;Wed Oct  1 17:19:19 2025&quot;</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.3.1 (2023-06-16)
+Platform: aarch64-apple-darwin20 (64-bit)
+Running under: macOS 15.6.1
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Zurich
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] bigmds_3.0.0        ggsci_3.0.0         harmony_1.2.0      
+ [4] Rcpp_1.0.11         CellChat_1.6.1      Biobase_2.60.0     
+ [7] BiocGenerics_0.46.0 igraph_1.5.0.1      dplyr_1.1.2        
+[10] dittoSeq_1.12.1     ggplot2_3.4.2       SeuratObject_5.1.0 
+[13] Seurat_4.3.0.1      purrr_1.0.1         here_1.0.1         
+[16] magrittr_2.0.3      circlize_0.4.15     tidyr_1.3.0        
+[19] tibble_3.2.1        workflowr_1.7.1    
+
+loaded via a namespace (and not attached):
+  [1] RcppAnnoy_0.0.21            splines_4.3.1              
+  [3] later_1.3.1                 bitops_1.0-7               
+  [5] polyclip_1.10-4             ggnetwork_0.5.12           
+  [7] lifecycle_1.0.3             rstatix_0.7.2              
+  [9] doParallel_1.0.17           rprojroot_2.0.3            
+ [11] globals_0.16.2              processx_3.8.2             
+ [13] lattice_0.21-8              MASS_7.3-60                
+ [15] backports_1.4.1             plotly_4.10.2              
+ [17] sass_0.4.7                  rmarkdown_2.23             
+ [19] jquerylib_0.1.4             yaml_2.3.7                 
+ [21] httpuv_1.6.11               NMF_0.26                   
+ [23] sctransform_0.4.1           spam_2.10-0                
+ [25] sp_2.0-0                    spatstat.sparse_3.0-2      
+ [27] reticulate_1.36.1           cowplot_1.1.1              
+ [29] pbapply_1.7-2               RColorBrewer_1.1-3         
+ [31] abind_1.4-5                 zlibbioc_1.46.0            
+ [33] Rtsne_0.16                  GenomicRanges_1.52.0       
+ [35] RCurl_1.98-1.12             pracma_2.4.4               
+ [37] git2r_0.33.0                GenomeInfoDbData_1.2.10    
+ [39] IRanges_2.34.1              S4Vectors_0.38.1           
+ [41] svd_0.5.5                   ggrepel_0.9.3              
+ [43] irlba_2.3.5.1               listenv_0.9.0              
+ [45] spatstat.utils_3.1-0        pheatmap_1.0.12            
+ [47] RSpectra_0.16-1             goftest_1.2-3              
+ [49] spatstat.random_3.1-5       fitdistrplus_1.1-11        
+ [51] parallelly_1.36.0           svglite_2.1.1              
+ [53] leiden_0.4.3                codetools_0.2-19           
+ [55] DelayedArray_0.28.0         tidyselect_1.2.0           
+ [57] shape_1.4.6                 farver_2.1.1               
+ [59] matrixStats_1.0.0           stats4_4.3.1               
+ [61] spatstat.explore_3.2-1      jsonlite_1.8.7             
+ [63] GetoptLong_1.0.5            BiocNeighbors_1.18.0       
+ [65] ellipsis_0.3.2              progressr_0.13.0           
+ [67] ggalluvial_0.12.5           ggridges_0.5.4             
+ [69] survival_3.5-5              iterators_1.0.14           
+ [71] systemfonts_1.0.4           foreach_1.5.2              
+ [73] tools_4.3.1                 ragg_1.2.5                 
+ [75] sna_2.7-1                   ica_1.0-3                  
+ [77] glue_1.6.2                  gridExtra_2.3              
+ [79] SparseArray_1.2.4           xfun_0.39                  
+ [81] MatrixGenerics_1.12.3       GenomeInfoDb_1.36.1        
+ [83] withr_2.5.0                 BiocManager_1.30.21.1      
+ [85] fastmap_1.1.1               fansi_1.0.4                
+ [87] callr_3.7.3                 digest_0.6.33              
+ [89] R6_2.5.1                    mime_0.12                  
+ [91] textshaping_0.3.6           colorspace_2.1-0           
+ [93] scattermore_1.2             tensor_1.5                 
+ [95] spatstat.data_3.0-1         RhpcBLASctl_0.23-42        
+ [97] utf8_1.2.3                  generics_0.1.3             
+ [99] data.table_1.14.8           FNN_1.1.3.2                
+[101] httr_1.4.6                  htmlwidgets_1.6.2          
+[103] S4Arrays_1.2.1              whisker_0.4.1              
+[105] uwot_0.1.16                 pkgconfig_2.0.3            
+[107] gtable_0.3.3                registry_0.5-1             
+[109] ComplexHeatmap_2.16.0       lmtest_0.9-40              
+[111] SingleCellExperiment_1.22.0 XVector_0.40.0             
+[113] htmltools_0.5.5             carData_3.0-5              
+[115] dotCall64_1.1-1             clue_0.3-64                
+[117] scales_1.2.1                png_0.1-8                  
+[119] knitr_1.43                  rstudioapi_0.15.0          
+[121] rjson_0.2.21                reshape2_1.4.4             
+[123] coda_0.19-4                 statnet.common_4.9.0       
+[125] nlme_3.1-162                cachem_1.0.8               
+[127] zoo_1.8-12                  GlobalOptions_0.1.2        
+[129] stringr_1.5.0               KernSmooth_2.23-22         
+[131] parallel_4.3.1              miniUI_0.1.1.1             
+[133] pillar_1.9.0                grid_4.3.1                 
+[135] vctrs_0.6.3                 RANN_2.6.1                 
+[137] ggpubr_0.6.0                promises_1.2.0.1           
+[139] car_3.1-2                   xtable_1.8-4               
+[141] cluster_2.1.4               evaluate_0.21              
+[143] cli_3.6.1                   compiler_4.3.1             
+[145] rlang_1.1.1                 crayon_1.5.2               
+[147] rngtools_1.5.2              ggsignif_0.6.4             
+[149] future.apply_1.11.0         labeling_0.4.2             
+[151] ps_1.7.5                    getPass_0.2-4              
+[153] plyr_1.8.8                  fs_1.6.3                   
+[155] stringi_1.7.12              network_1.18.1             
+[157] BiocParallel_1.34.2         viridisLite_0.4.2          
+[159] deldir_1.0-9                gridBase_0.4-7             
+[161] munsell_0.5.0               lazyeval_0.2.2             
+[163] spatstat.geom_3.2-4         Matrix_1.6-4               
+[165] patchwork_1.1.2             future_1.33.0              
+[167] shiny_1.7.4.1               highr_0.10                 
+[169] SummarizedExperiment_1.30.2 ROCR_1.0-11                
+[171] broom_1.0.5                 bslib_0.5.0                </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
