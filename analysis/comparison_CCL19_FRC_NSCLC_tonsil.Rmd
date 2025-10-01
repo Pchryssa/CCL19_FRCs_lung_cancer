@@ -1,0 +1,355 @@
+---
+title: "Definition of CCL19 FRC subsets and their interactions with immune cells in NSCLC"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(Seurat)
+  library(dittoSeq)
+  library(NMF)
+  library(CellChat)
+  library(harmony)
+  library(ggsci)
+  library(bigmds)
+})
+```
+
+## Set directory
+```{r set directory}
+basedir <- here()
+```
+
+### Read NSCLC CCL19 FRC data
+```{r read CCL19 stroma cell data}
+NSCLC_CCL19_data <- readRDS(paste0(basedir,"/data/Human/NSCLC_CCL19_FRCs_CAFs.rds"))
+```
+
+### NSCLC CCL19`r knitr::asis_output("\U207A")` cells in NSCLC
+```{r umap CCL19 Cells}
+#Define color palet
+palet_CCL19_FRC <- c("#1B9E77", "#54B0E4","#E3BE00", "#E41A1C")
+names(palet_CCL19_FRC) <- c("CAF2/TRC","CAF1/PRC","AdvFB" ,"SMC/PC")
+
+palet_CCL19_FRC <- palet_CCL19_FRC[names(palet_CCL19_FRC) %in% unique(NSCLC_CCL19_data$cell_type)]
+
+DimPlot(NSCLC_CCL19_data, reduction = "umap", group.by = "cell_type",cols = palet_CCL19_FRC)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("CCL19", "\U207A ", "fibroblasts"))
+```
+
+### Subset on CCL19`r knitr::asis_output("\U207A")` FRCs  
+```{r subset CCL19 cells on FRCs}
+NCLS_FRCS <- subset(NSCLC_CCL19_data, cell_type %in% c("CAF2/TRC","CAF1/PRC"))
+
+#Preprocessing
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.7, 0.8, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0)
+NCLS_FRCS <- FindVariableFeatures(NCLS_FRCS, selection.method = "vst", nfeatures = 2000)
+NCLS_FRCS <- ScaleData(NCLS_FRCS)
+NCLS_FRCS <- RunPCA(object = NCLS_FRCS, npcs = 30, verbose = FALSE,seed.use = 8734)
+NCLS_FRCS <- RunTSNE(object = NCLS_FRCS, reduction = "pca", dims = 1:20, seed.use = 8734)
+NCLS_FRCS <- RunUMAP(object = NCLS_FRCS, reduction = "pca", dims = 1:20, seed.use = 8734)
+NCLS_FRCS <- FindNeighbors(object = NCLS_FRCS, reduction = "pca", dims = 1:20, seed.use = 8734)
+for(k in 1:length(resolution)){
+  NCLS_FRCS <- FindClusters(object = NCLS_FRCS, resolution = resolution[k], random.seed = 8734)
+}
+```
+
+
+### Umap of Re-embedded CCL19`r knitr::asis_output("\U207A")` FRC subsets (Figure 4B)
+```{r umap TRC PRC}
+palet_CCL19_FRC <- c("#5050FFFF", "#CE3D32FF")
+names(palet_CCL19_FRC) <- c("CAF2/TRC","CAF1/PRC")
+
+DimPlot(NCLS_FRCS, reduction = "umap", group.by = "cell_type",cols = palet_CCL19_FRC)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("CCL19", "\U207A ", "Tumor FRCs"))
+
+```
+
+### Tonsillar FRC signatures projected on tumor CCL19`r knitr::asis_output("\U207A")` FRC subsets (Figure 4C) {.tabset}
+#### Signature SLO-TRC 
+```{r signature SLO TRC}
+NSCLC_TRC <-c("CCL19","CCL21","PDPN","ICAM1","VCAM1","LUM","PDGFRA","TNFSF13B")
+NSCLC_TRC <- unlist(lapply(NSCLC_TRC, function(x) {
+  get_full_gene_name(x,NCLS_FRCS)
+}))
+slot_type <-"data"
+gn <- "Tumor_TRC"
+Visualize_GeneSignatures_sc(NCLS_FRCS, NSCLC_TRC, slot_type, 'average.mean',gn) + ggtitle("SLO-TRC signature")
+```
+
+#### Signature SLO-PRC 
+```{r signature SLO PRC}
+NSCLC_PRC <-c("CCL19","CCL21","ITGA1","ITGA7","MCAM","CNN1","NOTCH3","ACTA2","PDGFRB","ANGPT2")
+NSCLC_PRC <- unlist(lapply(NSCLC_PRC, function(x) {
+  get_full_gene_name(x,NCLS_FRCS)
+}))
+
+slot_type <-"data"
+gn <- "Tumor_PRC"
+Visualize_GeneSignatures_sc(NCLS_FRCS, NSCLC_PRC, slot_type, 'average.mean',gn) + ggtitle("SLO-PRC signature")
+```
+
+
+## **Comparison of transcriptional profiles between NSCLC CCL19`r knitr::asis_output("\U207A")` FRCs and Tonsilar FRCs via Multidimensional scaling (MDS)**
+
+### Read Tonsilar FRC data
+```{r read Tonsil FRC data}
+Tons_FRC_data <-readRDS(paste0(basedir,"/data/Human/mergedHumanTonsilExtendedDataset_incAcuteTonsilitis_mapped_wocl11+12+14_seuratFRC.rds"))
+```
+
+### Define color palette
+```{r color vector}
+cols<- pal_igv()(51)
+names(cols) <- c(0:50)
+```
+
+### Tonsilar FRCs
+```{r umap Tonsilar FRC}
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_1"] <- paste0("ACTA2", expression("\U207A"),"PRC_1")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_2"] <- paste0("ACTA2", expression("\U207A"),"PRC_2")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_3"] <- paste0("ACTA2", expression("\U207A"),"PRC_3")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_4"] <- paste0("ACTA2", expression("\U207A"),"PRC_4")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "ACTA2+PRC_5"] <- paste0("ACTA2", expression("\U207A"),"PRC_5")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "FDC_6"] <- "FDC"
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "PI16+RC_10"] <- paste0("PI16", expression("\U207A"),"RC_1")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "PI16+RC_11"] <- paste0("PI16", expression("\U207A"),"RC_2")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "PI16+RC_12"] <- paste0("PI16", expression("\U207A"),"RC_3")
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "TRC_7"] <- "TRC_1"
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "TRC_8"] <- "TRC_2"
+Tons_FRC_data@meta.data$clusterLabel[Tons_FRC_data@meta.data$clusterLabel == "TRC_9"] <- "TRC_3"
+
+colDataset <- cols[3:15]
+names(colDataset) <- unique(Tons_FRC_data$clusterLabel)
+
+DimPlot(Tons_FRC_data, reduction = "umap", group.by = "clusterLabel",cols=colDataset)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle("Tonsilar FRCs (De Martin et al 2023)")
+```
+
+### Merge NSCLC TRC and PRC with Tonsilar FRCs
+```{r merge NSCLC TRC PRC Tons FRC}
+NCLS_FRCS$Disease_short <-rep("NSCLC",nrow(NCLS_FRCS@meta.data))
+Tons_FRC_data$Disease_short <-rep("Tonsil",nrow(Tons_FRC_data@meta.data))
+colnames(Tons_FRC_data@meta.data)[names(Tons_FRC_data@meta.data) == 'clusterLabel'] <- 'cell_type'
+
+data_merge <- merge(NCLS_FRCS, y = c(Tons_FRC_data),
+             add.cell.ids = c("NCLS_FRCS","Tons_FRC_data"),
+             project = "merge_nsclc_tonsils")
+
+#Preprocessing
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.8, 1.)
+data_merge  <- preprocessing(data_merge,resolution)
+```
+
+
+### **Integrate data to correct for batch effects due to different tissues via seurat**
+### Step 1
+```{r integrate data step 1, eval=FALSE}
+obj.list <-SplitObject(data_merge, split.by = 'cell_type')
+#For each object in list we see to run normalization and identify highly variable features
+for (i in 1:length(obj.list)){
+  #Normalization
+  obj.list[[i]] <- NormalizeData(obj.list[[i]], normalization.method = "LogNormalize", scale.factor = 10000) 
+  #Find high variable genes
+  obj.list[[i]] <- FindVariableFeatures(obj.list[[i]], selection.method = "vst", nfeatures = 2000)
+}
+```
+
+### Step 2
+```{r integrate data step 2, eval=FALSE}
+#select features that are repeatedly variable across datasets for integration
+features <- SelectIntegrationFeatures(object.list = obj.list)
+#Find anchors to integrate the data across different patients (Canonical correlation analysis)
+anchors <- FindIntegrationAnchors(object.list = obj.list, anchor.features = features)
+# Create an 'integrated' data assay
+seurat_integrated <- IntegrateData(anchorset = anchors)
+```
+
+### Step 3
+```{r integrate data step 3, eval=FALSE}
+# We run a single integrated analysis on all cells!
+DefaultAssay(seurat_integrated) <- "integrated"
+
+# Run the standard workflow for visualization and clustering
+seurat_integrated <- ScaleData(seurat_integrated, verbose = FALSE)
+seurat_integrated <- RunPCA(object = seurat_integrated, npcs = 30, verbose = FALSE,seed.use = 8734) 
+seurat_integrated <- RunTSNE(object = seurat_integrated, reduction = "pca", dims = 1:20, seed.use = 8734)
+seurat_integrated<- RunUMAP(object = seurat_integrated, reduction = "pca", dims = 1:20, seed.use = 8734)
+seurat_integrated <- FindNeighbors(object = seurat_integrated, reduction = "pca", dims = 1:20, seed.use = 8734)
+#Clustering 
+resolution <- c(0.1, 0.25, 0.4, 0.6,0.8, 1.,1.2,1.4,1.8)
+for(k in 1:length(resolution)){
+  seurat_integrated <- FindClusters(object = seurat_integrated, resolution = resolution[k], random.seed = 8734)
+}
+```
+
+### Apply Divide and conquer MDS algorithm proposed by Delicado P. and C. Pachón-García (2021) for fast MDS computation due to large dataset size
+```{r MDS computation, eval=FALSE}
+# celltype similarity wth MDS
+DefaultAssay(seurat_integrated) <-'integrated'
+
+#Divide-andconquer MDS proposed by Delicado P. and C. Pachón-García (2021)
+#MDS computation
+mds <- divide_conquer_mds(x = t(GetAssayData(seurat_integrated, slot = 'scale.data')), l = 200, c_points = 5 * 2, r = 2, n_cores = 1)$points
+colnames(mds) <- paste0("MDSDIVCONQ_", 1:2)
+
+# Store MDS representation as a custom dimensional reduction field
+seurat_integrated[['mds_div_conq']] <- CreateDimReducObject(embeddings = mds, key = 'MDSDIVCONQ_', assay = DefaultAssay(seurat_integrated))
+
+# Save seurat object for later use
+#saveRDS(seurat_integrated,paste0(basedir,"/data/Human/Tonsil_Ccl19_TRC_PRC_final_mds_div_conq.rds"))
+```
+
+### Multidimensional scaling (MDS) plot 
+
+### Read integrated object with MDS representation 
+```{r read integrated data}
+seurat_integrated <- readRDS(paste0(basedir,"/data/Human/Tonsil_Ccl19_TRC_PRC_final_mds_conq.rds"))
+```
+
+### Visualize MDS plot (Figure 4D)
+```{r MDS visualization}
+mds_tx_condition <- seurat_integrated@reductions$mds_div_conq@cell.embeddings %>% 
+as.data.frame() %>% cbind(tx = seurat_integrated@meta.data$Disease_short)
+
+mds_tx_celltype <- seurat_integrated@reductions$mds_div_conq@cell.embeddings %>% 
+as.data.frame() %>% cbind(tx = seurat_integrated@meta.data$cell_type)
+
+mds_tx_TOTAL <- merge(mds_tx_condition, mds_tx_celltype, by=c("MDSDIVCONQ_1", "MDSDIVCONQ_2"), all.x=T, all.y=T)
+colnames(mds_tx_TOTAL) <-c("MDS_1", "MDS_2", "Condition","Celltype")
+
+#Color palette
+colDataset <- cols[1:15]
+names(colDataset) <- unique(seurat_integrated$cell_type)
+
+# Use mean gaussian kernel
+mds_tx_TOTAL_gk <- mds_tx_TOTAL %>% 
+  group_by(Celltype,Condition) %>% 
+  mutate(count_mds1 = mean(GK(MDS_1))) %>%
+  mutate(count_mds2 = mean(GK(MDS_2)))
+
+ggplot(mds_tx_TOTAL_gk, aes(x=count_mds1, y=count_mds2, color=Celltype, shape = Condition)) + geom_point(stroke = 1.5) + ylab("MDS2") + xlab("MDS1") + coord_cartesian(xlim = c(0, max(mds_tx_TOTAL_gk$count_mds1,mds_tx_TOTAL_gk$count_mds2)), ylim = c(0, max(mds_tx_TOTAL_gk$count_mds1,mds_tx_TOTAL_gk$count_mds2)) ) +
+scale_color_manual(values=colDataset) + scale_shape_manual(values = c(2, 3)) + 
+  theme(aspect.ratio = 2,axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    axis.text.y = element_text(angle = 0, vjust = 0.5,colour = "black",size = 10),
+    axis.text.x = element_text(angle = 0, vjust = 0.5,colour = "black",size = 10)) 
+```
+
+### Read NSCLC TIL data
+```{r read immune cells}
+NSCLS_TIL_data <- readRDS(paste0(basedir,"/data/Human/NSCLC_TILs.rds"))
+```
+
+### Merge NSCLS CCL19`r knitr::asis_output("\U207A")` FRCs and NSCLS TILs
+```{r merge CCL19 FRCs TILS}
+same_columns <- intersect(colnames(NSCLS_TIL_data@meta.data),colnames(NCLS_FRCS@meta.data))
+
+NSCLS_TIL_data@meta.data <-NSCLS_TIL_data@meta.data[,same_columns]
+NCLS_FRCS@meta.data <-NCLS_FRCS@meta.data[,same_columns]
+
+merged_data<- merge(NSCLS_TIL_data, y = c(NCLS_FRCS),
+             add.cell.ids = c('NSCLS_TIL_data','NCLS_FRCS'),
+             project = "NSCLC_FRC_TIL")
+
+resolution <- c(0.1, 0.25, 0.4, 0.6, 0.8, 1.,1.2,1.4,1.6,2.)
+merged_data  <- preprocessing(merged_data,resolution)
+```
+
+### **FRC-immune cell interactions in NSCLC via Cellchat (Suoqin Jin et al., 2021)**
+
+### Convert seurat object to cellchat object
+```{r conv seurat to cellchat}
+#Define color palet
+palet <- c("#5050FFFF", "#CE3D32FF", "#4DAF4A","#FB9A99","#377EB8","#A65628","#222F75")
+names(palet) <- c( "CAF2/TRC","CAF1/PRC", paste0("CD4", "\u207A ", "T cells"), paste0("CD8", "\u207A ", "T cells"), "B cells", "Regulatory T cells",paste0("Cycling CD8", "\u207A ", "T cells"))
+
+# Interactome analysis
+cellchat <- Cellchat_Analysis(merged_data)
+cellchat <-CellChatDownstreamAnalysis(cellchat,"human",thresh = 0.05)
+
+```
+
+### Interactome analysis (Figure 4E)
+```{r interactome analysis, message=FALSE}
+gg <- netAnalysis_signalingRole_scatter(cellchat,color.use = palet)
+gg <- gg + ggtitle("Interactome analysis (Cellchat)")
+gg
+```
+### Outgoing signaling patterns
+```{r outgoing signaling}
+selectK(cellchat, pattern = "outgoing")
+```
+
+### Incoming signaling patterns
+```{r incoming signaling}
+selectK(cellchat, pattern = "incoming")
+```
+
+### Incoming and outgoing patterns
+```{r patterns, results='hide', fig.keep = 'none'}
+cellchat <- identifyCommunicationPatterns(cellchat, pattern = "outgoing", k = 5, color.use = palet)
+cellchat <- identifyCommunicationPatterns(cellchat, pattern = "incoming", k = 6, color.use = palet)
+```
+
+
+### Joint dotplot for highlighting incoming and outcoming communication patterns explicitly for pathways with active signaling between FRCs and immune cells (Figure 4F)
+
+```{r join dotplot FRC immune}
+order_list <-c("CAF2/TRC","CAF1/PRC", 
+               paste0("CD8", "\u207A ", "T cells"),
+               paste0("Cycling CD8", "\u207A ", "T cells"),
+               paste0("CD4", "\u207A ", "T cells"),"B cells", "Regulatory T cells")
+
+pathways<- cellchat@netP$pathways
+
+gg <-comAnalysis_joint_dot(cellchat,color.use = palet,font.size = 8,pathways = pathways, order_list = order_list)$gg
+shared_signaling <- comAnalysis_joint_dot(cellchat,color.use = palet,font.size = 8,pathways = pathways, order_list = order_list)$new_df_list
+gg
+```
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
+
