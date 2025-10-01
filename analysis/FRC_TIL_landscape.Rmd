@@ -1,0 +1,163 @@
+---
+title: "Characterization of cancer-associated fibroblasts (CAFs) and tumor-infiltrating lymphocytes (TILs) in non-small cell lung cancer"
+author: "Chrysa Papadopoulou"
+output:
+  html_document:
+    self_contained: yes
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: no
+    smooth_scroll: yes
+mainfont: {Arial Unicode MS}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, dev = c("ragg_png", "cairo_pdf"))
+knitr::asis_output("\U207A")
+knitr::spin_child('extra_functions.R')
+set.seed(1000)
+```
+
+### Load packages
+```{r libraries}
+suppressPackageStartupMessages({
+  library(here)
+  library(purrr)
+  library(Seurat)
+  library(dittoSeq)
+  library(CellChat)
+  library(harmony)
+  library(ggsci)
+  library(bigmds)
+})
+```
+
+## Set directory
+```{r set directory}
+basedir <- here()
+```
+
+## **Characterization of cancer-associated fibroblasts (CAFs) in NSCLC**
+
+### Read Stroma cell data
+```{r read NSCLC stroma cell data}
+NSCLC_data <- readRDS(paste0(basedir,"/data/Human/NSCLC_stroma_total.rds"))
+```
+
+### Subset on CAFs only
+```{r subset on CAFs}
+CAFs_NSCLC <- subset(NSCLC_data, cell_type %in% c("CAF2", "CAF1"))
+
+#Do preprocessing again without re normalization
+resolution <- c(0.1, 0.25, 0.4, 0.6, 0.8, 1., 1.2, 1.4, 1.6, 2., 2.2, 2.4)
+CAFs_NSCLC <- FindVariableFeatures(CAFs_NSCLC, selection.method = "vst", nfeatures = 2000)
+CAFs_NSCLC <- ScaleData(CAFs_NSCLC)
+CAFs_NSCLC <- RunPCA(object = CAFs_NSCLC, npcs = 30, verbose = FALSE,seed.use = 8734)
+CAFs_NSCLC <- RunTSNE(object = CAFs_NSCLC, reduction = "pca", dims = 1:20, seed.use = 8734)
+CAFs_NSCLC <- RunUMAP(object = CAFs_NSCLC, reduction = "pca", dims = 1:20, seed.use = 8734)
+CAFs_NSCLC <- FindNeighbors(object = CAFs_NSCLC, reduction = "pca", dims = 1:20, seed.use = 8734)
+for(k in 1:length(resolution)){
+  CAFs_NSCLC <- FindClusters(object = CAFs_NSCLC, resolution = resolution[k], random.seed = 8734)
+}
+```
+
+### Data integration with Harmony
+```{r integration with harmony}
+experiment.harmonized <- RunHarmony(CAFs_NSCLC,
+				group.by.vars = c("patient"),
+				reduction = "pca", reduction.save = "harmony", plot_convergence = TRUE)
+
+harmony_embeddings <- Embeddings(experiment.harmonized, 'harmony')
+
+experiment.harmonized <- RunUMAP(experiment.harmonized, dims = 1:30,seed.use = 1753,reduction = "harmony")
+experiment.harmonized <- FindNeighbors(experiment.harmonized, dims = 1:30,seed.use = 1753, reduction = "harmony")
+resolution <- c(0.1, 0.15, 0.125, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45 , 0.5, 0.6, 0.8, 1., 1.2, 1.4, 1.6, 1.8, 2., 2.2, 2.5)
+for(k in 1:length(resolution)){
+  experiment.harmonized <- FindClusters(object = experiment.harmonized, resolution = resolution[k], algorithm = 1,random.seed = 1753)
+}
+```
+
+### Cancer associated fibroblasts - CAFs subsets (Figure 3A)
+```{r umap CAFs}
+cols<- pal_igv()(51)
+names(cols) <- c(0:50)
+palet <- cols[4:6]
+names(palet) <- c("CAF2","CAF1")
+
+DimPlot(experiment.harmonized, reduction = "umap", group.by = "cell_type", cols= palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+         panel.grid.major = element_blank()) +
+ xlab("UMAP1") +
+ylab("UMAP2") + ggtitle("Cancer associated fibroblasts")
+```
+
+### CCL19 expression in CAFs of NSCLC (Figure 4A)
+```{r CCL19 sign umap}
+FeaturePlot(experiment.harmonized, reduction = "umap", 
+          features = get_full_gene_name('CCL19',experiment.harmonized),raster=FALSE,
+          cols=c("lightgrey", "red"))
+
+```
+
+### CAF gene signatures (Figure 3B)
+```{r dotplot CAFs, fig.width=7}
+data_conv <- experiment.harmonized
+data_conv <-Remove_ensebl_id(data_conv)
+
+gene_list <- c("CCL19","CCL21","PDPN","FAP","POSTN","CLU","LEPR","CD34","SULF1","DPT","ICAM1",
+"VCAM1","CXCL12","ALDH1A1","MMP2","ACTA2","MYH11","MCAM","NOTCH3","RGS5",
+"DES","AIFM2","CSPG4", "KCNJ8", "ITGA7")
+
+dittoDotPlot(data_conv, vars = gene_list, group.by = "cell_type", size = 8,legend.size.title = "Expression (%)",scale = FALSE) + ylab(" ") 
+
+```
+
+## **Characterization of tumor-infiltrating lymphocytes (TILs) in NSCLC**
+
+### Read NSCLC TIL data
+```{r read immune cells}
+NSCLS_TIL_data <- readRDS(paste0(basedir,"/data/Human/NSCLC_TILs.rds"))
+```
+
+### Tumor-infiltrating lymphocytes (TILS) subsets (Figure 3C)
+```{r umap TILs}
+#Define color palet
+palet <- c("#5050FFFF", "#CE3D32FF", "#4DAF4A","#FB9A99","#377EB8","#A65628","#222F75")
+names(palet) <- c( "CAF2/TRC","CAF1/PRC", paste0("CD4", "\u207A ", "T cells"), paste0("CD8", "\u207A ", "T cells"), "B cells", "Regulatory T cells",paste0("Cycling CD8", "\u207A ", "T cells"))
+
+
+DimPlot(NSCLS_TIL_data, reduction = "umap", group.by = "cell_type", cols=palet)+
+  theme_bw() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(), 
+        panel.grid.minor = element_blank(),
+         panel.grid.major = element_blank()) +
+  xlab("UMAP1") +
+  ylab("UMAP2") + ggtitle(paste0("Tumor infiltrating lymphocytes"))
+```
+
+### TIL gene signatures (Figure 3D)
+```{r TILS dotplot}
+data_conv <-Remove_ensebl_id(NSCLS_TIL_data) 
+
+genes <- c("CD79A","IGHM","IGHD","JCHAIN","CD4","CCR7","SELL","FOXP3","IKZF4","IL2RA","CTLA4","CD8A","CX3CR1","FCGR3A","KIR3DL2","KLRF1", "NKG7","GZMB","GNLY","TIGIT","TOP2A","MKI67","PCLAF")
+
+data_conv$cell_type <- factor(data_conv$cell_type, levels = c("B cells",paste0("CD4", "\u207A ", "T cells"),"Regulatory T cells",paste0("CD8", "\u207A ", "T cells"), paste0("Cycling CD8", "\u207A ", "T cells")))
+  
+gg <-dittoDotPlot(data_conv, vars = genes, group.by = "cell_type", size = 4)
+gg + coord_fixed(ratio=0.8) + ylab("")
+```
+
+
+### Session info
+```{r session info}
+sessionInfo()
+date()
+```
+
+
